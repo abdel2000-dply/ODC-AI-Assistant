@@ -1,1 +1,9 @@
-venv
+# Ignore virtual environments
+venv/
+
+# Ignore Git files
+.git/
+
+# Ignore other unnecessary files
+*.log
+*.md
