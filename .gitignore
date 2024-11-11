@@ -1,1 +1,15 @@
+# Ignore Python virtual environments
 venv/
+
+# Ignore Docker-related files
+*.log
+*.pid
+
+# Ignore bytecode and compiled files
+__pycache__
+*.pyc
+*.pyo
+
+# Ignore IDE configuration files (optional)
+.idea/
+.vscode/
