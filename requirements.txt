@@ -1,3 +1,4 @@
 SpeechRecognition
 gTTS
 pyttsx3
+pyaudio
