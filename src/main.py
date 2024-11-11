@@ -1,14 +1,14 @@
-import pyttsx3
-
-engine = pyttsx3.init()
-
-# Set properties (optional)
-engine.setProperty('rate', 150)  # Adjust speech rate
-engine.setProperty('volume', 1.0)  # Adjust volume
+from gtts import gTTS
+import os
 
 # Text to be spoken
 text = "Hello, world! This is a text-to-speech example."
 
-# Speak the text
-engine.say(text)
-engine.runAndWait()
+# Generate speech
+tts = gTTS(text=text, lang='en')
+
+# Save the speech to a file
+tts.save("output.mp3")
+
+# Play the speech (this will work on Raspberry Pi)
+os.system("mpg321 output.mp3")
