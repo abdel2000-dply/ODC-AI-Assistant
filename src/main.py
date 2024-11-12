@@ -1,14 +1,30 @@
-from gtts import gTTS
-import os
+from assistant import Assistant
 
-# Text to be spoken
 text = "Hello, world! This is a text-to-speech example."
 
-# Generate speech
-tts = gTTS(text=text, lang='en')
+assistant = Assistant("Bonjour test test, merci", lang='fr')
+assistant.play_speech()
 
-# Save the speech to a file
-tts.save("output.mp3")
 
-# Play the speech (this will work on Raspberry Pi)
-os.system("mpg321 output.mp3")
+
+
+
+
+
+
+
+
+# from gtts import gTTS
+# import os
+
+# # Text to be spoken
+# text = "Hello, world! This is a text-to-speech example."
+
+# # Generate speech
+# tts = gTTS(text=text, lang='en')
+
+# # Save the speech to a file
+# tts.save("output.mp3")
+
+# # Play the speech (this will work on Raspberry Pi)
+# os.system("mpg321 output.mp3")
