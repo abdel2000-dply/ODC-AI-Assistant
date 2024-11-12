@@ -1,6 +1,9 @@
 # Ignore Python virtual environments
 venv/
 
+# Ignore .env file
+.env
+
 # Ignore Docker-related files
 *.log
 *.pid
