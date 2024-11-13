@@ -1,30 +1,26 @@
 from assistant import Assistant
 
-text = "Hello, world! This is a text-to-speech example."
+# Initialize the Assistant with a greeting text
+assistant = Assistant("Hello, world! This is a text-to-speech example.")
 
-assistant = Assistant("Bonjour test test, merci", lang='fr')
+# Generate and play speech
 assistant.play_speech()
 
+# # Ask AI a question
+# prompt = "What is the capital of France?"
+# response = assistant.ask_AI(prompt)
+# print(f"AI response: {response}")
 
+# # Generate and play the AI response
+# assistant.text = response
+# assistant.play_speech()
 
+# Ask a factual question
+context = "France is a country in Europe. Paris is the capital of France."
+question = "What is the capital of France?"
+factual_response = assistant.ask_factual_question(question, context)
+print(f"Factual response: {factual_response}")
 
-
-
-
-
-
-
-# from gtts import gTTS
-# import os
-
-# # Text to be spoken
-# text = "Hello, world! This is a text-to-speech example."
-
-# # Generate speech
-# tts = gTTS(text=text, lang='en')
-
-# # Save the speech to a file
-# tts.save("output.mp3")
-
-# # Play the speech (this will work on Raspberry Pi)
-# os.system("mpg321 output.mp3")
+# Generate and play the factual response
+assistant.text = factual_response
+assistant.play_speech()
