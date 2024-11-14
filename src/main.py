@@ -17,7 +17,7 @@ assistant.play_speech()
 
 # Ask a factual question
 context = "France is a country in Europe. Paris is the capital of France."
-question = "What is the capital of France?"
+question = "What is Paris?"
 factual_response = assistant.ask_factual_question(question, context)
 print(f"Factual response: {factual_response}")
 

@@ -1,6 +1,7 @@
 from gtts import gTTS
 import os
 from transformers import pipeline
+from utils import text_to_speech
 
 
 class Assistant:
@@ -9,19 +10,15 @@ class Assistant:
         self.text = text
         self.lang = lang
         self.generator = pipeline('text-generation', model='gpt2')
-        self.qa_model = pipeline('question-answering', model='distilbert-base-uncased-distilled-squad')
+        self.qa_model = pipeline('question-answering', model='mrm8488/bert-tiny-5-finetuned-squadv2')
 
     def generate_speech(self):
         """ Generate speech from text """
-        output_file = "output.mp3"
-        tts = gTTS(text=self.text, lang=self.lang)
-        tts.save(output_file)
-        return output_file
+        text_to_speech(self.text)
 
     def play_speech(self):
         """ Play the speech """
-        output_file = self.generate_speech()
-        os.system(f"mpg321 {output_file}")
+        self.generate_speech()
 
     def change_language(self, lang):
         """ Change the language of the speech """
