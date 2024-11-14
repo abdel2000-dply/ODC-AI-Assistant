@@ -22,5 +22,6 @@ factual_response = assistant.ask_factual_question(question, context)
 print(f"Factual response: {factual_response}")
 
 # Generate and play the factual response
-assistant.text = factual_response
+text = f"The answer to the question, {question}, is {factual_response}."
+assistant.text = text
 assistant.play_speech()
