@@ -4,6 +4,9 @@ venv/
 # Ignore .env file
 .env
 
+# Ignore mp3
+*.mp3
+
 # Ignore Docker-related files
 *.log
 *.pid
