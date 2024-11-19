@@ -1,18 +1,14 @@
 import speech_recognition as sr
+import pyttsx3
 
-def recognize_speech_from_mic():
-    # Initialize recognizer
+def recognize_speech_from_mic(device_index=3):
     recognizer = sr.Recognizer()
-
-    # Use the microphone as the source for input
-    with sr.Microphone(device_index=3) as source:  # Update device_index to the correct value
+    with sr.Microphone(device_index=device_index) as source:
         print("Please say something:")
-        # Adjust for ambient noise and record the audio
         recognizer.adjust_for_ambient_noise(source)
         audio = recognizer.listen(source)
 
     try:
-        # Recognize speech using Google Web Speech API
         text = recognizer.recognize_google(audio)
         print("You said: " + text)
         return text
@@ -20,8 +16,13 @@ def recognize_speech_from_mic():
         print("Google Web Speech API could not understand the audio")
         return None
     except sr.RequestError as e:
-        print("Could not request results from Google Web Speech API; {0}".format(e))
+        print(f"Could not request results from Google Web Speech API; {e}")
         return None
 
-if __name__ == "__main__":
-    recognize_speech_from_mic()
+def speak(text, lang='en'):
+    """ Generate speech from text using pyttsx3 """
+    engine = pyttsx3.init()
+    engine.setProperty('rate', 150)  # Speed percent (can go over 100)
+    engine.setProperty('volume', 1)  # Volume 0-1
+    engine.say(text)
+    engine.runAndWait()
