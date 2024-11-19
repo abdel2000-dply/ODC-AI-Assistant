@@ -1,11 +1,10 @@
-from gtts import gTTS
 import os
 import json
 from transformers import pipeline
 from handlers.static_handler import StaticHandler
 from handlers.pre_dynamic_handler import PreDynamicHandler
 from handlers.dynamic_handler import DynamicHandler
-
+from utils import speak
 
 class Assistant:
     def __init__(self, text="", lang='en', static_responses_file='src/static_responses.json', pre_dynamic_context_file='src/pre_dynamic_context.json'):
@@ -22,15 +21,11 @@ class Assistant:
 
     def generate_speech(self):
         """ Generate speech from text """
-        output_file = "output.mp3"
-        tts = gTTS(text=self.text, lang=self.lang)
-        tts.save(output_file)
-        return output_file
+        speak(self.text, self.lang)
 
     def play_speech(self):
         try:
-            output_file = self.generate_speech()
-            os.system(f"mpg321 {output_file}")
+            self.generate_speech()
         except Exception as e:
             print(f"Error during playback: {e}")
 
