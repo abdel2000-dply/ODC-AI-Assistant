@@ -7,7 +7,9 @@ assistant.play_speech()
 
 while True:
     # Recognize speech from the microphone
-    question = recognize_speech_from_mic()
+    question = None
+    while not question:
+        question = recognize_speech_from_mic()
 
     # Check for exit condition
     if question.lower() in ["exit", "quit"]:
