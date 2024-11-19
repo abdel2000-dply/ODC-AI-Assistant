@@ -1,14 +1,24 @@
 from gtts import gTTS
 import os
+import json
 from transformers import pipeline
+from handlers.static_handler import StaticHandler
+from handlers.pre_dynamic_handler import PreDynamicHandler
+from handlers.dynamic_handler import DynamicHandler
 
 
 class Assistant:
-    def __init__(self, text, lang='en'):
+    def __init__(self, text="", lang='en', static_responses_file='static_responses.json', pre_dynamic_context_file='pre_dynamic_context.json'):
         """ Initialize the Assistant """
         self.text = text
         self.lang = lang
-        self.qa_model = pipeline('question-answering', model='mrm8488/bert-tiny-5-finetuned-squadv2')
+        self.static_handler = StaticHandler(static_responses_file)
+        self.pre_dynamic_handler = PreDynamicHandler()
+        self.dynamic_handler = DynamicHandler()
+        
+        # Load pre-dynamic context from JSON file
+        with open(pre_dynamic_context_file, 'r') as file:
+            self.pre_dynamic_context = json.load(file)
 
     def generate_speech(self):
         """ Generate speech from text """
@@ -24,14 +34,23 @@ class Assistant:
         except Exception as e:
             print(f"Error during playback: {e}")
 
-
     def change_language(self, lang):
         """ Change the language of the speech """
         self.lang = lang
         return self.lang
 
-    def ask_factual_question(self, question, context):
-        """ Ask a factual question and get a response """
-        result = self.qa_model(question=question, context=context)
-        return result['answer']
+    def get_response(self, question):
+        """ Get a response to a question """
+        # Check for static response
+        static_response = self.static_handler.get_response(question)
+        if static_response:
+            return static_response
+        
+        # Check for pre-dynamic context
+        if question in self.pre_dynamic_context:
+            context = self.pre_dynamic_context[question]
+            return self.pre_dynamic_handler.get_response(question, context)
+        
+        # Use dynamic model
+        return self.dynamic_handler.get_response(question, context=None)
 
