@@ -48,7 +48,7 @@ class Assistant:
         
         # Check for pre-dynamic context
         # if question in self.pre_dynamic_context:
-        context = self.pre_dynamic_context[question]
+        context = self.pre_dynamic_context.get('context')
         return self.pre_dynamic_handler.get_response(question, context)
         
         # Use dynamic model
