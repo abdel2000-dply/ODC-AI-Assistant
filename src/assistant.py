@@ -8,7 +8,7 @@ from handlers.dynamic_handler import DynamicHandler
 
 
 class Assistant:
-    def __init__(self, text="", lang='en', static_responses_file='static_responses.json', pre_dynamic_context_file='pre_dynamic_context.json'):
+    def __init__(self, text="", lang='en', static_responses_file='src/static_responses.json', pre_dynamic_context_file='pre_dynamic_context.json'):
         """ Initialize the Assistant """
         self.text = text
         self.lang = lang
