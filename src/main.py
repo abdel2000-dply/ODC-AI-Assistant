@@ -1,18 +1,20 @@
 from assistant import Assistant
+from utils import recognize_speech_from_mic
 
-# Initialize the Assistant with a greeting text
-assistant = Assistant("Hello, world! This is a text-to-speech example.")
-
-# Generate and play speech
+# Initialize the Assistant with a hey message
+assistant = Assistant("Hello, I'm Orange digital Center's Assistant. How can I help you?")
 assistant.play_speech()
 
-# Ask a factual question
-context = "France is a country in Europe. Paris is the capital of France."
-question = "What is the capital of France?"
-factual_response = assistant.ask_factual_question(question, context)
-print(f"Factual response: {factual_response}")
+# # Recognize speech from the microphone
+# question = recognize_speech_from_mic()
 
-# Generate and play the factual response
-text = f"The answer to the question, {question}, is {factual_response}."
-assistant.text = text
+question = "what is this place?"
+print(f"Question: {question}")
+
+# Get the response
+response = assistant.get_response(question)
+print(f"Response: {response}")
+
+# Generate and play the response
+assistant.text = response
 assistant.play_speech()
