@@ -1,20 +1,26 @@
 from assistant import Assistant
 from utils import recognize_speech_from_mic
 
-# Initialize the Assistant with a hey message
-assistant = Assistant("Hello, I'm Orange digital Center's Assistant. How can I help you?")
+# Initialize the Assistant with a greeting message
+assistant = Assistant("Hello, I'm Orange Digital Center's Assistant. How can I help you?")
 assistant.play_speech()
 
-# # Recognize speech from the microphone
-# question = recognize_speech_from_mic()
+while True:
+    # Recognize speech from the microphone
+    question = recognize_speech_from_mic()
 
-question = "what is this place?"
-print(f"Question: {question}")
+    # Check for exit condition
+    if question is None or question.lower() in ["exit", "quit"]:
+        assistant.text = "Goodbye!"
+        assistant.play_speech()
+        break
 
-# Get the response
-response = assistant.get_response(question)
-print(f"Response: {response}")
+    print(f"Question: {question}")
 
-# Generate and play the response
-assistant.text = response
-assistant.play_speech()
+    # Get the response
+    response = assistant.get_response(question)
+    print(f"Response: {response}")
+
+    # Generate and play the response
+    assistant.text = response
+    assistant.play_speech()
