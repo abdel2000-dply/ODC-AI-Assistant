@@ -10,7 +10,7 @@ while True:
     question = recognize_speech_from_mic()
 
     # Check for exit condition
-    if question is None or question.lower() in ["exit", "quit"]:
+    if question.lower() in ["exit", "quit"]:
         assistant.text = "Goodbye!"
         assistant.play_speech()
         break
