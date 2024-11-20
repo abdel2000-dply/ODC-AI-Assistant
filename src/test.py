@@ -1,19 +1,18 @@
 import os
-import edge_tts  # Correct import using the library
-import playsound
+import edge_tts
+from playsound import playsound
 
-def speak_text(text):
-    """Speaks the given text using Edge TTS and plays it directly.
-
-    Handles potential errors during TTS conversion or audio playback.
-    """
+async def speak_text(text):
+    """Speaks the given text using Edge TTS and plays it directly."""
+    voice = 'en-US-JennyNeural'  # Adjust voice as needed
+    audio_file = 'temp.mp3'
 
     try:
-        # Potential name change (check examples for actual name)
-        tts = edge_tts.TextToSpeech(text=text, voice='en-US-JennyNeural')  # Adjust voice as needed
-        audio_file = 'temp.mp3'
-        tts.save(audio_file)
+        # Generate speech using edge-tts
+        communicate = edge_tts.Communicate(text, voice)
+        await communicate.save(audio_file)
 
+        # Play the audio file
         playsound(audio_file)
     except Exception as e:
         print(f"Error during TTS or playback: {e}")  # Informative error message
@@ -23,5 +22,6 @@ def speak_text(text):
             os.remove(audio_file)
 
 if __name__ == "__main__":
+    import asyncio
     text_to_speak = "Hello, world! This is a test using Edge TTS."
-    speak_text(text_to_speak)
+    asyncio.run(speak_text(text_to_speak))
