@@ -1,28 +1,60 @@
-import speech_recognition as sr
-import pyttsx3 as tts
+import os
+import edge_tts
+import pyaudio
+import wave
+from pydub import AudioSegment
 
-def recognize_speech_from_mic(device_index=3):
-    recognizer = sr.Recognizer()
-    with sr.Microphone(device_index=device_index) as source:
-        print("Please say something:")
-        recognizer.adjust_for_ambient_noise(source)
-        audio = recognizer.listen(source)
+async def speak_text(text):
+    """Speaks the given text using Edge TTS and plays it directly."""
+    voice = 'en-US-AndrewMultilingualNeural'  # Adjust voice as needed
+    mp3_file = 'temp.mp3'
+    wav_file = 'temp.wav'
 
     try:
-        text = recognizer.recognize_google(audio)
-        print("You said: " + text)
-        return text
-    except sr.UnknownValueError:
-        print("Google Web Speech API could not understand the audio")
-        return None
-    except sr.RequestError as e:
-        print(f"Could not request results from Google Web Speech API; {e}")
-        return None
+        # Generate speech using edge-tts
+        communicate = edge_tts.Communicate(text, voice)
+        await communicate.save(mp3_file)
 
-def speak(text, lang='en'):
-    """ Generate speech from text using pyttsx3 """
-    engine = tts.init()
-    engine.setProperty('rate', 150)  # Speed percent (can go over 100)
-    engine.setProperty('volume', 1)  # Volume 0-1
-    engine.say(text)
-    engine.runAndWait()
+        # Convert MP3 to WAV
+        audio = AudioSegment.from_mp3(mp3_file)
+        audio.export(wav_file, format="wav")
+
+        # Play the audio file using pyaudio
+        wf = wave.open(wav_file, 'rb')
+        p = pyaudio.PyAudio()
+
+        # Open a stream
+        stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
+                        channels=wf.getnchannels(),
+                        rate=wf.getframerate(),
+                        output=True)
+
+        # Read data in chunks
+        chunk = 1024
+        data = wf.readframes(chunk)
+
+        # Play the audio file
+        while data:
+            stream.write(data)
+            data = wf.readframes(chunk)
+
+        # Stop and close the stream
+        stream.stop_stream()
+        stream.close()
+
+        # Close PyAudio
+        p.terminate()
+
+    except Exception as e:
+        print(f"Error during TTS or playback: {e}")  # Informative error message
+    finally:
+        # Ensure temporary files are removed even if exceptions occur
+        if os.path.exists(mp3_file):
+            os.remove(mp3_file)
+        if os.path.exists(wav_file):
+            os.remove(wav_file)
+
+if __name__ == "__main__":
+    import asyncio
+    text_to_speak = "Hello, world! This is a test using Edge TTS."
+    asyncio.run(speak_text(text_to_speak))
