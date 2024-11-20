@@ -1,3 +1,10 @@
 {
-  "context" : "We are in Orange digital Center in Technopark Agadir."
+    "center_name": "Orange Digital Center Agadir",
+    "location": "Agadir, Morocco",
+    "services": ["Coding courses", "Design workshops", "FabLab access", "3D printing", "Mentorship"],
+    "target_audience": ["Students", "Entrepreneurs", "General public"],
+    "programs": ["Youth employment", "Social entrepreneurship", "Women in tech"],
+    "features": ["Free access", "State-of-the-art equipment", "Expert support"],
+    "3d_printing": "Offers a variety of 3D printers and materials for prototyping.",
+    "fablab_laser_cutter": "Equipped with a laser cutter for precise cutting and engraving."
 }
