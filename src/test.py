@@ -45,6 +45,6 @@ def test_espeak_standalone(text):
 
 # Example usage (uncomment desired tests)
 if __name__ == "__main__":
-    test_pyttsx3_espeak()  # Test pyttsx3 with Espeak
+    # test_pyttsx3_espeak()  # Test pyttsx3 with Espeak
     test_espeak_standalone("This is a test using Espeak directly.")
     # test_festival_standalone("This is a test using Festival TTS.")
