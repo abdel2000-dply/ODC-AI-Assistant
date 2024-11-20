@@ -19,6 +19,9 @@ class Assistant:
         # Load pre-dynamic context from JSON file
         with open(pre_dynamic_context_file, 'r') as file:
             self.pre_dynamic_context = json.load(file)
+        
+        # Convert the context dictionary to a single string
+        self.context = " ".join([f"{key}: {value}" for key, value in self.pre_dynamic_context.items()])
 
     async def generate_speech(self):
         """ Generate speech from text """
@@ -43,9 +46,8 @@ class Assistant:
             return static_response
         
         # Use pre-dynamic context
-        context = self.pre_dynamic_context.get('context')
-        if context:
-            return self.pre_dynamic_handler.get_response(question, context)
+        if self.context:
+            return self.pre_dynamic_handler.get_response(question, self.context)
         
         # Use dynamic model
         return self.dynamic_handler.get_response(question, context=None)
