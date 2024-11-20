@@ -21,7 +21,7 @@ def recognize_speech_from_mic(device_index=3):
 
 def speak(text, lang='en'):
     """ Generate speech from text using pyttsx3 """
-    engine = tts.init(driverName='espeak')
+    engine = tts.init()
     engine.setProperty('rate', 150)  # Speed percent (can go over 100)
     engine.setProperty('volume', 1)  # Volume 0-1
     engine.say(text)
