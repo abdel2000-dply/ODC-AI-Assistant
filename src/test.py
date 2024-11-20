@@ -2,19 +2,25 @@ import os
 import edge_tts
 import pyaudio
 import wave
+from pydub import AudioSegment
 
 async def speak_text(text):
     """Speaks the given text using Edge TTS and plays it directly."""
     voice = 'en-US-AndrewMultilingualNeural'  # Adjust voice as needed
-    audio_file = 'temp.wav'
+    mp3_file = 'temp.mp3'
+    wav_file = 'temp.wav'
 
     try:
         # Generate speech using edge-tts
         communicate = edge_tts.Communicate(text, voice)
-        await communicate.save(audio_file)
+        await communicate.save(mp3_file)
+
+        # Convert MP3 to WAV
+        audio = AudioSegment.from_mp3(mp3_file)
+        audio.export(wav_file, format="wav")
 
         # Play the audio file using pyaudio
-        wf = wave.open(audio_file, 'rb')
+        wf = wave.open(wav_file, 'rb')
         p = pyaudio.PyAudio()
 
         # Open a stream
@@ -42,9 +48,11 @@ async def speak_text(text):
     except Exception as e:
         print(f"Error during TTS or playback: {e}")  # Informative error message
     finally:
-        # Ensure temporary file is removed even if exceptions occur
-        if os.path.exists(audio_file):
-            os.remove(audio_file)
+        # Ensure temporary files are removed even if exceptions occur
+        if os.path.exists(mp3_file):
+            os.remove(mp3_file)
+        if os.path.exists(wav_file):
+            os.remove(wav_file)
 
 if __name__ == "__main__":
     import asyncio
