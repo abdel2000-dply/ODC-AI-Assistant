@@ -13,12 +13,8 @@ async def speak_text(text):
         await communicate.save(audio_file)
 
         # Initialize pygame mixer
-        pygame.init()
         pygame.mixer.init()
         pygame.mixer.music.load(audio_file)
-
-        # Clear the sound buffer before playback
-        pygame.mixer.music.stop()
 
         # Play the audio file
         pygame.mixer.music.play()
@@ -32,7 +28,9 @@ async def speak_text(text):
         # Ensure temporary file is removed even if exceptions occur
         if os.path.exists(audio_file):
             os.remove(audio_file)
+        pygame.mixer.music.stop()
         pygame.mixer.quit()
+        pygame.quit()
 
 if __name__ == "__main__":
     import asyncio
