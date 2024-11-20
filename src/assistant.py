@@ -5,6 +5,7 @@ from handlers.static_handler import StaticHandler
 from handlers.pre_dynamic_handler import PreDynamicHandler
 from handlers.dynamic_handler import DynamicHandler
 from utils import speak
+import asyncio
 
 class Assistant:
     def __init__(self, text="", lang='en', static_responses_file='src/static_responses.json', pre_dynamic_context_file='src/pre_dynamic_context.json'):
@@ -19,13 +20,13 @@ class Assistant:
         with open(pre_dynamic_context_file, 'r') as file:
             self.pre_dynamic_context = json.load(file)
 
-    def generate_speech(self):
+    async def generate_speech(self):
         """ Generate speech from text """
-        speak(self.text, self.lang)
+        await speak(self.text, self.lang)
 
-    def play_speech(self):
+    async def play_speech(self):
         try:
-            self.generate_speech()
+            await self.generate_speech()
         except Exception as e:
             print(f"Error during playback: {e}")
 
@@ -41,11 +42,11 @@ class Assistant:
         if static_response:
             return static_response
         
-        # Check for pre-dynamic context
-        # if question in self.pre_dynamic_context:
+        # Use pre-dynamic context
         context = self.pre_dynamic_context.get('context')
-        return self.pre_dynamic_handler.get_response(question, context)
+        if context:
+            return self.pre_dynamic_handler.get_response(question, context)
         
         # Use dynamic model
-        # return self.dynamic_handler.get_response(question, context=None)
+        return self.dynamic_handler.get_response(question, context=None)
 
