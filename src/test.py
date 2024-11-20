@@ -4,7 +4,7 @@ import pygame
 
 async def speak_text(text):
     """Speaks the given text using Edge TTS and plays it directly."""
-    voice = 'en-US-JennyNeural'  # Adjust voice as needed
+    voice = 'en-US-AndrewMultilingualNeural'  # Adjust voice as needed
     audio_file = 'temp.mp3'
 
     try:
@@ -16,6 +16,9 @@ async def speak_text(text):
         pygame.init()
         pygame.mixer.init()
         pygame.mixer.music.load(audio_file)
+
+        # Clear the sound buffer before playback
+        pygame.mixer.music.stop()
 
         # Play the audio file
         pygame.mixer.music.play()
