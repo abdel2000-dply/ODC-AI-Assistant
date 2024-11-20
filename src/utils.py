@@ -1,6 +1,7 @@
 import speech_recognition as sr
-from gtts import gTTS
 import os
+import edge_tts
+import asyncio
 
 def recognize_speech_from_mic(device_index=3):
     recognizer = sr.Recognizer()
@@ -20,11 +21,22 @@ def recognize_speech_from_mic(device_index=3):
         print(f"Could not request results from Google Web Speech API; {e}")
         return None
 
-def speak(text, lang='en'):
-    """ Generate speech from text using gTTS and play using mpv """
-    tts = gTTS(text=text, lang=lang)
+async def speak(text, lang='en'):
+    """ Generate speech from text using edge-tts and play using mpv """
+    voice = 'en-US-AndrewMultilingualNeural'  # Adjust voice as needed
     output_file = "temp.mp3"
-    tts.save(output_file)
-    command = f'mpv --no-terminal {output_file}'
-    os.system(command)
-    os.remove(output_file)
+
+    try:
+        # Generate speech using edge-tts
+        communicate = edge_tts.Communicate(text, voice)
+        await communicate.save(output_file)
+
+        # Play the audio file using mpv
+        command = f'mpv --no-terminal {output_file}'
+        os.system(command)
+    except Exception as e:
+        print(f"Error during TTS or playback: {e}")  # Informative error message
+    finally:
+        # Ensure temporary file is removed even if exceptions occur
+        if os.path.exists(output_file):
+            os.remove(output_file)
