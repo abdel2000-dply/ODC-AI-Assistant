@@ -1,4 +1,5 @@
 import speech_recognition as sr
+from gtts import gTTS
 import os
 
 def recognize_speech_from_mic(device_index=3):
@@ -20,6 +21,10 @@ def recognize_speech_from_mic(device_index=3):
         return None
 
 def speak(text, lang='en'):
-    """ Generate speech from text using espeak """
-    command = f'espeak "{text}" --stdout | aplay'
+    """ Generate speech from text using gTTS and play using mpv """
+    tts = gTTS(text=text, lang=lang)
+    output_file = "temp.mp3"
+    tts.save(output_file)
+    command = f'mpv --no-terminal {output_file}'
     os.system(command)
+    os.remove(output_file)
