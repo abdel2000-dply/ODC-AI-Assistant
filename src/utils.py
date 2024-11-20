@@ -1,5 +1,7 @@
 import speech_recognition as sr
-import pyttsx3 as tts
+from gtts import gTTS
+from playsound import playsound
+import os
 
 def recognize_speech_from_mic(device_index=3):
     recognizer = sr.Recognizer()
@@ -20,9 +22,10 @@ def recognize_speech_from_mic(device_index=3):
         return None
 
 def speak(text, lang='en'):
-    """ Generate speech from text using pyttsx3 """
-    engine = tts.init()
-    engine.setProperty('rate', 150)  # Speed percent (can go over 100)
-    engine.setProperty('volume', 1)  # Volume 0-1
-    engine.say(text)
-    engine.runAndWait()
+    """ Generate speech from text using gTTS and play using playsound """
+    tts = gTTS(text=text, lang=lang)
+    output_file = "temp.mp3"
+    tts.save(output_file)
+
+    playsound(output_file)
+    os.remove(output_file)
