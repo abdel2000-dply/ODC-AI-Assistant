@@ -2,15 +2,13 @@ import cohere
 import os
 import requests
 import json
-from transformers import pipeline, DistilBertTokenizer, DistilBertForQuestionAnswering
+from dotenv import load_dotenv
 
 class DynamicHandler:
     def __init__(self):
+        load_dotenv()  # Load environment variables from .env file
         self.api_key = os.getenv('COHERE_API_KEY')
         self.client = cohere.Client(self.api_key)
-        self.tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased-distilled-squad")
-        self.qa_model = DistilBertForQuestionAnswering.from_pretrained("distilbert-base-uncased-distilled-squad")
-        self.qa_pipeline = pipeline("question-answering", model=self.qa_model, tokenizer=self.tokenizer)
         self.chat_api_endpoint = "https://api.cohere.com/v1/chat"
         self.chat_history = []
 
