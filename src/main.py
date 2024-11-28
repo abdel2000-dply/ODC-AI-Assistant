@@ -25,7 +25,7 @@ async def main():
         response = assistant.get_response(question)
         print(f"Response: {response}")
 
-        # Generate and play the response
+        # Update the text and play the response
         assistant.text = response
         await assistant.play_speech()
 
