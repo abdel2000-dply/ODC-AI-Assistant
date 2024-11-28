@@ -46,9 +46,9 @@ class Assistant:
             return static_response
         
         # Use pre-dynamic context
-        if self.context:
-            return self.pre_dynamic_handler.get_response(question, self.context)
+        # if self.context:
+        #     return self.pre_dynamic_handler.get_response(question, self.context)
         
         # Use dynamic model
-        return self.dynamic_handler.get_response(question, context=None)
+        return self.dynamic_handler.get_response(question, context=self.context)
 
