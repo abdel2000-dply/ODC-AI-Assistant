@@ -4,7 +4,7 @@ from transformers import pipeline
 from handlers.static_handler import StaticHandler
 from handlers.pre_dynamic_handler import PreDynamicHandler
 from handlers.dynamic_handler import DynamicHandler
-from utils import speak
+from src.utils.utils import speak
 import asyncio
 
 class Assistant:
