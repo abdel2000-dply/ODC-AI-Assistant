@@ -1,6 +1,6 @@
 import asyncio
 from assistant import Assistant
-from utils import recognize_speech_from_mic
+from src.utils.utils import recognize_speech_from_mic
 
 async def main():
     # Initialize the Assistant with a greeting message
