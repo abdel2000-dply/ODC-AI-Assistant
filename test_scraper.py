@@ -58,31 +58,95 @@ def test_scrape_events():
         print(f"Found {len(event_divs)} upcoming events")
         events = []
         
+        def wait_and_click_event(driver, event_div, wait):
+            """Safely click an event and wait for detail page"""
+            max_attempts = 3
+            for attempt in range(max_attempts):
+                try:
+                    # Scroll into view
+                    driver.execute_script("arguments[0].scrollIntoView(true);", event_div)
+                    time.sleep(1)
+                    # Click using JavaScript
+                    driver.execute_script("arguments[0].click();", event_div)
+                    # Wait for detail content
+                    wait.until(
+                        EC.presence_of_element_located((By.CLASS_NAME, "odc-country-detail-event-header"))
+                    )
+                    return True
+                except:
+                    if attempt == max_attempts - 1:
+                        return False
+                    time.sleep(1)
+            return False
+
+        def get_event_description(driver, event_div, wait):
+            """Get event description from detail page"""
+            initial_url = driver.current_url
+            try:
+                if not wait_and_click_event(driver, event_div, wait):
+                    return "", "", "", ""
+                
+                # Get event details with explicit waits
+                detail_content = wait.until(
+                    EC.presence_of_element_located((By.CLASS_NAME, "odc-country-detail-event-header"))
+                )
+                
+                # Get dates
+                dates = detail_content.find_elements(By.CLASS_NAME, "wrapper-date-time")
+                start_date = dates[0].text if dates else "N/A"
+                end_date = dates[1].text if len(dates) > 1 else "N/A"
+                
+                # Get venue
+                venue = detail_content.find_element(
+                    By.CLASS_NAME, "wrapper-location2"
+                ).find_element(By.TAG_NAME, "span").text.strip()
+                
+                # Get description
+                description = ""
+                try:
+                    desc_div = wait.until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, ".content2 div:not(.ant-row)"))
+                    )
+                    paragraphs = desc_div.find_elements(By.TAG_NAME, "p")
+                    description = "\n".join([p.text.strip() for p in paragraphs if not p.text.startswith('#')])
+                except:
+                    pass
+                
+                return description, start_date, end_date, venue
+            finally:
+                driver.get(initial_url)
+                wait.until(EC.url_to_be(initial_url))
+                time.sleep(2)
+
+        wait = WebDriverWait(driver, 10)
+        
         for event_div in event_divs:
             try:
-                month = event_div.find_element(By.CLASS_NAME, "alphabetic-month").text.strip()
-                day = event_div.find_element(By.CLASS_NAME, "numeric-date").text.strip()
-                title = event_div.find_element(By.CLASS_NAME, "event-title").text.strip()
+                # Get basic info with explicit waits
+                title = wait.until(lambda d: event_div.find_element(By.CLASS_NAME, "event-title")).text.strip()
+                month = wait.until(lambda d: event_div.find_element(By.CLASS_NAME, "alphabetic-month")).text.strip()
+                day = wait.until(lambda d: event_div.find_element(By.CLASS_NAME, "numeric-date")).text.strip()
                 
-                dates = event_div.find_elements(By.CLASS_NAME, "from-to-date-wrapper")
-                dates = [d.find_element(By.TAG_NAME, "p").text.strip() for d in dates]
-                
-                start_date = dates[0] if dates else "N/A"
-                end_date = dates[1] if len(dates) > 1 else "N/A"
-                location = 'ODC Agadir' if 'Agadir' in title else 'ODC Other'
-                
-                event = Event(
-                    title=title,
-                    start_date=start_date,
-                    end_date=end_date,
-                    location=location,
-                    month=month,
-                    day=day
-                )
-                events.append(event)
+                if 'Agadir' in title:
+                    description, start_date, end_date, venue = get_event_description(driver, event_div, wait)
+                    if not venue:  # Skip if we couldn't get details
+                        continue
+                        
+                    event = Event(
+                        title=title,
+                        start_date=start_date,
+                        end_date=end_date,
+                        location='ODC Agadir',
+                        month=month,
+                        day=day,
+                        description=description,
+                        venue=venue
+                    )
+                    events.append(event)
+                    print(f"Successfully processed Agadir event: {title}")
                 
             except Exception as e:
-                print(f"Error parsing event: {e}")
+                print(f"Error parsing event: {str(e)}")
                 continue
         
         # Print events
@@ -94,7 +158,11 @@ def test_scrape_events():
                 print(f"Date: {event.month} {event.day}")
                 print(f"From: {event.start_date}")
                 print(f"To: {event.end_date}")
-                print(f"Location: {event.location}")
+                print(f"Venue: {event.venue}")
+                if event.description:
+                    print("\nDescription:")
+                    for line in event.description.split('\n'):
+                        print(f"  {line}")
                 print("-" * 50)
 
     except Exception as e:
