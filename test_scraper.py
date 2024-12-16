@@ -114,19 +114,16 @@ def test_scrape_events():
 
             initial_url = driver.current_url
             
-            for event_div in event_divs:
+            for index, event_div in enumerate(event_divs):
                 try:
-                    # Refresh elements list to avoid stale references
-                    event_divs = get_event_elements()
-                    event_div = event_divs[i]
-                    
                     # Get basic info before clicking
                     try:
                         title = WebDriverWait(event_div, 10).until(
                             EC.presence_of_element_located((By.CLASS_NAME, "event-title"))
                         ).text.strip()
                         
-                        print(f"\nProcessing event: {title}")
+                        print(f"\nProcessing event {index + 1}/{len(event_divs)}: {title}")
+                        
                         month = event_div.find_element(By.CLASS_NAME, "alphabetic-month").text.strip()
                         day = event_div.find_element(By.CLASS_NAME, "numeric-date").text.strip()
                         
