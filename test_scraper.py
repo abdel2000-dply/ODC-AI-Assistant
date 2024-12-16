@@ -104,59 +104,81 @@ def test_scrape_events():
                 return ""
 
         # Memory optimization for Raspberry Pi
+        def get_element_text_safely(element, class_name, wait):
+            """Safely get text from an element with retries"""
+            max_attempts = 3
+            for attempt in range(max_attempts):
+                try:
+                    element = wait.until(
+                        EC.presence_of_element_located((By.CLASS_NAME, class_name))
+                    )
+                    return element.text.strip()
+                except:
+                    if attempt == max_attempts - 1:
+                        raise
+                    time.sleep(1)
+
         def process_events():
             events = []
             initial_url = driver.current_url
-            processed_titles = set()  # Track processed events
-            
+            processed_titles = set()
+
             try:
-                # Get all events at once
                 event_divs = get_event_elements()
                 total_events = len(event_divs)
-                
                 print(f"\nFound {total_events} total events to process")
-                
-                # Process each event once
-                for index, event_div in enumerate(event_divs):
+
+                for index in range(total_events):
                     try:
-                        # Get basic info
-                        title = event_div.find_element(By.CLASS_NAME, "event-title").text.strip()
-                        
-                        # Skip if already processed
+                        # Get fresh list of elements
+                        event_divs = wait.until(
+                            EC.presence_of_all_elements_located((By.CLASS_NAME, "ant-row.event-detail"))
+                        )
+                        current_event = event_divs[index]
+
+                        # Get basic info safely
+                        title = get_element_text_safely(current_event, "event-title", wait)
                         if title in processed_titles:
                             continue
-                            
                         processed_titles.add(title)
+
+                        month = get_element_text_safely(current_event, "alphabetic-month", wait)
+                        day = get_element_text_safely(current_event, "numeric-date", wait)
                         
                         print(f"\nProcessing event {index + 1}/{total_events}: {title}")
-                        month = event_div.find_element(By.CLASS_NAME, "alphabetic-month").text.strip()
-                        day = event_div.find_element(By.CLASS_NAME, "numeric-date").text.strip()
-                        
-                        # Click the event
-                        driver.execute_script("arguments[0].click();", event_div)
+
+                        # Scroll element into view and click
+                        driver.execute_script("arguments[0].scrollIntoView(true);", current_event)
+                        time.sleep(1)  # Allow time for scroll
+                        driver.execute_script("arguments[0].click();", current_event)
+
+                        # Wait for navigation
                         wait.until(lambda d: d.current_url != initial_url)
                         
-                        # Get location
+                        # Get event details with explicit waits
                         detail_content = wait.until(
                             EC.presence_of_element_located((By.CLASS_NAME, "odc-country-detail-event-header"))
                         )
+                        
                         location = get_location_from_detail(detail_content, wait)
                         print(f"Found location: {location}")
                         
                         if 'Agadir' in location:
-                            # Get dates
-                            dates = detail_content.find_elements(By.CLASS_NAME, "wrapper-date-time")
+                            # Process Agadir event
+                            dates = wait.until(
+                                EC.presence_of_all_elements_located((By.CLASS_NAME, "wrapper-date-time"))
+                            )
                             start_date = dates[0].text if dates else "N/A"
                             end_date = dates[1].text if len(dates) > 1 else "N/A"
                             
-                            # Get description
                             description = ""
                             try:
                                 description_div = wait.until(
                                     EC.presence_of_element_located((By.CSS_SELECTOR, ".content2 div:not(.ant-row)"))
                                 )
+                                paragraphs = description_div.find_elements(By.TAG_NAME, "p")
                                 description = clean_description('\n'.join(
-                                    p.text.strip() for p in description_div.find_elements(By.TAG_NAME, "p")
+                                    p.text.strip() for p in paragraphs
                                 ))
                             except Exception as e:
                                 print(f"Error getting description: {e}")
@@ -174,16 +196,20 @@ def test_scrape_events():
                             print(f"Added Agadir event: {title}")
                         else:
                             print(f"Skipping non-Agadir location: {location}")
-                            
+
                     except Exception as e:
                         print(f"Error processing event {index + 1}: {e}")
-                        
+                    
                     finally:
-                        # Always return to main page
+                        # Return to main page and ensure it's loaded
                         driver.get(initial_url)
                         wait.until(EC.url_to_be(initial_url))
+                        # Wait for events to be visible again
+                        wait.until(
+                            EC.presence_of_element_located((By.CLASS_NAME, "past-future-events"))
+                        )
                         time.sleep(2)
-                        
+
                 return events
                 
             except Exception as e:
