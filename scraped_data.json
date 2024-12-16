@@ -1,0 +1,71 @@
+{
+    "header": {
+        "title": "Orange Digital Center a network of opportunities",
+        "subtitle": "Orange Digital Center brings together several strategic programs into one place !"
+    },
+    "programs": [
+        {
+            "name": "Coding School",
+            "description": "Number of events held by Orange Digital Center to help the community to stay up to date with new trends in technology.",
+            "about_numbers": [
+                {
+                    "title": "Community",
+                    "value": "24000",
+                    "description": "Number of students and professionals who got a training or attended events on new technologies."
+                },
+                {
+                    "title": "Employment (Per year)",
+                    "value": "95 %",
+                    "description": "Number of trainees who got a job at the end of their internship at Orange Digital Center."
+                },
+                {
+                    "title": "Events",
+                    "value": "540",
+                    "description": "Number of events held by Orange Digital Center to help the community to stay up to date with new trends in technology."
+                }
+            ]
+        },
+        {
+            "name": "FabLab Solidaires",
+            "description": "Number of events oraganized at FabLabs Solidaires to initiate young people about digital manufacturing.",
+            "about_numbers": [
+                {
+                    "title": "Community",
+                    "value": "15000",
+                    "description": "Number of young people who attended training sessions or created their prototypes at FabLabs Solidaires Network."
+                },
+                {
+                    "title": "Prototypes",
+                    "value": "1000",
+                    "description": "Number of prototypes and projects produced at Fablabs Solidaires Network."
+                },
+                {
+                    "title": "Events",
+                    "value": "370",
+                    "description": "Number of events oraganized at FabLabs Solidaires to initiate young people about digital manufacturing."
+                }
+            ]
+        },
+        {
+            "name": "Orange Fab",
+            "description": "Number of hours achieved in mentoring sessions with the accelerated startups.",
+            "about_numbers": [
+                {
+                    "title": "Orange Fabs Network",
+                    "value": "18",
+                    "description": "Number of Orange Fabs across the 4 continents."
+                },
+                {
+                    "title": "Startups",
+                    "value": "30",
+                    "description": "Number of startups accelerated by Orange Fabs Network."
+                },
+                {
+                    "title": "Mentoring",
+                    "value": "1000 hours",
+                    "description": "Number of hours achieved in mentoring sessions with the accelerated startups."
+                }
+            ]
+        }
+    ]
+}
