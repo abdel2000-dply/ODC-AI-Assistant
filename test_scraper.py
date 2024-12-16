@@ -50,8 +50,12 @@ def test_scrape_events():
         # Wait for events to load
         time.sleep(5)  # Give React time to render
 
-        # Find all event divs
-        event_divs = driver.find_elements(By.CLASS_NAME, "event-detail")
+        # Find upcoming events section specifically
+        upcoming_section = driver.find_element(By.XPATH, "//div[h5[contains(text(), 'Évènements à venir')]]")
+        
+        # Find event divs within upcoming section
+        event_divs = upcoming_section.find_elements(By.CLASS_NAME, "event-detail")
+        print(f"Found {len(event_divs)} upcoming events")
         events = []
         
         for event_div in event_divs:
