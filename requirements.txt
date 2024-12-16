@@ -2,3 +2,7 @@ SpeechRecognition
 gTTS
 pyttsx3
 pyaudio
+
+langchain
+faiss-cpu
+sentence-transformers
