@@ -5,6 +5,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.utils import ChromeType
 import time
 
 @dataclass
@@ -21,16 +24,21 @@ class Event:
 def test_scrape_events():
     url = "https://www.orangedigitalcenters.com/country/ma/events"
     
-    # Configure Chrome options
+    # Configure Chrome options for Raspberry Pi
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Run in headless mode
+    chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--ignore-certificate-errors")
+    chrome_options.binary_location = "/usr/bin/chromium-browser"
     
     try:
         print("Initializing browser...")
-        driver = webdriver.Chrome(options=chrome_options)
+        service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
+        driver = webdriver.Chrome(
+            service=service,
+            options=chrome_options
+        )
         wait = WebDriverWait(driver, 10)
         driver.maximize_window()  # Maximize to ensure elements are clickable
         print("Fetching events...")
