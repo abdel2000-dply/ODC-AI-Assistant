@@ -7,7 +7,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.utils import ChromeType
 import time
 
 @dataclass
@@ -34,7 +33,8 @@ def test_scrape_events():
     
     try:
         print("Initializing browser...")
-        service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
+        # Updated ChromeDriverManager usage
+        service = Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(
             service=service,
             options=chrome_options
