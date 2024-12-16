@@ -52,6 +52,23 @@ def test_scrape_events():
         section = wait_for_element(driver, By.XPATH, "//div[h5[contains(text(), 'Évènements à venir')]]")
         return section.find_elements(By.CLASS_NAME, "event-detail")
 
+    def get_clean_description(driver):
+        """Extract and clean description text with better selector"""
+        try:
+            # Wait for content section to be present
+            content_div = wait_for_element(driver, By.CSS_SELECTOR, ".content2 > div:nth-child(2)")
+            # Get all paragraphs except the last one (which usually contains hashtags)
+            paragraphs = content_div.find_elements(By.TAG_NAME, "p")
+            # Filter and join paragraphs
+            description = "\n".join([
+                p.text.strip() for p in paragraphs 
+                if p.text.strip() and not any(tag in p.text for tag in ['#', 'Orange', 'ODC'])
+            ])
+            return description
+        except Exception as e:
+            print(f"Error extracting description: {e}")
+            return ""
+
     try:
         print("Initializing browser...")
         # Check if running on Raspberry Pi
@@ -123,15 +140,20 @@ def test_scrape_events():
                     location = wait_for_element(driver, By.CSS_SELECTOR, ".wrapper-location2 span").text.strip()
                     
                     if 'Agadir' in location:
+                        # Get description with improved extraction
+                        description = get_clean_description(driver)
+                        
                         events.append(Event(
                             title=title,
                             start_date=time_elements[0].text if time_elements else "N/A",
                             end_date=time_elements[1].text if len(time_elements) > 1 else "N/A",
                             location=location,
                             month=month,
-                            day=day
+                            day=day,
+                            description=description
                         ))
                         print(f"Added Agadir event: {title}")
+                        print(f"Description found: {bool(description)}")
                 
                 finally:
                     # Always return to main page
@@ -152,6 +174,10 @@ def test_scrape_events():
             print(f"Start: {event.start_date}")
             print(f"End: {event.end_date}")
             print(f"Location: {event.location}")
+            if event.description:
+                print("\nDescription:")
+                for line in event.description.split('\n'):
+                    print(f"  {line}")
             print("-" * 50)
 
     except Exception as e:
