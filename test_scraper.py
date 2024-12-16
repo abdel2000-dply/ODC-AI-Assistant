@@ -1,6 +1,10 @@
 from dataclasses import dataclass
-from bs4 import BeautifulSoup
-import requests
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
 
 @dataclass
 class Event:
@@ -13,27 +17,38 @@ class Event:
 
 def test_scrape_events():
     url = "https://www.orangedigitalcenters.com/country/ma/events"
+    
+    # Configure Chrome options
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Run in headless mode
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--ignore-certificate-errors")
+    
     try:
+        print("Initializing browser...")
+        driver = webdriver.Chrome(options=chrome_options)
         print("Fetching events...")
-        response = requests.get(url)
-        soup = BeautifulSoup(response.text, 'html.parser')
+        driver.get(url)
         
+        # Wait for events to load
+        time.sleep(5)  # Give React time to render
+        
+        # Find all event divs
+        event_divs = driver.find_elements(By.CLASS_NAME, "event-detail")
         events = []
-        event_divs = soup.find_all('div', class_='event-detail')
         
         for event_div in event_divs:
             try:
-                # Extract month and day
-                month = event_div.find('p', class_='alphabetic-month').text.strip()
-                day = event_div.find('h5', class_='numeric-date').text.strip()
+                month = event_div.find_element(By.CLASS_NAME, "alphabetic-month").text.strip()
+                day = event_div.find_element(By.CLASS_NAME, "numeric-date").text.strip()
+                title = event_div.find_element(By.CLASS_NAME, "event-title").text.strip()
                 
-                # Extract event details
-                title = event_div.find('h5', class_='event-title').text.strip()
-                dates = event_div.find_all('p', class_='from-to-date-wrapper')
-                start_date = dates[0].text.strip() if dates else "N/A"
-                end_date = dates[1].text.strip() if len(dates) > 1 else "N/A"
+                dates = event_div.find_elements(By.CLASS_NAME, "from-to-date-wrapper")
+                dates = [d.find_element(By.TAG_NAME, "p").text.strip() for d in dates]
                 
-                # Determine location from title
+                start_date = dates[0] if dates else "N/A"
+                end_date = dates[1] if len(dates) > 1 else "N/A"
                 location = 'ODC Agadir' if 'Agadir' in title else 'ODC Other'
                 
                 event = Event(
@@ -50,7 +65,7 @@ def test_scrape_events():
                 print(f"Error parsing event: {e}")
                 continue
         
-        # Print events in a formatted way
+        # Print events
         print("\nUpcoming Events at Orange Digital Center:")
         print("=" * 50)
         for event in events:
@@ -63,6 +78,11 @@ def test_scrape_events():
             
     except Exception as e:
         print(f"Error fetching events: {e}")
+    finally:
+        try:
+            driver.quit()
+        except:
+            pass
 
 if __name__ == "__main__":
     test_scrape_events()
