@@ -107,50 +107,43 @@ def test_scrape_events():
         def process_events():
             events = []
             initial_url = driver.current_url
+            processed_titles = set()  # Track processed events
             
-            while True:
-                try:
-                    # Get fresh list of events
-                    event_divs = get_event_elements()
-                    if not event_divs:
-                        print("No events to process")
-                        break
-
-                    # Process only unprocessed events
-                    processed_count = len(events)
-                    if processed_count >= len(event_divs):
-                        break
-
-                    current_event = event_divs[processed_count]
-                    
+            try:
+                # Get all events at once
+                event_divs = get_event_elements()
+                total_events = len(event_divs)
+                
+                print(f"\nFound {total_events} total events to process")
+                
+                # Process each event once
+                for index, event_div in enumerate(event_divs):
                     try:
-                        # Extract info before clicking
-                        title = current_event.find_element(By.CLASS_NAME, "event-title").text.strip()
-                        month = current_event.find_element(By.CLASS_NAME, "alphabetic-month").text.strip()
-                        day = current_event.find_element(By.CLASS_NAME, "numeric-date").text.strip()
+                        # Get basic info
+                        title = event_div.find_element(By.CLASS_NAME, "event-title").text.strip()
                         
-                        print(f"\nProcessing event {processed_count + 1}/{len(event_divs)}: {title}")
+                        # Skip if already processed
+                        if title in processed_titles:
+                            continue
+                            
+                        processed_titles.add(title)
                         
-                        # Click event
-                        try:
-                            current_event.click()
-                        except:
-                            driver.execute_script("arguments[0].click();", current_event)
-
-                        # Wait for page load
+                        print(f"\nProcessing event {index + 1}/{total_events}: {title}")
+                        month = event_div.find_element(By.CLASS_NAME, "alphabetic-month").text.strip()
+                        day = event_div.find_element(By.CLASS_NAME, "numeric-date").text.strip()
+                        
+                        # Click the event
+                        driver.execute_script("arguments[0].click();", event_div)
                         wait.until(lambda d: d.current_url != initial_url)
                         
-                        # Get event details
+                        # Get location
                         detail_content = wait.until(
                             EC.presence_of_element_located((By.CLASS_NAME, "odc-country-detail-event-header"))
                         )
-                        
                         location = get_location_from_detail(detail_content, wait)
                         print(f"Found location: {location}")
                         
                         if 'Agadir' in location:
-                            print("Found Agadir event! Processing details...")
-                            
                             # Get dates
                             dates = detail_content.find_elements(By.CLASS_NAME, "wrapper-date-time")
                             start_date = dates[0].text if dates else "N/A"
@@ -182,19 +175,20 @@ def test_scrape_events():
                         else:
                             print(f"Skipping non-Agadir location: {location}")
                             
+                    except Exception as e:
+                        print(f"Error processing event {index + 1}: {e}")
+                        
                     finally:
                         # Always return to main page
                         driver.get(initial_url)
                         wait.until(EC.url_to_be(initial_url))
                         time.sleep(2)
                         
-                except Exception as e:
-                    print(f"Error processing event: {e}")
-                    driver.get(initial_url)
-                    wait.until(EC.url_to_be(initial_url))
-                    time.sleep(2)
-                    
-            return events
+                return events
+                
+            except Exception as e:
+                print(f"Error in process_events: {e}")
+                return events
 
         # Process events with better error handling
         events = process_events()
