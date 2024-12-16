@@ -106,88 +106,69 @@ def test_scrape_events():
         # Memory optimization for Raspberry Pi
         def process_events():
             events = []
-            event_divs = get_event_elements()
-            
-            if not event_divs:
-                print("No events to process")
-                return events
-
             initial_url = driver.current_url
             
-            for index, event_div in enumerate(event_divs):
+            while True:
                 try:
-                    # Get basic info before clicking
-                    try:
-                        title = WebDriverWait(event_div, 10).until(
-                            EC.presence_of_element_located((By.CLASS_NAME, "event-title"))
-                        ).text.strip()
-                        
-                        print(f"\nProcessing event {index + 1}/{len(event_divs)}: {title}")
-                        
-                        month = event_div.find_element(By.CLASS_NAME, "alphabetic-month").text.strip()
-                        day = event_div.find_element(By.CLASS_NAME, "numeric-date").text.strip()
-                        
-                        print(f"Clicking event to check location: {title} ({month} {day})")
-                        
-                        # Try clicking with both methods
-                        clicked = False
-                        try:
-                            event_div.click()
-                            clicked = True
-                        except:
-                            try:
-                                driver.execute_script(
-                                    "arguments[0].click(); arguments[0].dispatchEvent(new Event('click'));", 
-                                    event_div
-                                )
-                                clicked = True
-                            except:
-                                print(f"Failed to click event: {title}")
-                                continue
+                    # Get fresh list of events
+                    event_divs = get_event_elements()
+                    if not event_divs:
+                        print("No events to process")
+                        break
 
-                        if clicked:
-                            # Wait for URL change
-                            wait.until(lambda d: d.current_url != initial_url)
-                            print(f"Loaded detail page for: {title}")
-                            
-                            # Get detailed information
-                            detail_content = wait.until(
-                                EC.presence_of_element_located((By.CLASS_NAME, "odc-country-detail-event-header"))
-                            )
-                            
-                            # Check location first
-                            location = get_location_from_detail(detail_content, wait)
-                            print(f"Found location: {location}")
-                            
-                            # Only process if location contains Agadir
-                            if 'Agadir' not in location:
-                                print(f"Skipping non-Agadir location: {location}")
-                                driver.get(initial_url)
-                                wait.until(EC.url_to_be(initial_url))
-                                time.sleep(2)
-                                continue
-                                
-                            print(f"Found Agadir event! Processing details...")
+                    # Process only unprocessed events
+                    processed_count = len(events)
+                    if processed_count >= len(event_divs):
+                        break
+
+                    current_event = event_divs[processed_count]
+                    
+                    try:
+                        # Extract info before clicking
+                        title = current_event.find_element(By.CLASS_NAME, "event-title").text.strip()
+                        month = current_event.find_element(By.CLASS_NAME, "alphabetic-month").text.strip()
+                        day = current_event.find_element(By.CLASS_NAME, "numeric-date").text.strip()
+                        
+                        print(f"\nProcessing event {processed_count + 1}/{len(event_divs)}: {title}")
+                        
+                        # Click event
+                        try:
+                            current_event.click()
+                        except:
+                            driver.execute_script("arguments[0].click();", current_event)
+
+                        # Wait for page load
+                        wait.until(lambda d: d.current_url != initial_url)
+                        
+                        # Get event details
+                        detail_content = wait.until(
+                            EC.presence_of_element_located((By.CLASS_NAME, "odc-country-detail-event-header"))
+                        )
+                        
+                        location = get_location_from_detail(detail_content, wait)
+                        print(f"Found location: {location}")
+                        
+                        if 'Agadir' in location:
+                            print("Found Agadir event! Processing details...")
                             
                             # Get dates
                             dates = detail_content.find_elements(By.CLASS_NAME, "wrapper-date-time")
                             start_date = dates[0].text if dates else "N/A"
                             end_date = dates[1].text if len(dates) > 1 else "N/A"
                             
-                            # Get description with improved extraction
+                            # Get description
                             description = ""
                             try:
                                 description_div = wait.until(
                                     EC.presence_of_element_located((By.CSS_SELECTOR, ".content2 div:not(.ant-row)"))
                                 )
-                                paragraphs = description_div.find_elements(By.TAG_NAME, "p")
-                                description = '\n'.join(p.text.strip() for p in paragraphs)
-                                description = clean_description(description)
-                                print("Found description")
+                                description = clean_description('\n'.join(
+                                    p.text.strip() for p in description_div.find_elements(By.TAG_NAME, "p")
+                                ))
                             except Exception as e:
                                 print(f"Error getting description: {e}")
                             
-                            event = Event(
+                            events.append(Event(
                                 title=title,
                                 start_date=start_date,
                                 end_date=end_date,
@@ -196,32 +177,23 @@ def test_scrape_events():
                                 day=day,
                                 description=description,
                                 venue=location
-                            )
-                            events.append(event)
+                            ))
                             print(f"Added Agadir event: {title}")
-                    
-                    except Exception as e:
-                        print(f"Error processing event details: {e}")
-                    
-                    # Return to main page
+                        else:
+                            print(f"Skipping non-Agadir location: {location}")
+                            
+                    finally:
+                        # Always return to main page
+                        driver.get(initial_url)
+                        wait.until(EC.url_to_be(initial_url))
+                        time.sleep(2)
+                        
+                except Exception as e:
+                    print(f"Error processing event: {e}")
                     driver.get(initial_url)
                     wait.until(EC.url_to_be(initial_url))
                     time.sleep(2)
                     
-                    # Add memory cleanup for Raspberry Pi
-                    if len(events) % 3 == 0:
-                        driver.execute_script("window.gc();")
-                    
-                except Exception as e:
-                    print(f"Error processing event: {e}")
-                    try:
-                        driver.get(initial_url)
-                        wait.until(EC.url_to_be(initial_url))
-                        time.sleep(2)
-                    except:
-                        print("Error returning to main page")
-                    continue
-                
             return events
 
         # Process events with better error handling
