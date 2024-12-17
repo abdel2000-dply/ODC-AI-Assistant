@@ -1,10 +1,10 @@
 import os
 import json
 from transformers import pipeline
-from handlers.static_handler import StaticHandler
-from handlers.pre_dynamic_handler import PreDynamicHandler
-from handlers.dynamic_handler import DynamicHandler
-from src.utils.utils import speak
+from .handlers.static_handler import StaticHandler  # Changed to relative import
+from .handlers.pre_dynamic_handler import PreDynamicHandler  # Changed to relative import
+from .handlers.dynamic_handler import DynamicHandler  # Changed to relative import
+from .utils.utils import speak  # Changed to relative import
 import asyncio
 
 class Assistant:
