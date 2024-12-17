@@ -1,7 +1,8 @@
 import cohere
 import os
+import requests
 from dotenv import load_dotenv
-from ..utils.document_processor import DocumentProcessor
+from src.utils.document_processor import DocumentProcessor  # Changed from relative to absolute import
 
 class DynamicHandler:
     def __init__(self):
@@ -10,6 +11,7 @@ class DynamicHandler:
         self.client = cohere.Client(self.api_key)
         self.chat_history = []
         self.vector_store = DocumentProcessor.load_vector_store()
+        self.chat_api_endpoint = "https://api.cohere.ai/v1/chat"  # Added missing endpoint
 
     def get_relevant_context(self, question, k=3):
         docs = self.vector_store.similarity_search(question, k=k)
