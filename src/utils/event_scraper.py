@@ -1,4 +1,3 @@
-
 from dataclasses import dataclass
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -30,28 +29,33 @@ class EventScraper:
         self.data_dir.mkdir(exist_ok=True)
 
     def scrape_events(self):
-        options = Options()
-        options.add_argument("--headless")
-        options.add_argument("--disable-gpu")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
+        try:
+            print("Initializing browser...")
+            chrome_options = Options()
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
 
-        # Check if running on Raspberry Pi
-        is_raspberry_pi = platform.machine().startswith('arm') or platform.machine().startswith('aarch')
-        
-        if is_raspberry_pi:
-            service = Service('/usr/bin/chromedriver')
-        else:
-            service = Service(ChromeDriverManager().install())
-        
-        driver = webdriver.Chrome(service=service, options=options)
-        driver.get(self.url)
+            # Check if running on Raspberry Pi
+            is_raspberry_pi = platform.machine().startswith('arm') or platform.machine().startswith('aarch')
+            
+            if is_raspberry_pi:
+                service = Service('/usr/bin/chromedriver')
+            else:
+                service = Service(ChromeDriverManager().install())
+            
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+            driver.get(self.url)
 
-        events = self.get_event_list(driver)
-        driver.quit()
+            events = self.get_event_list(driver)
+            driver.quit()
 
-        self._save_events(events)
-        return events
+            self._save_events(events)
+            return events
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return []
 
     def get_event_list(self, driver):
         events = []
