@@ -1,3 +1,4 @@
+
 from dataclasses import dataclass
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -35,7 +36,15 @@ class EventScraper:
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
 
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        # Check if running on Raspberry Pi
+        is_raspberry_pi = platform.machine().startswith('arm') or platform.machine().startswith('aarch')
+        
+        if is_raspberry_pi:
+            service = Service('/usr/bin/chromedriver')
+        else:
+            service = Service(ChromeDriverManager().install())
+        
+        driver = webdriver.Chrome(service=service, options=options)
         driver.get(self.url)
 
         events = self.get_event_list(driver)
