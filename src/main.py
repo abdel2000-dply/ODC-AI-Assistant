@@ -1,6 +1,6 @@
 import asyncio
-from assistant import Assistant
-from src.utils.utils import recognize_speech_from_mic
+from .assistant import Assistant  # Change to relative import
+from .utils.utils import recognize_speech_from_mic  # Change to relative import
 
 async def main():
     # Initialize the Assistant with a greeting message
@@ -30,4 +30,9 @@ async def main():
         await assistant.play_speech()
 
 if __name__ == "__main__":
+    # Add this to allow running from project root
+    import sys
+    from pathlib import Path
+    sys.path.append(str(Path(__file__).parent.parent))
+    
     asyncio.run(main())
