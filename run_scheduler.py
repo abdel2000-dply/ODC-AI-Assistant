@@ -15,16 +15,15 @@ def update_events():
     print("Update complete!")
 
 def main():
-    print("Starting event scheduler...")
+    print("Starting ODC event scheduler...")
     
-    # Schedule event updates
-    schedule.every().day.at("00:00").do(update_events)  # Run daily at midnight
-    # For testing: schedule.every(1).minutes.do(update_events)
+    # Schedule multiple tasks if needed
+    schedule.every().day.at("09:30").do(update_events)  # Daily event updates
+    # Add any other scheduled tasks from scheduler.py here
     
     # Initial run
     update_events()
     
-    # Keep running
     while True:
         schedule.run_pending()
         time.sleep(60)
