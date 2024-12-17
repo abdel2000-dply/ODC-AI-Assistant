@@ -1,5 +1,6 @@
 # Ignore Python virtual environments
 venv/
+cm/
 
 # Ignore .env file
 .env
