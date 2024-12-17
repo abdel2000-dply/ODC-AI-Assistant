@@ -17,7 +17,12 @@ class Event:
 class EventScraper:
     def __init__(self):
         self.url = "https://www.orangedigitalcenters.com/country/ma/events"
-        self.events_file = Path(__file__).parent.parent.parent / "data" / "events.txt"
+        # Update path to use data directory
+        self.data_dir = Path(__file__).parent.parent.parent / "data"
+        self.events_file = self.data_dir / "events.txt"
+        
+        # Ensure data directory exists
+        self.data_dir.mkdir(exist_ok=True)
 
     def scrape_events(self):
         try:
@@ -61,6 +66,7 @@ class EventScraper:
 
     def _save_events(self, events):
         # Save as formatted text for RAG processing
+        print(f"Saving events to {self.events_file}")
         with open(self.events_file, 'w', encoding='utf-8') as f:
             f.write("Upcoming Events at Orange Digital Center:\n\n")
             for event in events:
