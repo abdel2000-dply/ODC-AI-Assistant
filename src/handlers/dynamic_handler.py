@@ -10,12 +10,30 @@ class DynamicHandler:
         self.api_key = os.getenv('COHERE_API_KEY')
         self.client = cohere.Client(self.api_key)
         self.chat_history = []
-        self.vector_store = DocumentProcessor.load_vector_store()
         self.chat_api_endpoint = "https://api.cohere.ai/v1/chat"  # Added missing endpoint
+        
+        # Initialize vector store with better error handling
+        try:
+            self.vector_store = DocumentProcessor.load_vector_store()
+            if not self.vector_store:
+                print("Warning: Vector store not initialized. Running setup first...")
+                processor = DocumentProcessor()
+                self.vector_store = processor.process_documents()
+        except Exception as e:
+            print(f"Error loading vector store: {e}")
+            print("Please run setup.py first to initialize the vector store")
+            self.vector_store = None
 
     def get_relevant_context(self, question, k=3):
-        docs = self.vector_store.similarity_search(question, k=k)
-        return "\n".join(doc.page_content for doc in docs)
+        if not self.vector_store:
+            print("Warning: Vector store not available")
+            return ""
+        try:
+            docs = self.vector_store.similarity_search(question, k=k)
+            return "\n".join(doc.page_content for doc in docs)
+        except Exception as e:
+            print(f"Error searching vector store: {e}")
+            return ""
 
     def chat_with_cohere(self, message):
         # Retrieve relevant context
