@@ -4,18 +4,36 @@ import edge_tts
 import asyncio
 from langdetect import detect
 
-def recognize_speech_from_mic(device_index=0):  # Changed from 3 to 0
+def recognize_speech_from_mic(device_index=None):  # Changed to None to auto-detect
     recognizer = sr.Recognizer()
     try:
         # List available microphones
         mics = sr.Microphone.list_microphone_names()
         print(f"Available microphones: {mics}")
         
-        with sr.Microphone(device_index=device_index) as source:
-            print("Please say something:")
-            recognizer.adjust_for_ambient_noise(source)
+        # Try to find USB audio device
+        if device_index is None:
+            for index, name in enumerate(mics):
+                if 'USB' in name.upper():  # Case insensitive search
+                    device_index = index
+                    print(f"Found USB microphone at index {index}: {name}")
+                    break
+        
+        if device_index is None:
+            device_index = 2  # Try the bcm2835 device as fallback
+        
+        print(f"Using microphone device index: {device_index}")
+        
+        with sr.Microphone(device_index=device_index, sample_rate=44100) as source:
+            print("Adjusting for ambient noise...")
+            recognizer.adjust_for_ambient_noise(source, duration=1)
             print("Listening...")
-            audio = recognizer.listen(source, timeout=5, phrase_time_limit=10)
+            try:
+                audio = recognizer.listen(source, timeout=5, phrase_time_limit=10)
+                print("Audio captured successfully")
+            except Exception as e:
+                print(f"Error capturing audio: {e}")
+                return None
 
         try:
             text = recognizer.recognize_google(audio)
@@ -52,20 +70,22 @@ def recognize_speech_from_mic(device_index=0):  # Changed from 3 to 0
 
 async def speak(text, lang='en'):
     """ Generate speech from text using edge-tts and play using mpv """
-    voice = 'en-US-AndrewMultilingualNeural'  # Adjust voice as needed
+    voice = 'en-US-AndrewMultilingualNeural'
     output_file = "temp.mp3"
 
     try:
-        # Generate speech using edge-tts
         communicate = edge_tts.Communicate(text, voice)
         await communicate.save(output_file)
-
-        # Play the audio file using mpv
-        command = f'mpv --no-terminal {output_file}'
-        os.system(command)
+        
+        # Use playsound instead of mpv for better compatibility
+        from playsound import playsound
+        playsound(output_file)
     except Exception as e:
         print(f"Error during TTS or playback: {e}")  # Informative error message
     finally:
         # Ensure temporary file is removed even if exceptions occur
         if os.path.exists(output_file):
-            os.remove(output_file)
+            try:
+                os.remove(output_file)
+            except:
+                pass
