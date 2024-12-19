@@ -64,10 +64,15 @@ class DocumentProcessor:
         """Load existing vector store with the lightweight model"""
         try:
             print("Loading FAISS index...")
+            if not VECTOR_DB_PATH.exists():
+                print("Vector store not found. Please run setup.py first")
+                return None
+                
             embeddings = HuggingFaceEmbeddings(
                 model_name="sentence-transformers/all-MiniLM-L6-v2"
             )
             return FAISS.load_local(str(VECTOR_DB_PATH), embeddings, allow_dangerous_deserialization=True)
         except Exception as e:
             print(f"Error loading vector store: {e}")
+            print("Please ensure setup.py has been run to initialize the vector store")
             return None
