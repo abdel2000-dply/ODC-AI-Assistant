@@ -4,38 +4,50 @@ import edge_tts
 import asyncio
 from langdetect import detect
 
-def recognize_speech_from_mic(device_index=3):
+def recognize_speech_from_mic(device_index=0):  # Changed from 3 to 0
     recognizer = sr.Recognizer()
-    with sr.Microphone(device_index=device_index) as source:
-        print("Please say something:")
-        recognizer.adjust_for_ambient_noise(source)
-        audio = recognizer.listen(source)
-
     try:
-        text = recognizer.recognize_google(audio)
-        print("You said: " + text)
+        # List available microphones
+        mics = sr.Microphone.list_microphone_names()
+        print(f"Available microphones: {mics}")
+        
+        with sr.Microphone(device_index=device_index) as source:
+            print("Please say something:")
+            recognizer.adjust_for_ambient_noise(source)
+            print("Listening...")
+            audio = recognizer.listen(source, timeout=5, phrase_time_limit=10)
 
-        # Detect the language of the recognized text
-        detected_lang = detect(text)
-        print(f"Detected language: {detected_lang}")
+        try:
+            text = recognizer.recognize_google(audio)
+            print("You said: " + text)
 
-        # Map detected language to Google Speech API language codes
-        lang_map = {
-            'en': 'en-US',
-            'fr': 'fr-FR',
-            'ar': 'ar-MA'  # Arabic (Morocco)
-        }
-        language = lang_map.get(detected_lang, 'en-US')
+            # Detect the language of the recognized text
+            detected_lang = detect(text)
+            print(f"Detected language: {detected_lang}")
 
-        # Recognize speech again with the detected language
-        text = recognizer.recognize_google(audio, language=language)
-        print(f"You said (in {language}): " + text)
-        return text
-    except sr.UnknownValueError:
-        print("Google Web Speech API could not understand the audio")
-        return None
-    except sr.RequestError as e:
-        print(f"Could not request results from Google Web Speech API; {e}")
+            # Map detected language to Google Speech API language codes
+            lang_map = {
+                'en': 'en-US',
+                'fr': 'fr-FR',
+                'ar': 'ar-MA'  # Arabic (Morocco)
+            }
+            language = lang_map.get(detected_lang, 'en-US')
+
+            # Recognize speech again with the detected language
+            text = recognizer.recognize_google(audio, language=language)
+            print(f"You said (in {language}): " + text)
+            return text
+            
+        except sr.UnknownValueError:
+            print("Could not understand audio")
+            return None
+        except sr.RequestError as e:
+            print(f"Could not request results; {e}")
+            return None
+            
+    except Exception as e:
+        print(f"Error with microphone: {e}")
+        print(f"Current device_index: {device_index}")
         return None
 
 async def speak(text, lang='en'):
