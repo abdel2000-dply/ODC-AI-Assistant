@@ -1,0 +1,358 @@
+ ALL AVAILABLE MATERIALS AT THE FABLAB :
+ microcontrollers:
+  - arduino nano avec cable
+  - Raspberry pi 3B+ 1Go
+  - Raspberry pi 4 8Go
+  - ARDUINO UNO
+  - Arduino Mega Due
+  - Arduino Mega 2560
+  - ESP32 Development Board 2.4GHz WiFi+Bluetooth Ultra-Low Power Consumption
+  - ARDUINO LILYPAD ATMEGA328P
+  - Ardupilote mega 2.8
+  - Nodemcu esp 01
+  - FLYT Contrôleur
+  - Nodemcu 8266
+  - programmateur RGB
+  - STM32
+  - ESP32 cam
+  - ATMEGA 328
+
+Pré-actionneur:
+  - Driver moteur L293D
+  - DFPLAYER MINI MP3 PLAYER MODULE TF CARD
+  - Module Relais 5V – 8 Canaux
+  - Visseuse Tournevis Sans Fil
+  - ECS 1400Kv 30A
+  - L293 D
+  - Relais 1
+  - ECS 1400Kv 30A
+
+Passif:
+  - Resistances 220
+  - Resistance 1K 10K 100 K 1M
+  - Condensateur ( 1 µ 47 µ ) electrolitique
+  - Condensateur ( 100 n , 100p) Ceramique
+  - 22pf Capacitor
+  - Potentiotiemetre 10K
+
+Ouillage:
+  - PLAQUE A ESSAI 400pts BB-801P
+  - PLAQUE A ESSAI 800pts BB-801P
+  - JEU DE 6 TOURNEVIS ISOLÉ 1000V TLS38013
+  - Jeux tournevis Bi Sheng 47 Pièces JK-6032D
+  - Tournevis FR BATI 538 3X150
+  - Tournevis FR BATI 538 3x100
+  - Tournevis AM BATI 538 PHO
+  - JEUX DE TROIS MINI PINCE TOLSEN TLS10038
+  - PINCE UNIVERSELLE 160MM TOLSEN 10000
+  - Pince coupante Industrielle 160mm TOLSEN 10018
+  - Pince à dénuder et à sertir TOLSEN TLS38052
+  - PIED À COULISSE NUMÉRIQUE TOLSEN TLS35052
+  - CUTTER 18*100MM EXTRA TOLSEN TLS30001
+  - LAMES POUR CUTTER 18*100*0.5MM TOLSEN TLS30011
+  - LUNETTES DE SÉCURITÉ TOLSEN TLS45071
+  - REGLE EN ACIER INOXYDABLE 600MM TOLSEN TLS35028
+  - Pistolet a colle TOLSEN TLS79105
+  - JEUX CLES MALES TORX EXTRA LONG (9PCS) ACEM 280125204
+  - Perceuse-visseuse double batterie Li-Ion 18V
+  - Caisse à outils 22"
+  - Station air chaud (fer asoudé + support + eponge + pompe a desouder + Soufleur air chaud )
+  - Fer a souder avec support avec ponge
+  - pompe à déssouder
+  - Metre
+  - Décapeur Thermique
+  - Dremel 200 -5
+  - Etau de serrage
+  - Etau d'angle 90°
+  - Pince à etau
+  - Rifteuse
+  - jeu de 25 foret
+  - Serre joint à pompe de serrage
+  - Pince serre joint à Machoire
+  - Support de percage à colonne
+  - Cale Etalon
+  - Cisaille
+  - Scie Sauteuse
+  - Scie Circulaire
+  - Touret meuleur
+  - Meuleuse Droite Longue
+  - Meuleuse Angulaire
+  - Ponceuse à Bande
+  - Ponceuse Excentrique
+  - Perceuse Rotative
+  - Marteau Perforateur
+  - Defonceuse
+  - Clouseuse electrique
+  - loupe
+  - Desoldering
+  - Cale Etalon
+  - Afficheur dual voltmetre amperemetre mini 0-100v/10A
+  - mini labdec 180
+  - Labdec 400
+  - BOSCH SET EMBOUTS COULEUR 32 PCES
+  - Multimetres Excel
+  - Pincette pack
+  - PH metre
+  - Magnifying glasses
+  - Scie à marbre makute 1480W
+  - Outils d'alimentation Makute 3mm 350W Meule (DG002)
+  - pistolet à peinture ingco 500W
+  - Digital oscilloscope
+  - ciseau petite taille / grande taille
+
+Machine:
+  - cnc machine : fraisage
+  - Scanner 3D xyz
+  - UV Machine
+
+Kit:
+  - RFID Starter Kit for Arduino UNO R3
+  - Arduino Compatible 37 in 1 Sensor Module Kit
+  - Photovoltaique Kit
+  - Kit chargeur de batterie USB 5V 1A
+  - PIXHAWK PX4 / KIT
+  - KIT capteur 37
+
+Equipement:
+  - Bloc Tiroirs TR 144 PG
+
+Consommable:
+  - 20 Baton de colle transparent pour pistolet
+  - Bobines : impression 3d 1.75 3Kg (PLA)
+  - Bobines : impression 3d 1.75 3Kg (ABS)
+  - Plexiglace dont 3 mm Orange Plaque
+  - Plywood 3 mm
+  - Panneaux de MDF 220 cm * 180 cm
+  - PCB Differentes tailles
+  - Plaque de cuivre
+  - Plaque PCB UV
+  - Perchlorure de fer
+  - Étain 0,8 200G
+  - Broches 40 M (une ligne / deux lignes )
+  - Plexiglace dont 3 mm Orange Plaque
+  - Plywood 3 mm
+  - Mini chassis rond 2 roues pour robot
+  - vinyle consommable 10m*40C
+  - scotch normal / noire / d'emballage / double face
+  - rouleau d'aliminuim
+  - Tube de colle liquide moyenne taille
+  - hydroalcoolique desinfectant 500ml
+  - marqueur pour flipchart
+  - PCB Wire
+
+Communication & Convertisseurs:
+  - Module LORA
+  - Module Bluetooth UART 4 pin ,HC-06
+  - GSM/GPRS SIM900 Shield
+  - module Bluetooth HC05 / HC06
+  - SIM 900 A
+  - Wirless AV transmitter TS832 5 Km
+  - Transfo + SIM 808
+  - GSM 800L
+  - nRF24L01 Transceiver Module
+  - Convertisseur USB - FTDI
+  - Convertisseur RS232 TTL
+  - clé Wifi alpha
+  - ADC PGA 16 bits 4 channels ADS1115
+  - Multiplexeur CD74HC4067
+
+Circuit integré:
+  - NE555
+
+Capteur:
+  - RTC Board
+  - MPU6050 (Gyroscope + Accelerometer + Magneto) Sensor Module
+  - Interrupteurs ( ON / OFF / BP )
+  - GPS TTL Upblox NEO 6 V2
+  - Ultrason HC SR04
+  - Motion sensor
+  - capteur de courant 20A
+  - Capteur de couleur
+  - Module Caméra v2 8MP Raspberry Pi
+  - Camera FPV VTXTVL FPV
+  - DS3231 I2C
+  - HYGROMÉTRIE DU SOL
+  - IMU 9 ddl
+  - Module détection de lumière
+  - MODULE ENREGISTREUR DE VOIX À MICROPHONE AVEC HAUT-PARLEUR ISD1820
+  - MQ135
+  - MQ2
+  - MQ7
+  - Codeur Rotatif
+  - Button bp
+  - Water Sensor
+  - mpu 9250
+  - bmp 280 5v i2c/spi
+  - hmc5883L
+  - US-10 Ultrasonic
+  - GPS NEO-7M
+  - max9814
+  - LM358
+  - Microphone Raspberry + Driver sound card USB
+  - LM35
+  - MLX906144 Module
+  - Laser Diode Module
+  - Capteur de pulse SEN-11574 / XD - 58C
+  - MAX30100
+  - max30102 blood pressure
+  - Carte son USB externe HIFI Magic Voice 7.1CH Microphone-in Audio-out Port Free Drive Plug
+  - Mini Micro-Cravate
+  - Tag Rfid active
+  - capteur de vent
+  - boutton pour compétition
+  - Boutton poussoirs 426-DFR0785-W
+  - capteur MQ3 / MQ4 /MQ8 / MQ9
+  - DHT11 / DHT 22
+  - capteur de tension
+  - Capacitive touch
+  - Capteur Infrarouge Suiveur de Ligne
+  - Camera module OV7670
+  - LIGHTING DIODE RESISTENCE
+  - Phototransistor Module
+  - RFID HAT for Raspberry Pi
+  - fin de course
+  - 4*4 matrix keypad + Membrane
+  - Infrarouge detecteur d'obstacle TCRT5000
+  - Capteur de temperature DS18B20 avec sonde
+  - Thermocouple MAX6675
+  - Pression atmospherique BMP180
+  - Empreinte digitales FPM10A
+  - Detecteur de pluie
+  - Magnetometer HMC 5883L
+  - Capteur de vitesse LM993
+  - Flex sensor 2.2 / 4.5
+  - EMG grove Sensor
+  - WATER proof ultrasonic sensor
+  - Soil Moisture
+  - Capteur de poid 1 K / 5 K / 10 K avec driver
+  - Capteur inductif
+  - Debit metre
+  - LM2596 avec afficheur
+  - Piezoelectrique avec circuit
+  - Electromagnetique p20 15 2,5 Kg
+  - Peltier 12706
+  - hq camera raspberry pi
+  - Joystick analogique
+  - iq receive sensor
+  - 28byj48 stepper motor
+  - sound sensor module
+  - remote
+  - 7 segment
+  - 4*7 segment
+  - 74HC595
+  - laser  emittor
+  - smd rgb
+  - RFID reader RC522
+
+Cables & connecteurs:
+  - (Arduino UNO Shield + Arduino MEGA Shield + Raspberry pi 4 Shield ) extension
+  - Wires jumpers femelle/femelle 20cm Lot de 40 fils
+  - wires jumpers male/male 20cm Lot de 40 fils
+  - wires jumpers Male/femelle 20cm Lot de 40 fils
+  - Cable mini USB/ Usb 1.5M
+  - Cable HDMI 1,5M
+  - Cable USB A/B M/M 0,5 M
+  - Module connecteur prise audio jack 3.5 stéréo carte Arduino femelle TRRS F
+  - Prise jack alimentation paire ( M/ F)
+  - Extension Rasperry PI GPIO
+  - Pack cable df13 (1pc 2pin, 1pc 3pin, 1pc 4pin, 1pc 5pin,1pc 6pin)
+  - headphone jack M/F
+  - AUX cable 1m
+  - Connecteur de batterie 9V
+  - connecteur femelle 2*20
+  - Bornier à vis 2 plots
+  - Bornier à vis 3 plots
+  - Bornier à vis 4 plots
+  - Connecteur jack d'alimentation cc femelle 2.5
+  - count60 XT 60 Mâle Femelle
+  - 1,4RAMPS
+  - Jack adapter
+  - Jack adapter DC 3,5MM
+  - 1M UL1007 PVC Tinned Copper Wire Cable 16/18/20/22/24/26/28/30 AWG
+  - Crimp Spade Terminal Assorted Electrical Wire Cable Connector Kit
+
+Appareil:
+  - Camera samsung gear 360
+  - vr headset Meta queta 2
+  - headset SAMSUNG Gear VR
+
+Alimentation:
+  - Alimentation USB pour raspberry Pi3 B+ 5.1V 3A - Original Blanc
+  - Alimentation USB Type C pour raspberry Pi4 5.1V 3A - Original Blanc
+  - Alimentation de labo 30V 5A
+  - Alimentation regulée (12v) 10A
+  - Booster + Charger
+  - Regulateur 7805 7809
+  - 1-8S 1S-8S 2in1 Lipo/Li-ion/Fe Batterie Testeur Tension Basse Buzzer Alarm
+  - Battery Protection Board
+  - booster d'alimentation
+  - Drone power Distribiteur
+  - Lipo battery 11.1 3500mAh
+  - charger lipo
+  - XL4016 300w 8A abaisseur de tension
+  - Charger Node MCU MICRO USB
+  - Batterie 9V rechargable
+  - Chargeur des batteries 9v
+  - Power adapter Golden trust ( Arduino )
+
+Actionneur:
+  - LCD Raspberry 3,5 Inch
+  - 3.5" TFT LCD TOUCH SHIELD Arduino
+  - LCD 16X02 I2C
+  - Leds ( Blanc rouge bleu jaune vert Orange )
+  - RGB led
+  - Buzzer passive
+  - Moteur brushless 1400Kv
+  - MOTEUR PAS À PAS NEMA17 KS42STH40
+  - Servo Moteur FS90R
+  - Servo Moteur MG996R(360) (à engrenage métalique)
+  - SHIELD CNC + 4 DRIVER MOTEUR PAS À PAS A4988
+  - DISPLAY 3.5 UNO Module
+  - DISPLAY 3.5 Rasperry PI
+  - A2212 1000Kv + ESC 30A Brushless + une Pair 1045 Hélice pour DJI F450 F550 Quadcopter
+  - servo motor mg995(0-180) ou mg996(à engrenage métalique)
+  - Mini servo moteur SG90
+  - 7 pouces écran LCD HDMI tactile 1024X600 avec câble USB
+  - haut parleur (cable usb)
+  - P3 64*64
+  - Moteurs Pas à Pas Nema 14 35mm
+  - Moteurs DC 9v
+  - moteur DC 3,3V
+  - Pompe 12V
+  - Pompe 5V
+  - Pompe aquarium
+  - Venilateurs ( 30/10 - 50/10 )
+  - Tube chauffante eletrique
+  - buzzer active
+  - Electrovannes
+  - Serrure electrique
+  - Roues pour les moteurs DC 5V
+
+Actif:
+  - transistors NPN 2N222
+  - Mosfet 2N3904
+  - Diodes 1N4007
+  - 16MHz Quartz Crystal Oscillator
+
+Accessoire & Equipement:
+  - Carte Memoire micro SDHC 16Go / 64gb + Adaptateur Class10
+  - Boitier Officiel Rouge et Blanc pour Raspberry Pi 4 model B
+  - Boitier Officiel Rouge et Blanc pour Raspberry Pi 3 model B
+  - Helice 10' 1045
+  - JMT J630 Kit de Cadre de Support Pliable en 4 Axes en Fibre de Carbone pour Drone Quadcopter DIY
+  - carte SD 64 GB
+  - Module SD Arduino
+  - Clavier et souris pour la rasberry(port usb)
+  - Disque Dur externe 2 T
+  - SONOFF
+  - hifi shield
+  - Makey Makey kit
+  - Gants isolation à la chaleur
+  - Lunettes de soudeur
+  - Cles USB 32 GB
+  - Power bank 30000MAH
+  - Tablettes Samsung A8 4GO 128GO
+  - Function generator GBF
+  - Rallonges Ingelec 6 prises avec interrupteur'2m'
+  - Rallonge 5m Multiprises
+
