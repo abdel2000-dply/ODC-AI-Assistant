@@ -1,7 +1,7 @@
 from langchain.llms import Cohere
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
-from ..utils.document_processor import DocumentProcessor  # Changed to relative import
+from src.utils.document_processor import DocumentProcessor
 import os
 from dotenv import load_dotenv
 
@@ -48,22 +48,30 @@ class LangChainHandler:
             return {"answer": "Sorry, I encountered an error.", "sources": []}
 
 if __name__ == "__main__":
-    # Test the LangChain handler
     handler = LangChainHandler()
-    test_questions = [
-        "What is Orange Digital Center?",
-        "What programs are available at ODC?",
-        "Tell me about the coding school",
-        "What is FabLab?",
-    ]
-    
-    print("\nTesting LangChain Handler:")
+    print("\nODC AI Assistant (powered by LangChain)")
+    print("Type 'quit' or 'exit' to end the conversation")
     print("-" * 50)
     
-    for question in test_questions:
-        print(f"\nQ: {question}")
-        response = handler.get_response(question)
-        print(f"A: {response['answer']}")
-        if response['sources']:
-            print("Sources:", ", ".join(response['sources']))
-        print("-" * 50)
+    while True:
+        try:
+            user_input = input("\nYou: ").strip()
+            if user_input.lower() in ['quit', 'exit']:
+                print("Goodbye!")
+                break
+            
+            if not user_input:
+                continue
+                
+            response = handler.get_response(user_input)
+            print("\nAssistant:", response['answer'])
+            if response['sources']:
+                print("\nSources:", ", ".join(response['sources']))
+            print("-" * 50)
+            
+        except KeyboardInterrupt:
+            print("\nGoodbye!")
+            break
+        except Exception as e:
+            print(f"\nError: {e}")
+            print("Let's continue our conversation...")
