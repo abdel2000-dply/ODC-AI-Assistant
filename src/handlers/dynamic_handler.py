@@ -36,7 +36,6 @@ class DynamicHandler:
             return ""
 
     def chat_with_cohere(self, message):
-        # Retrieve relevant context
         context = self.get_relevant_context(message)
         
         headers = {
@@ -48,7 +47,7 @@ class DynamicHandler:
 
         data = {
             "message": message,
-            "chat_history": [{"role": entry["role"], "content": entry["content"]} for entry in limited_chat_history],
+            "chat_history": [{"role": entry["role"], "message": entry["message"]} for entry in limited_chat_history],
             "max_tokens": 150,
             "temperature": 0.3,
             "context": context
@@ -59,8 +58,9 @@ class DynamicHandler:
         if response.status_code == 200:
             response_data = response.json()
             generated_response = response_data["text"]
-            self.chat_history.append({"role": "user", "content": message, "message": message})
-            self.chat_history.append({"role": "chatbot", "content": generated_response, "message": generated_response})
+            # Store only role and message in chat history
+            self.chat_history.append({"role": "user", "message": message})
+            self.chat_history.append({"role": "chatbot", "message": generated_response})
             return generated_response
         else:
             print(f"Error: {response.status_code} - {response.text}")
