@@ -1,8 +1,20 @@
+# Speech recognition and TTS
 SpeechRecognition
-gTTS
-pyttsx3
-pyaudio
+edge-tts
+langdetect
+python-dotenv
 
+# LangChain and related packages
 langchain
+langchain-cohere
+langchain-huggingface
+cohere
 faiss-cpu
 sentence-transformers
+
+# Audio playback
+python-mpv
+
+# Utility packages
+requests
+numpy
