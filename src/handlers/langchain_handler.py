@@ -37,9 +37,14 @@ class LangChainHandler:
 
     def get_response(self, question, context=""):
         try:
-            response = self.chain({"question": question})
+            # Using invoke instead of direct calling
+            response = self.chain.invoke({
+                "question": question,
+                "chat_history": self.memory.chat_memory.messages
+            })
+            
             return {
-                "answer": response["answer"],
+                "answer": response.get("answer", "No answer generated"),
                 "sources": [doc.metadata.get('source', 'Unknown') 
                           for doc in response.get("source_documents", [])]
             }
