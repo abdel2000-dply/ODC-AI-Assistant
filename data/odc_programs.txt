@@ -1,0 +1,25 @@
+ODC Programs and Training Tracks:
+
+1. Coding School: 
+- Full-stack JavaScript development
+- Python programming
+- Mobile app development
+- Web development fundamentals
+
+2. FabLab: 
+- Digital fabrication
+- Prototyping
+- 3D printing
+- Electronics and IoT
+
+3. Tech Hub:
+- Startup incubation
+- Innovation support
+- Mentorship programs
+- Networking events
+
+4. Digital Academy:
+- Data Science
+- AI/ML fundamentals
+- Cloud computing
+- Digital marketing
