@@ -1,4 +1,4 @@
-from langchain.llms import Cohere
+from langchain_cohere import Cohere
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 from src.utils.document_processor import DocumentProcessor
