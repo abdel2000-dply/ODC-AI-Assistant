@@ -1,8 +1,20 @@
-SpeechRecognition
-gTTS
-pyttsx3
-pyaudio
+# Speech recognition and TTS
+SpeechRecognition==3.10.0
+edge-tts==6.1.9
+langdetect==1.0.9
+python-dotenv==1.0.0
 
-langchain
-faiss-cpu
-sentence-transformers
+# LangChain and related packages
+langchain==0.0.329
+langchain-cohere==0.0.3
+langchain-huggingface
+cohere==4.27
+faiss-cpu==1.7.4
+sentence-transformers==2.2.2
+
+# Audio playback
+python-mpv==1.0.5
+
+# Utility packages
+requests==2.31.0
+numpy==1.24.3
