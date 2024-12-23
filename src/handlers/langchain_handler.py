@@ -1,7 +1,7 @@
 from langchain.llms import Cohere
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
-from src.utils.document_processor import DocumentProcessor
+from ..utils.document_processor import DocumentProcessor  # Changed to relative import
 import os
 from dotenv import load_dotenv
 
