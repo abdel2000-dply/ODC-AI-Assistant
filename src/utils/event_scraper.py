@@ -10,6 +10,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 import platform
 import subprocess
+from pathlib import Path
 
 @dataclass
 class Event:
@@ -25,6 +26,9 @@ class Event:
 class EventScraper:
     def __init__(self):
         self.url = "https://www.orangedigitalcenters.com/country/ma/events"
+        self.data_dir = Path(__file__).parent.parent.parent / "data"
+        self.events_file = self.data_dir / "events.txt"
+        self.data_dir.mkdir(exist_ok=True)
 
     def wait_for_element(self, by, value, timeout=10):
         """Wait for an element to be present and return it"""
@@ -63,7 +67,30 @@ class EventScraper:
             print(f"Error extracting description: {e}")
             return ""
 
+    def _save_events(self, events):
+        """Save events to text file"""
+        print(f"Saving events to {self.events_file}")
+        with open(self.events_file, 'w', encoding='utf-8') as f:
+            f.write("Upcoming Events at Orange Digital Center:\n\n")
+            for event in events:
+                f.write(f"Event: {event.title}\n")
+                f.write(f"Date: {event.month} {event.day}\n")
+                f.write(f"From: {event.start_date}\n")
+                f.write(f"To: {event.end_date}\n")
+                f.write(f"Location: {event.location}\n")
+                if event.description:
+                    f.write(f"Description: {event.description}\n")
+                f.write("\n---\n\n")
+
+    def _save_default_content(self):
+        """Save default content when scraping fails"""
+        print("Saving default events content...")
+        with open(self.events_file, 'w', encoding='utf-8') as f:
+            f.write("Please visit https://www.orangedigitalcenters.com/country/ma/events for the latest events.\n")
+        print(f"Default content saved to {self.events_file}")
+
     def scrape_events(self):
+        events = []
         try:
             print("Initializing browser...")
             self.chrome_options = Options()
@@ -158,25 +185,23 @@ class EventScraper:
                     self.driver.get(self.initial_url)
                     time.sleep(3)
 
-            # Print events with better formatting
-            print("\nUpcoming Events at Orange Digital Center Agadir:")
-            print("=" * 50)
-            for event in events:
-                print(f"\nEvent: {event.title}")
-                print(f"Date: {event.month} {event.day}")
-                print(f"Start: {event.start_date}")
-                print(f"End: {event.end_date}")
-                print(f"Location: {event.location}")
-                if event.description:
-                    print("\nDescription:")
-                    for line in event.description.split('\n'):
-                        print(f"  {line}")
-                print("-" * 50)
+            # After successfully scraping events and before printing them:
+            if events:
+                self._save_events(events)
+                print(f"Successfully saved {len(events)} events")
+            else:
+                print("No events could be scraped")
+                self._save_default_content()
+
+            return events
 
         except Exception as e:
             print(f"Error fetching events: {e}")
+            self._save_default_content()
+            return []
         finally:
-            self.driver.quit()
+            if hasattr(self, 'driver'):
+                self.driver.quit()
 
 def test_scrape_events():
     scraper = EventScraper()
