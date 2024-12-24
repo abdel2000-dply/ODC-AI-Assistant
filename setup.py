@@ -1,3 +1,6 @@
+import os
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 from pathlib import Path
 from src.utils.event_scraper import EventScraper
 from src.utils.document_processor import DocumentProcessor
