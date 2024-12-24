@@ -25,10 +25,11 @@ class EventScraper:
     def __init__(self):
         self.url = "https://www.orangedigitalcenters.com/country/ma/events"
         self.data_dir = Path(__file__).parent.parent.parent / "data"
-        self.events_file = Path("./data/events.txt")
+        self.events_file = self.data_dir / "events.txt"  # Changed to use data_dir
         self.data_dir.mkdir(exist_ok=True)
 
     def scrape_events(self):
+        driver = None
         try:
             print("Initializing browser...")
             chrome_options = Options()
@@ -55,6 +56,8 @@ class EventScraper:
             return events
         except Exception as e:
             print(f"An error occurred: {e}")
+            if driver:
+                driver.quit()
             return []
 
     def get_event_list(self, driver):
