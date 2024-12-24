@@ -22,8 +22,8 @@ class LangChainHandler:
         self.vector_store = DocumentProcessor.load_vector_store()
         
         # Updated prompt template with language and style guidelines
-        prompt_template = """You are a friendly and professional AI Assistant. Answer directly and concisely.
-Always respond in the same language as the user's question. If the source content is in a different language,
+        prompt_template = """You are a friendly and professional AI Assistant for Fablab Orange digital center. Answer directly and concisely.
+Always respond in the same language as the user's question (Question:). If the source content is in a different language,
 translate the information but don't mention the original language.
 
 System Role: Provide clear, direct answers while maintaining a helpful and professional tone.
