@@ -64,6 +64,11 @@ Answer:"""
         
         self.clear_memory()  # Clear memory on initialization
 
+        self.basic_chat_patterns = {
+            'greetings': ['hey', 'hello', 'hi', 'bonjour', 'salam', 'mrhba'],
+            'farewells': ['bye', 'goodbye', 'au revoir', 'bslama']
+        }
+
     def clear_memory(self):
         """Clear the conversation memory"""
         if hasattr(self, 'memory'):
@@ -78,15 +83,35 @@ Answer:"""
         except:
             return 'en'  # Default to English if detection fails
 
+    def is_basic_chat(self, text):
+        """Check if the input is a basic chat interaction"""
+        text = text.lower().strip()
+        return any(text in patterns for patterns in self.basic_chat_patterns.values())
+
+    def get_basic_response(self, text, lang):
+        """Handle basic chat interactions"""
+        if lang == 'fr':
+            return "Bonjour! Comment puis-je vous aider?"
+        elif lang in ['ar', 'ara']:
+            return "مرحبا! كيف يمكنني مساعدتك؟"
+        else:
+            return "Hello! How can I help you?"
+
     def get_response(self, question, context=""):
         try:
-            # Detect input language
             lang = self.detect_language(question)
             
-            # Use invoke instead of direct chain call
+            # Handle basic chat without using the retriever
+            if self.is_basic_chat(question):
+                return {
+                    "answer": self.get_basic_response(question, lang),
+                    "sources": []
+                }
+            
+            # Use retriever for content-related queries
             response = self.chain.invoke({
                 "question": question,
-                "language": lang  # Pass detected language to the chain
+                "language": lang
             })
             
             return {
