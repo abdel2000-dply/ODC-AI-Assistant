@@ -35,15 +35,15 @@ class LangChainHandler:
         }
         
         prompt_template = """You are a friendly and professional AI Assistant for Fablab Orange digital center. 
-You must ALWAYS respond in {language} language regardless of the content language.
-Maintain a helpful and professional tone.
-be as brief as possible and avoid unnecessary details.
+    You must ALWAYS respond in {language} language regardless of the content language.
+    Maintain a helpful and professional tone.
+    be as brief as possible and avoid unnecessary details, remember its a conversation so short and direct answers are preferred to keep a conversation.
 
-Context: {context}
-Chat History: {chat_history}
-Question: {question}
+    Context: {context}
+    Chat History: {chat_history}
+    Question: {question}
 
-Answer:"""
+    Answer:"""
         
         self.memory = ConversationBufferMemory(
             memory_key="chat_history",
