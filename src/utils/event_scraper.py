@@ -87,15 +87,28 @@ class EventScraper:
                 month = event_element.find_element(By.CLASS_NAME, 'alphabetic-month').text.strip()
                 day = event_element.find_element(By.CLASS_NAME, 'numeric-date').text.strip()
                 title = event_element.find_element(By.CLASS_NAME, 'event-title').text.strip()
+                
+                # More defensive date parsing
                 dates = event_element.find_elements(By.CLASS_NAME, 'from-to-date-wrapper')
-                start_date = dates[0].text.replace('De ', '').strip()
-                end_date = dates[1].text.replace('À ', '').strip()
+                start_date = ""
+                end_date = ""
+                if len(dates) >= 2:
+                    start_date = dates[0].text.replace('De ', '').strip()
+                    end_date = dates[1].text.replace('À ', '').strip()
+                else:
+                    print(f"Warning: Incomplete date information for event: {title}")
+                    continue  # Skip events with incomplete information
+
                 location = 'ODC Agadir' if 'Agadir' in title else 'ODC Other'
+
+                # Add debug print
+                print(f"Processing event: {title}")
 
                 event_element.click()
                 self.wait_for_detail_page(driver)
                 description = self.get_clean_description(driver)
                 driver.back()
+                time.sleep(1)  # Add small delay after going back
 
                 event = Event(
                     title=title,
@@ -107,7 +120,12 @@ class EventScraper:
                     description=description
                 )
                 events.append(event.__dict__)
+                print(f"Successfully added event: {title}")
             except StaleElementReferenceException:
+                print("Stale element, skipping...")
+                continue
+            except Exception as e:
+                print(f"Error processing event: {str(e)}")
                 continue
 
         return events
