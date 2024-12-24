@@ -61,6 +61,15 @@ Answer:"""
             chain_type="stuff",
             verbose=True
         )
+        
+        self.clear_memory()  # Clear memory on initialization
+
+    def clear_memory(self):
+        """Clear the conversation memory"""
+        if hasattr(self, 'memory'):
+            self.memory.clear()
+        if hasattr(self, 'chain'):
+            self.chain.memory.clear()
 
     def detect_language(self, text):
         try:
@@ -92,7 +101,7 @@ Answer:"""
 if __name__ == "__main__":
     handler = LangChainHandler()
     print("\nODC AI Assistant (powered by LangChain)")
-    print("Type 'quit' or 'exit' to end the conversation")
+    print("Type 'quit', 'exit' to end or 'clear' to reset memory")
     print("-" * 50)
     
     while True:
@@ -101,6 +110,11 @@ if __name__ == "__main__":
             if user_input.lower() in ['quit', 'exit']:
                 print("Goodbye!")
                 break
+            
+            if user_input.lower() == 'clear':
+                handler.clear_memory()
+                print("Memory cleared!")
+                continue
             
             if not user_input:
                 continue
