@@ -21,7 +21,7 @@ class LangChainHandler:
         self.llm = ChatCohere(
             cohere_api_key=self.api_key,
             temperature=0.3,
-            max_tokens=512,
+            max_tokens=300,
             model="command-r-plus-08-2024"
         )
         
@@ -37,6 +37,7 @@ class LangChainHandler:
         prompt_template = """You are a friendly and professional AI Assistant for Fablab Orange digital center. 
 You must ALWAYS respond in {language} language regardless of the content language.
 Maintain a helpful and professional tone.
+be as brief as possible and avoid unnecessary details.
 
 Context: {context}
 Chat History: {chat_history}
