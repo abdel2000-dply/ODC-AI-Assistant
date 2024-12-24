@@ -32,7 +32,7 @@ Language Guidelines:
 - For English: Be clear and professional
 - For French: Use formal French ("vous")
 - For Arabic/Darija: Use conversational, respectful tone
-- Always match the user's language choice
+- Always match the user's language choice that they use in their question, as you can see in the paragraph starting with 'Question:'.
 
 Context: {context}
 Chat History: {chat_history}
