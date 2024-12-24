@@ -185,17 +185,37 @@ def test_scrape_events():
     finally:
         driver.quit()
 
+# if __name__ == "__main__":
+#     # Add retry mechanism for Raspberry Pi
+#     max_retries = 3
+#     for attempt in range(max_retries):
+#         try:
+#             test_scrape_events()
+#             break
+#         except Exception as e:
+#             print(f"Attempt {attempt + 1} failed: {e}")
+#             if attempt < max_retries - 1:
+#                 print("Retrying in 10 seconds...")
+#                 time.sleep(10)
+#             else:
+#                 print("All attempts failed")
+
+from src.utils.event_scraper import EventScraper
+
+def main():
+    scraper = EventScraper()
+    print("Starting event scraping...")
+    
+    events = scraper.scrape_events()
+    
+    print("\nScraped Events Summary:")
+    print(f"Total events found: {len(events)}")
+    
+    for i, event in enumerate(events, 1):
+        print(f"\nEvent {i}:")
+        for key, value in event.items():
+            print(f"{key}: {value}")
+        print("-" * 50)
+
 if __name__ == "__main__":
-    # Add retry mechanism for Raspberry Pi
-    max_retries = 3
-    for attempt in range(max_retries):
-        try:
-            test_scrape_events()
-            break
-        except Exception as e:
-            print(f"Attempt {attempt + 1} failed: {e}")
-            if attempt < max_retries - 1:
-                print("Retrying in 10 seconds...")
-                time.sleep(10)
-            else:
-                print("All attempts failed")
+    main()
