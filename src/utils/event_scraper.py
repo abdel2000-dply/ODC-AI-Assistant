@@ -25,7 +25,7 @@ class EventScraper:
     def __init__(self):
         self.url = "https://www.orangedigitalcenters.com/country/ma/events"
         self.data_dir = Path(__file__).parent.parent.parent / "data"
-        self.events_file = self.data_dir / "events.txt"
+        self.events_file = Path("./data/events.txt")
         self.data_dir.mkdir(exist_ok=True)
 
     def scrape_events(self):
