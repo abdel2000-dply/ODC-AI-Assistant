@@ -8,7 +8,13 @@ from dotenv import load_dotenv
 from langdetect import detect
 
 class LangChainHandler:
-    def __init__(self):
+    SUPPORTED_LANGUAGES = {
+        '1': {'code': 'en', 'name': 'English'},
+        '2': {'code': 'fr', 'name': 'French'},
+        '3': {'code': 'ar', 'name': 'Arabic/Darija'}
+    }
+
+    def __init__(self, selected_language='en'):
         load_dotenv()
         self.api_key = os.getenv('COHERE_API_KEY')
         
@@ -21,18 +27,16 @@ class LangChainHandler:
         
         self.vector_store = DocumentProcessor.load_vector_store()
         
-        # Updated prompt template with language and style guidelines
-        prompt_template = """You are a friendly and professional AI Assistant for Fablab Orange digital center. Answer directly and concisely.
-Always respond in the same language as the user's question (Question:). If the source content is in a different language,
-translate the information but don't mention the original language.
-
-System Role: Provide clear, direct answers while maintaining a helpful and professional tone.
-
-Language Guidelines:
-- For English: Be clear and professional
-- For French: Use formal French ("vous")
-- For Arabic/Darija: Use conversational, respectful tone
-- Always match the user's language choice that they use in their question, as you can see in the paragraph starting with 'Question:'.
+        self.selected_language = selected_language
+        self.greetings = {
+            'en': "Hello! How can I help you?",
+            'fr': "Bonjour! Comment puis-je vous aider?",
+            'ar': "مرحبا! كيف يمكنني مساعدتك؟"
+        }
+        
+        prompt_template = """You are a friendly and professional AI Assistant for Fablab Orange digital center. 
+You must ALWAYS respond in {language} language regardless of the content language.
+Maintain a helpful and professional tone.
 
 Context: {context}
 Chat History: {chat_history}
@@ -69,6 +73,18 @@ Answer:"""
             'farewells': ['bye', 'goodbye', 'au revoir', 'bslama']
         }
 
+    @classmethod
+    def select_language(cls):
+        print("\nPlease select your preferred language:")
+        for key, lang in cls.SUPPORTED_LANGUAGES.items():
+            print(f"{key}. {lang['name']}")
+        
+        while True:
+            choice = input("Enter your choice (1-3): ").strip()
+            if choice in cls.SUPPORTED_LANGUAGES:
+                return cls.SUPPORTED_LANGUAGES[choice]['code']
+            print("Invalid choice, please try again.")
+
     def clear_memory(self):
         """Clear the conversation memory"""
         if hasattr(self, 'memory'):
@@ -99,19 +115,9 @@ Answer:"""
 
     def get_response(self, question, context=""):
         try:
-            lang = self.detect_language(question)
-            
-            # Handle basic chat without using the retriever
-            if self.is_basic_chat(question):
-                return {
-                    "answer": self.get_basic_response(question, lang),
-                    "sources": []
-                }
-            
-            # Use retriever for content-related queries
             response = self.chain.invoke({
                 "question": question,
-                "language": lang
+                "language": self.selected_language
             })
             
             return {
@@ -121,12 +127,25 @@ Answer:"""
             }
         except Exception as e:
             print(f"Error getting response: {e}")
-            return {"answer": "Sorry, I encountered an error.", "sources": []}
+            error_messages = {
+                'en': "Sorry, I encountered an error.",
+                'fr': "Désolé, j'ai rencontré une erreur.",
+                'ar': "عذراً، حدث خطأ ما."
+            }
+            return {"answer": error_messages.get(self.selected_language, error_messages['en']), "sources": []}
 
 if __name__ == "__main__":
-    handler = LangChainHandler()
-    print("\nODC AI Assistant (powered by LangChain)")
-    print("Type 'quit', 'exit' to end or 'clear' to reset memory")
+    # Get language preference at startup
+    selected_language = LangChainHandler.select_language()
+    handler = LangChainHandler(selected_language)
+    
+    welcome_messages = {
+        'en': "\nODC AI Assistant (powered by LangChain)\nType 'quit', 'exit' to end or 'clear' to reset memory",
+        'fr': "\nAssistant IA ODC (propulsé par LangChain)\nTapez 'quit', 'exit' pour terminer ou 'clear' pour réinitialiser",
+        'ar': "\nمساعد ODC الذكي\nاكتب 'quit' أو 'exit' للخروج أو 'clear' لمسح المحادثة"
+    }
+    
+    print(welcome_messages.get(selected_language, welcome_messages['en']))
     print("-" * 50)
     
     while True:
