@@ -25,16 +25,6 @@ class Event:
 class EventScraper:
     def __init__(self):
         self.url = "https://www.orangedigitalcenters.com/country/ma/events"
-        self.chrome_options = Options()
-        self.chrome_options.add_argument("--headless")
-        self.chrome_options.add_argument("--no-sandbox")
-        self.chrome_options.add_argument("--disable-dev-shm-usage")
-        self.chrome_options.add_argument("--ignore-certificate-errors")
-        self.is_raspberry_pi = platform.machine().startswith('arm') or platform.machine().startswith('aarch')
-        self.service = Service('/usr/bin/chromedriver') if self.is_raspberry_pi else Service(ChromeDriverManager().install())
-        self.driver = webdriver.Chrome(service=self.service, options=self.chrome_options)
-        self.driver.maximize_window()
-        self.initial_url = self.driver.current_url
 
     def wait_for_element(self, by, value, timeout=10):
         """Wait for an element to be present and return it"""
@@ -76,7 +66,17 @@ class EventScraper:
     def scrape_events(self):
         try:
             print("Initializing browser...")
+            self.chrome_options = Options()
+            self.chrome_options.add_argument("--headless")
+            self.chrome_options.add_argument("--no-sandbox")
+            self.chrome_options.add_argument("--disable-dev-shm-usage")
+            self.chrome_options.add_argument("--ignore-certificate-errors")
+            self.is_raspberry_pi = platform.machine().startswith('arm') or platform.machine().startswith('aarch')
+            self.service = Service('/usr/bin/chromedriver') if self.is_raspberry_pi else Service(ChromeDriverManager().install())
+            self.driver = webdriver.Chrome(service=self.service, options=self.chrome_options)
+            self.driver.maximize_window()
             self.driver.get(self.url)
+            self.initial_url = self.driver.current_url
 
             # Wait for events to load
             time.sleep(5)  # Give React time to render
