@@ -21,19 +21,22 @@ class LangChainHandler:
         # Initialize vector store
         self.vector_store = DocumentProcessor.load_vector_store()
         
-        # Initialize conversation memory
+        # Initialize conversation memory with output key
         self.memory = ConversationBufferMemory(
             memory_key="chat_history",
+            output_key="answer",
             return_messages=True
         )
         
-        # Create retrieval chain
+        # Create retrieval chain with specified output keys
         self.chain = ConversationalRetrievalChain.from_llm(
             llm=self.llm,
             retriever=self.vector_store.as_retriever(),
             memory=self.memory,
             return_source_documents=True,
-            max_tokens_limit=3000
+            combine_docs_chain_kwargs={"memory": self.memory},
+            max_tokens_limit=3000,
+            verbose=True
         )
 
     def get_response(self, question, context=""):
