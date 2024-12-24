@@ -49,16 +49,33 @@ class EventScraper:
             driver = webdriver.Chrome(service=service, options=chrome_options)
             driver.get(self.url)
 
-            events = self.get_event_list(driver)
-            driver.quit()
+            # Wait for page load and check if events exist
+            wait = WebDriverWait(driver, 10)
+            event_elements = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'event-detail')))
+            
+            if not event_elements:
+                print("No events found on the page")
+                self._save_default_content()
+                return []
 
-            self._save_events(events)
+            events = self.get_event_list(driver)
+            
+            if events:
+                self._save_events(events)
+                print(f"Successfully saved {len(events)} events")
+            else:
+                print("No events could be scraped")
+                self._save_default_content()
+            
             return events
+
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"An error occurred while scraping: {e}")
+            self._save_default_content()
+            return []
+        finally:
             if driver:
                 driver.quit()
-            return []
 
     def get_event_list(self, driver):
         events = []
@@ -118,3 +135,11 @@ class EventScraper:
                 f.write(f"Location: {event['location']}\n")
                 f.write(f"Description: {event['description']}\n")
                 f.write("\n---\n\n")
+
+    def _save_default_content(self):
+        """Save default content when scraping fails"""
+        print("Saving default events content...")
+        with open(self.events_file, 'w', encoding='utf-8') as f:
+            f.write("""Please visit https://www.orangedigitalcenters.com/country/ma/events for the latest events.
+""")
+        print(f"Default content saved to {self.events_file}")

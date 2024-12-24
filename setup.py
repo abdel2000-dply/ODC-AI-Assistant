@@ -12,18 +12,26 @@ def setup_assistant():
     # 2. Scrape latest events
     print("\n1. Scraping latest events...")
     scraper = EventScraper()
-    scraper.scrape_events()
-    print("Events saved to data/events.txt")
+    events = scraper.scrape_events()
+    
+    if not events:
+        print("Note: Using default events content")
+    else:
+        print(f"Successfully scraped {len(events)} events")
     
     # 3. Process all documents and create vector store
-    print("\n2. Processing all documents (including events)...")
+    print("\n2. Processing all documents...")
     processor = DocumentProcessor()
     vector_store = processor.process_documents()
-    print(f"Vector store created at {processor.vector_store_path}")
     
-    print("\nSetup complete! You can now run:")
-    print("1. python run_scheduler.py (in one terminal)")
-    print("2. python src/main.py (in another terminal)")
+    if vector_store:
+        print("\nSetup completed successfully!")
+        print(f"Data directory contains: {', '.join(f.name for f in data_dir.glob('*'))}")
+        print("\nYou can now run:")
+        print("1. python run_scheduler.py (in one terminal)")
+        print("2. python src/main.py (in another terminal)")
+    else:
+        print("\nSetup completed with warnings. Please check the logs above.")
 
 if __name__ == "__main__":
     setup_assistant()
