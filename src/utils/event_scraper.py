@@ -73,6 +73,7 @@ class EventScraper:
         with open(self.events_file, 'w', encoding='utf-8') as f:
             f.write("Upcoming Events at Orange Digital Center:\n\n")
             for event in events:
+                # Convert Event object attributes to strings safely
                 f.write(f"Event: {event.title}\n")
                 f.write(f"Date: {event.month} {event.day}\n")
                 f.write(f"From: {event.start_date}\n")
@@ -81,6 +82,7 @@ class EventScraper:
                 if event.description:
                     f.write(f"Description: {event.description}\n")
                 f.write("\n---\n\n")
+        print(f"Events saved to {self.events_file}")
 
     def _save_default_content(self):
         """Save default content when scraping fails"""
@@ -187,7 +189,7 @@ class EventScraper:
 
             # After successfully scraping events and before printing them:
             if events:
-                self._save_events(events)
+                self._save_events(events)  # Save events before returning
                 print(f"Successfully saved {len(events)} events")
             else:
                 print("No events could be scraped")
