@@ -1,4 +1,4 @@
-from langchain_cohere import Cohere
+from langchain_cohere import ChatCohere
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 from src.utils.document_processor import DocumentProcessor
@@ -10,11 +10,12 @@ class LangChainHandler:
         load_dotenv()
         self.api_key = os.getenv('COHERE_API_KEY')
         
-        # Initialize the language model
-        self.llm = Cohere(
+        # Initialize the chat model
+        self.llm = ChatCohere(
             cohere_api_key=self.api_key,
             temperature=0.3,
-            max_tokens=512
+            max_tokens=512,
+            model="command"  # Using command model for better chat performance
         )
         
         # Initialize vector store

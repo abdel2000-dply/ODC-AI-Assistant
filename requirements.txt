@@ -18,3 +18,7 @@ python-mpv
 # Utility packages
 requests
 numpy
+
+# Web scraping
+selenium
+webdriver-manager
