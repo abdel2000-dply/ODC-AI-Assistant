@@ -25,7 +25,15 @@ class LangChainHandler:
             model="command-r-plus-08-2024"
         )
         
+        # Configure retriever with specific parameters
         self.vector_store = DocumentProcessor.load_vector_store()
+        self.retriever = self.vector_store.as_retriever(
+            search_type="similarity",
+            search_kwargs={
+                "k": 2,  # Number of documents to retrieve
+                "score_threshold": 0.5  # Minimum similarity score (0-1)
+            }
+        )
         
         self.selected_language = selected_language
         self.greetings = {
@@ -37,7 +45,8 @@ class LangChainHandler:
         prompt_template = """You are a friendly and professional AI Assistant for Fablab Orange digital center. 
     You must ALWAYS respond in {language} language regardless of the content language.
     Maintain a helpful and professional tone.
-    be as brief as possible and avoid unnecessary details, remember its a conversation so short and direct answers are preferred to keep a conversation.
+    Be as brief as possible and avoid unnecessary details, remember its a conversation so short and direct answers are preferred to keep a conversation.
+    Don't provide the details unless asked for, ALWAYS be short and to the point.
 
     Context: {context}
     Chat History: {chat_history}
@@ -54,7 +63,7 @@ class LangChainHandler:
         
         self.chain = ConversationalRetrievalChain.from_llm(
             llm=self.llm,
-            retriever=self.vector_store.as_retriever(),
+            retriever=self.retriever,  # Use configured retriever
             memory=self.memory,
             combine_docs_chain_kwargs={
                 "prompt": PromptTemplate(
@@ -116,15 +125,22 @@ class LangChainHandler:
 
     def get_response(self, question, context=""):
         try:
+            # Add debug info about retrieved documents
             response = self.chain.invoke({
                 "question": question,
                 "language": self.selected_language
             })
             
+            sources = response.get("source_documents", [])
+            
+            if self.chain.verbose:
+                print(f"\nRetrieved {len(sources)} relevant documents")
+                for i, doc in enumerate(sources, 1):
+                    print(f"Doc {i} score: {doc.metadata.get('score', 'N/A')}")
+            
             return {
                 "answer": response.get("answer", "No answer generated"),
-                "sources": [doc.metadata.get('source', 'Unknown') 
-                          for doc in response.get("source_documents", [])]
+                "sources": [doc.metadata.get('source', 'Unknown') for doc in sources]
             }
         except Exception as e:
             print(f"Error getting response: {e}")
