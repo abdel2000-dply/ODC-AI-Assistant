@@ -181,3 +181,6 @@ class EventScraper:
 def test_scrape_events():
     scraper = EventScraper()
     scraper.scrape_events()
+
+if __name__ == "__main__":
+    test_scrape_events()
