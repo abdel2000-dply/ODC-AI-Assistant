@@ -1,6 +1,7 @@
 from langchain_cohere import ChatCohere
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
+from langchain.prompts import PromptTemplate
 from src.utils.document_processor import DocumentProcessor
 import os
 from dotenv import load_dotenv
@@ -21,32 +22,42 @@ class LangChainHandler:
         # Initialize vector store
         self.vector_store = DocumentProcessor.load_vector_store()
         
-        # Initialize conversation memory with output key
+        # Create a custom prompt template
+        prompt_template = """Use the following conversation history and context to answer the question.
+        
+Context: {context}
+Chat History: {chat_history}
+Question: {question}
+
+Answer:"""
+        
+        # Initialize conversation memory
         self.memory = ConversationBufferMemory(
             memory_key="chat_history",
             output_key="answer",
-            return_messages=True
+            return_messages=True,
+            input_key="question"
         )
         
-        # Create retrieval chain with specified output keys
+        # Create retrieval chain with custom prompt
         self.chain = ConversationalRetrievalChain.from_llm(
             llm=self.llm,
             retriever=self.vector_store.as_retriever(),
             memory=self.memory,
+            combine_docs_chain_kwargs={
+                "prompt": PromptTemplate(
+                    template=prompt_template,
+                    input_variables=["context", "chat_history", "question"]
+                )
+            },
             return_source_documents=True,
-            combine_docs_chain_kwargs={"memory": self.memory},
-            max_tokens_limit=3000,
+            chain_type="stuff",
             verbose=True
         )
 
     def get_response(self, question, context=""):
         try:
-            # Using invoke instead of direct calling
-            response = self.chain.invoke({
-                "question": question,
-                "chat_history": self.memory.chat_memory.messages
-            })
-            
+            response = self.chain({"question": question})
             return {
                 "answer": response.get("answer", "No answer generated"),
                 "sources": [doc.metadata.get('source', 'Unknown') 
