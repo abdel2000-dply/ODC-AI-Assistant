@@ -10,7 +10,8 @@ class LangChainHandler:
     SUPPORTED_LANGUAGES = {
         '1': {'code': 'en', 'name': 'English'},
         '2': {'code': 'fr', 'name': 'French'},
-        '3': {'code': 'ar', 'name': 'Arabic/Darija'}
+        '3': {'code': 'ar', 'name': 'Arabic/Darija'},
+        '4': {'code': 'darija', 'name': 'Moroccan Darija'}
     }
 
     def __init__(self, selected_language='en'):
@@ -30,7 +31,8 @@ class LangChainHandler:
         self.greetings = {
             'en': "Hello! How can I help you?",
             'fr': "Bonjour! Comment puis-je vous aider?",
-            'ar': "مرحبا! كيف يمكنني مساعدتك؟"
+            'ar': "مرحبا! كيف يمكنني مساعدتك؟",
+            'darija': "سلام! كيفاش نعاونك؟"
         }
         
         prompt_template = """You are a friendly and professional AI Assistant for Fablab Orange digital center. 
@@ -91,7 +93,7 @@ class LangChainHandler:
             print(f"{key}. {lang['name']}")
         
         while True:
-            choice = input("Enter your choice (1-3): ").strip()
+            choice = input("Enter your choice (1-4): ").strip()
             if choice in cls.SUPPORTED_LANGUAGES:
                 return cls.SUPPORTED_LANGUAGES[choice]['code']
             print("Invalid choice, please try again.")
@@ -114,6 +116,8 @@ class LangChainHandler:
             return "Bonjour! Comment puis-je vous aider?"
         elif lang in ['ar', 'ara']:
             return "مرحبا! كيف يمكنني مساعدتك؟"
+        elif lang == 'darija':
+            return "سلام! كيفاش نعاونك؟"
         else:
             return "Hello! How can I help you?"
 
