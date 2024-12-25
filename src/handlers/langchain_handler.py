@@ -183,11 +183,15 @@ if __name__ == "__main__":
             
             if not user_input:
                 continue
-                
-            response = handler.get_response(user_input)
-            print("\nAssistant:", response['answer'])
-            if response['sources']:
-                print("\nSources:", ", ".join(response['sources']))
+
+            if handler.is_basic_chat(user_input):
+                response = handler.get_basic_response(user_input, handler.selected_language)
+                print("\nAssistant:", response)
+            else:
+                response = handler.get_response(user_input)
+                print("\nAssistant:", response['answer'])
+                if response['sources']:
+                    print("\nSources:", ", ".join(response['sources']))
             print("-" * 50)
             
         except KeyboardInterrupt:
