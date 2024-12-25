@@ -39,6 +39,7 @@ class LangChainHandler:
         Be as brief as possible and avoid unnecessary details, remember it's a conversation so short and direct answers are preferred to keep a conversation.
 
         Guidelines:
+        - If the question is a basic chat interaction, respond with a greeting or farewell, don't depend on the context just request if you could assist with anything related to Fablab Orange digital center
         - Respond ONLY in the specified language
         - Be direct and brief
         - Provide specific examples when relevant
