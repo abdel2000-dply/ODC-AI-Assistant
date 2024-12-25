@@ -69,7 +69,8 @@ class LangChainHandler:
             retriever=self.retriever,  # Use configured retriever
             memory=self.memory,
             combine_docs_chain_kwargs={
-                "prompt": prompt
+                "prompt": prompt,
+                "input_variables": ["context", "chat_history", "question", "language"]
             },
             return_source_documents=True,
             chain_type="stuff",
@@ -121,7 +122,8 @@ class LangChainHandler:
             # Add debug info about retrieved documents
             response = self.chain.invoke({
                 "question": question,
-                "context": context
+                "context": context,
+                "language": self.selected_language
                 })
             
             sources = response.get("source_documents", [])
