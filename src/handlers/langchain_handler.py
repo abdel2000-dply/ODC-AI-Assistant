@@ -4,6 +4,7 @@ from langchain.memory import ConversationBufferWindowMemory
 from langchain.prompts import ChatPromptTemplate
 from langchain.callbacks import StreamingStdOutCallbackHandler
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
+from src.utils.document_processor import DocumentProcessor
 from langchain.schema import Document
 from typing import List, Dict, Optional
 import logging
@@ -159,44 +160,44 @@ class EnhancedLangChainHandler:
             "confidence": 0.0
         }
 
-if __name__ == "__main__":
-    # Get language preference at startup
-    selected_language = LangChainHandler.select_language()
-    handler = LangChainHandler(selected_language)
+# if __name__ == "__main__":
+#     # Get language preference at startup
+#     selected_language = LangChainHandler.select_language()
+#     handler = LangChainHandler(selected_language)
     
-    welcome_messages = {
-        'en': "\nODC AI Assistant (powered by LangChain)\nType 'quit', 'exit' to end or 'clear' to reset memory",
-        'fr': "\nAssistant IA ODC (propulsé par LangChain)\nTapez 'quit', 'exit' pour terminer ou 'clear' pour réinitialiser",
-        'ar': "\nمساعد ODC الذكي\nاكتب 'quit' أو 'exit' للخروج أو 'clear' لمسح المحادثة"
-    }
+#     welcome_messages = {
+#         'en': "\nODC AI Assistant (powered by LangChain)\nType 'quit', 'exit' to end or 'clear' to reset memory",
+#         'fr': "\nAssistant IA ODC (propulsé par LangChain)\nTapez 'quit', 'exit' pour terminer ou 'clear' pour réinitialiser",
+#         'ar': "\nمساعد ODC الذكي\nاكتب 'quit' أو 'exit' للخروج أو 'clear' لمسح المحادثة"
+#     }
     
-    print(welcome_messages.get(selected_language, welcome_messages['en']))
-    print("-" * 50)
+#     print(welcome_messages.get(selected_language, welcome_messages['en']))
+#     print("-" * 50)
     
-    while True:
-        try:
-            user_input = input("\nYou: ").strip()
-            if user_input.lower() in ['quit', 'exit']:
-                print("Goodbye!")
-                break
+#     while True:
+#         try:
+#             user_input = input("\nYou: ").strip()
+#             if user_input.lower() in ['quit', 'exit']:
+#                 print("Goodbye!")
+#                 break
             
-            if user_input.lower() == 'clear':
-                handler.clear_memory()
-                print("Memory cleared!")
-                continue
+#             if user_input.lower() == 'clear':
+#                 handler.clear_memory()
+#                 print("Memory cleared!")
+#                 continue
             
-            if not user_input:
-                continue
+#             if not user_input:
+#                 continue
                 
-            response = handler.get_response(user_input)
-            print("\nAssistant:", response['answer'])
-            if response['sources']:
-                print("\nSources:", ", ".join(response['sources']))
-            print("-" * 50)
+#             response = handler.get_response(user_input)
+#             print("\nAssistant:", response['answer'])
+#             if response['sources']:
+#                 print("\nSources:", ", ".join(response['sources']))
+#             print("-" * 50)
             
-        except KeyboardInterrupt:
-            print("\nGoodbye!")
-            break
-        except Exception as e:
-            print(f"\nError: {e}")
-            print("Let's continue our conversation...")
+#         except KeyboardInterrupt:
+#             print("\nGoodbye!")
+#             break
+#         except Exception as e:
+#             print(f"\nError: {e}")
+#             print("Let's continue our conversation...")
