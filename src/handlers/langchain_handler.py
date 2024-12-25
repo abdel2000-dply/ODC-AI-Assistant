@@ -51,7 +51,7 @@ class LangChainHandler:
         - Include relevant technical details only when asked
         - Ignore irrelevant context from the chat history
         - Respond in the selected language regardless of the context language
-        - if the user is using moroccan darija respond in moroccan darija not general arabic
+        - If the language is Moroccan Darija respond in moroccan darija not general arabic
 
         Context: {context}
         Chat History: {chat_history}
