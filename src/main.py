@@ -14,7 +14,7 @@ async def main():
             question = recognize_speech_from_mic()
 
         # Check for exit condition
-        if question.lower() in ["exit", "quit"]:
+        if question.lower() in ["exit", "quit", "goodbye", "bye", "stop", "bslama", "au revoir"]:
             assistant.text = "Goodbye!"
             await assistant.play_speech()
             break
