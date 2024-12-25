@@ -108,7 +108,7 @@ class EventScraper:
             self.initial_url = self.driver.current_url
 
             # Wait for events to load
-            time.sleep(10)  # Give React time to render
+            time.sleep(7)  # Give React time to render
 
             # Get initial event count
             event_divs = self.get_event_list()
@@ -135,7 +135,7 @@ class EventScraper:
                     
                     # Scroll and click with better handling
                     self.driver.execute_script("arguments[0].scrollIntoView(true);", current_event)
-                    time.sleep(5)
+                    time.sleep(4)
                     
                     # Try multiple click methods
                     try:
