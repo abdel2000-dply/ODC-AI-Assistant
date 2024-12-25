@@ -1,155 +1,163 @@
 from langchain_cohere import ChatCohere
 from langchain.chains import ConversationalRetrievalChain
-from langchain.memory import ConversationBufferMemory
-from langchain.prompts import PromptTemplate
-from src.utils.document_processor import DocumentProcessor
-import os
-from dotenv import load_dotenv
-from langdetect import detect
+from langchain.memory import ConversationBufferWindowMemory
+from langchain.prompts import ChatPromptTemplate
+from langchain.callbacks import StreamingStdOutCallbackHandler
+from langchain.retrievers import TimeWeightedVectorStoreRetriever
+from langchain.schema import Document
+from typing import List, Dict, Optional
+import logging
+from datetime import datetime
 
-class LangChainHandler:
-    SUPPORTED_LANGUAGES = {
-        '1': {'code': 'en', 'name': 'English'},
-        '2': {'code': 'fr', 'name': 'French'},
-        '3': {'code': 'ar', 'name': 'Arabic/Darija'}
-    }
-
-    def __init__(self, selected_language='en'):
-        load_dotenv()
-        self.api_key = os.getenv('COHERE_API_KEY')
-        
-        self.llm = ChatCohere(
-            cohere_api_key=self.api_key,
-            temperature=0.3,
-            max_tokens=300,
-            model="command-r-plus-08-2024"
-        )
-        
-        # Configure retriever with specific parameters
-        self.vector_store = DocumentProcessor.load_vector_store()
-        self.retriever = self.vector_store.as_retriever(
-            search_type="similarity",
-            search_kwargs={
-                "k": 2,  # Number of documents to retrieve
-                "score_threshold": 0.5  # Minimum similarity score (0-1)
-            }
-        )
-        
+class EnhancedLangChainHandler:
+    def __init__(
+        self,
+        selected_language: str = 'en',
+        model_name: str = "command-r-plus-08-2024",
+        temperature: float = 0.3,
+        memory_window: int = 5,
+        max_tokens: int = 300
+    ):
+        self._setup_logging()
+        self._initialize_llm(model_name, temperature, max_tokens)
+        self._setup_retriever()
+        self._setup_memory(memory_window)
+        self._setup_chain()
         self.selected_language = selected_language
-        self.greetings = {
-            'en': "Hello! How can I help you?",
-            'fr': "Bonjour! Comment puis-je vous aider?",
-            'ar': "مرحبا! كيف يمكنني مساعدتك؟"
-        }
-        
-        prompt_template = """You are a friendly and professional AI Assistant for Fablab Orange digital center. 
-    You must ALWAYS respond in {language} language regardless of the content language.
-    Maintain a helpful and professional tone.
-    Be as brief as possible and avoid unnecessary details, remember its a conversation so short and direct answers are preferred to keep a conversation.
-    Don't provide the details unless asked for, ALWAYS be short and to the point.
 
-    Context: {context}
-    Chat History: {chat_history}
-    Question: {question}
+    def _setup_logging(self):
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(levelname)s - %(message)s',
+            filename='assistant_logs.log'
+        )
+        self.logger = logging.getLogger(__name__)
 
-    Answer:"""
-        
-        self.memory = ConversationBufferMemory(
+    def _initialize_llm(self, model_name: str, temperature: float, max_tokens: int):
+        try:
+            self.llm = ChatCohere(
+                cohere_api_key=os.getenv('COHERE_API_KEY'),
+                temperature=temperature,
+                max_tokens=max_tokens,
+                model=model_name,
+                callbacks=[StreamingStdOutCallbackHandler()]
+            )
+        except Exception as e:
+            self.logger.error(f"Failed to initialize LLM: {str(e)}")
+            raise
+
+    def _setup_retriever(self):
+        try:
+            base_retriever = DocumentProcessor.load_vector_store().as_retriever(
+                search_type="similarity_score_threshold",
+                search_kwargs={
+                    "k": 3,
+                    "score_threshold": 0.7,
+                    "fetch_k": 5
+                }
+            )
+            
+            self.retriever = TimeWeightedVectorStoreRetriever(
+                vectorstore=base_retriever.vectorstore,
+                decay_rate=0.95,
+                k=3
+            )
+        except Exception as e:
+            self.logger.error(f"Failed to setup retriever: {str(e)}")
+            raise
+
+    def _setup_memory(self, window_size: int):
+        self.memory = ConversationBufferWindowMemory(
             memory_key="chat_history",
             output_key="answer",
             return_messages=True,
-            input_key="question"
+            input_key="question",
+            k=window_size
         )
-        
-        self.chain = ConversationalRetrievalChain.from_llm(
-            llm=self.llm,
-            retriever=self.retriever,  # Use configured retriever
-            memory=self.memory,
-            combine_docs_chain_kwargs={
-                "prompt": PromptTemplate(
-                    template=prompt_template,
-                    input_variables=["context", "chat_history", "question"]
-                )
-            },
-            return_source_documents=True,
-            chain_type="stuff",
-            verbose=True
-        )
-        
-        self.clear_memory()  # Clear memory on initialization
 
-        self.basic_chat_patterns = {
-            'greetings': ['hey', 'hello', 'hi', 'bonjour', 'salam', 'mrhba'],
-            'farewells': ['bye', 'goodbye', 'au revoir', 'bslama']
-        }
+    def _setup_chain(self):
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", """You are a professional AI Assistant for Fablab Orange digital center.
+            Response Language: {language}
+            Tone: Professional and concise
+            Context: {context}
+            
+            Guidelines:
+            - Respond ONLY in the specified language
+            - Be direct and brief
+            - Provide specific examples when relevant
+            - If unsure, acknowledge limitations
+            - Include relevant technical details only when asked"""),
+            ("human", "{question}"),
+            ("assistant", "Let me help you with that.")
+        ])
 
-    @classmethod
-    def select_language(cls):
-        print("\nPlease select your preferred language:")
-        for key, lang in cls.SUPPORTED_LANGUAGES.items():
-            print(f"{key}. {lang['name']}")
-        
-        while True:
-            choice = input("Enter your choice (1-3): ").strip()
-            if choice in cls.SUPPORTED_LANGUAGES:
-                return cls.SUPPORTED_LANGUAGES[choice]['code']
-            print("Invalid choice, please try again.")
-
-    def clear_memory(self):
-        """Clear the conversation memory"""
-        if hasattr(self, 'memory'):
-            self.memory.clear()
-        if hasattr(self, 'chain'):
-            self.chain.memory.clear()
-
-    def detect_language(self, text):
         try:
-            lang = detect(text)
-            return lang
-        except:
-            return 'en'  # Default to English if detection fails
+            self.chain = ConversationalRetrievalChain.from_llm(
+                llm=self.llm,
+                retriever=self.retriever,
+                memory=self.memory,
+                combine_docs_chain_kwargs={"prompt": prompt},
+                return_source_documents=True,
+                verbose=True
+            )
+        except Exception as e:
+            self.logger.error(f"Failed to setup chain: {str(e)}")
+            raise
 
-    def is_basic_chat(self, text):
-        """Check if the input is a basic chat interaction"""
-        text = text.lower().strip()
-        return any(text in patterns for patterns in self.basic_chat_patterns.values())
-
-    def get_basic_response(self, text, lang):
-        """Handle basic chat interactions"""
-        if lang == 'fr':
-            return "Bonjour! Comment puis-je vous aider?"
-        elif lang in ['ar', 'ara']:
-            return "مرحبا! كيف يمكنني مساعدتك؟"
-        else:
-            return "Hello! How can I help you?"
-
-    def get_response(self, question, context=""):
+    async def get_response_async(
+        self,
+        question: str,
+        context: Optional[str] = ""
+    ) -> Dict:
         try:
-            # Add debug info about retrieved documents
-            response = self.chain.invoke({
+            self.logger.info(f"Processing question: {question[:100]}...")
+            
+            response = await self.chain.ainvoke({
                 "question": question,
                 "language": self.selected_language
             })
             
             sources = response.get("source_documents", [])
             
-            if self.chain.verbose:
-                print(f"\nRetrieved {len(sources)} relevant documents")
-                for i, doc in enumerate(sources, 1):
-                    print(f"Doc {i} score: {doc.metadata.get('score', 'N/A')}")
+            # Log retrieval metrics
+            self.logger.info(f"Retrieved {len(sources)} documents with scores: " + 
+                           ", ".join([f"{doc.metadata.get('score', 'N/A')}" for doc in sources]))
             
             return {
                 "answer": response.get("answer", "No answer generated"),
-                "sources": [doc.metadata.get('source', 'Unknown') for doc in sources]
+                "sources": [self._format_source(doc) for doc in sources],
+                "confidence": self._calculate_confidence(sources)
             }
+            
         except Exception as e:
-            print(f"Error getting response: {e}")
-            error_messages = {
-                'en': "Sorry, I encountered an error.",
-                'fr': "Désolé, j'ai rencontré une erreur.",
-                'ar': "عذراً، حدث خطأ ما."
-            }
-            return {"answer": error_messages.get(self.selected_language, error_messages['en']), "sources": []}
+            self.logger.error(f"Error in get_response: {str(e)}")
+            return self._get_error_response()
+
+    def _format_source(self, doc: Document) -> Dict:
+        return {
+            "source": doc.metadata.get('source', 'Unknown'),
+            "score": doc.metadata.get('score', 0),
+            "timestamp": doc.metadata.get('timestamp', datetime.now().isoformat())
+        }
+
+    def _calculate_confidence(self, sources: List[Document]) -> float:
+        if not sources:
+            return 0.0
+        scores = [doc.metadata.get('score', 0) for doc in sources]
+        return sum(scores) / len(scores) if scores else 0.0
+
+    def _get_error_response(self) -> Dict:
+        error_messages = {
+            'en': "I apologize, but I encountered an error processing your request.",
+            'fr': "Je suis désolé, mais j'ai rencontré une erreur lors du traitement de votre demande.",
+            'ar': "عذراً، واجهت مشكلة في معالجة طلبك."
+        }
+        return {
+            "answer": error_messages.get(self.selected_language, error_messages['en']),
+            "sources": [],
+            "confidence": 0.0
+        }
 
 if __name__ == "__main__":
     # Get language preference at startup
