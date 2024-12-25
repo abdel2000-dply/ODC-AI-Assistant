@@ -1,7 +1,8 @@
 from langchain_cohere import ChatCohere
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import PromptTemplate, ChatPromptTemplate
+from langchain.prompts import PromptTemplate, ChatPromptTemplate, MessagesPlaceholder
+from langchain.agents import AgentExecutor, RunnablePassthrough, OpenAIFunctionsAgentOutputParser
 from src.utils.document_processor import DocumentProcessor
 import os
 from dotenv import load_dotenv
@@ -41,40 +42,23 @@ class LangChainHandler:
             'ar': "مرحبا! كيف يمكنني مساعدتك؟"
         }
         
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", """You are a professional AI Assistant for Fablab Orange digital center.
-            Response Language: {language}
-            Tone: Professional and concise
-            Context: {context}
-            
-            Guidelines:
-            - Respond ONLY in the specified language
-            - Be direct and brief
-            - Provide specific examples when relevant
-            - If unsure, acknowledge limitations
-            - Include relevant technical details only when asked"""),
-            ("human", "{question}"),
-            ("assistant", "Let me help you with that.")
+        self.memory = ConversationBufferMemory(
+            return_messages=True,
+            memory_key="chat_history"
+        )
+        
+        self.prompt = ChatPromptTemplate.from_messages([
+            ("system", "You are a helpful but sassy assistant"),
+            MessagesPlaceholder(variable_name="chat_history"),
+            ("user", "{input}"),
+            MessagesPlaceholder(variable_name="agent_scratchpad")
         ])
         
-        self.memory = ConversationBufferMemory(
-            memory_key="chat_history",
-            output_key="answer",
-            return_messages=True,
-            input_key="question"
-        )
+        self.chain = RunnablePassthrough.assign(
+            agent_scratchpad=lambda x: format_to_openai_functions(x["intermediate_steps"])
+        ) | self.prompt | self.llm | OpenAIFunctionsAgentOutputParser()
         
-        self.chain = ConversationalRetrievalChain.from_llm(
-            llm=self.llm,
-            retriever=self.retriever,  # Use configured retriever
-            memory=self.memory,
-            combine_docs_chain_kwargs={
-                "prompt": prompt
-            },
-            return_source_documents=True,
-            chain_type="stuff",
-            verbose=True
-        )
+        self.qa = AgentExecutor(agent=self.chain, tools=[], verbose=False, memory=self.memory)
         
         self.clear_memory()  # Clear memory on initialization
 
@@ -119,10 +103,10 @@ class LangChainHandler:
     def get_response(self, question, context=""):
         try:
             # Add debug info about retrieved documents
-            response = self.chain.invoke({
-                "question": question,
+            response = self.qa.invoke({
+                "input": question,
                 "context": context
-                })
+            })
             
             sources = response.get("source_documents", [])
             
