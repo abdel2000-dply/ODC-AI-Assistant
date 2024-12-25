@@ -1,93 +1,46 @@
 from langchain_cohere import ChatCohere
 from langchain.chains import ConversationalRetrievalChain
-from langchain.memory import ConversationBufferWindowMemory
-from langchain.prompts import ChatPromptTemplate
-from langchain.callbacks import StreamingStdOutCallbackHandler
-from langchain.retrievers import TimeWeightedVectorStoreRetriever
-from langchain.schema import Document
-from typing import List, Dict, Optional
-import logging
-from datetime import datetime
+from langchain.memory import ConversationBufferMemory
+from langchain.prompts import PromptTemplate, ChatPromptTemplate
 from src.utils.document_processor import DocumentProcessor
 import os
 from dotenv import load_dotenv
-from langdetect import detect
 
-class EnhancedLangChainHandler:
+class LangChainHandler:
     SUPPORTED_LANGUAGES = {
         '1': {'code': 'en', 'name': 'English'},
         '2': {'code': 'fr', 'name': 'French'},
         '3': {'code': 'ar', 'name': 'Arabic/Darija'}
     }
 
-    def __init__(
-        self,
-        selected_language: str = 'en',
-        model_name: str = "command-r-plus-08-2024",
-        temperature: float = 0.3,
-        memory_window: int = 5,
-        max_tokens: int = 300
-    ):
+    def __init__(self, selected_language='en'):
         load_dotenv()
-        self._setup_logging()
-        self._initialize_llm(model_name, temperature, max_tokens)
-        self._setup_retriever()
-        self._setup_memory(memory_window)
-        self._setup_chain()
+        self.api_key = os.getenv('COHERE_API_KEY')
+        
+        self.llm = ChatCohere(
+            cohere_api_key=self.api_key,
+            temperature=0.3,
+            max_tokens=300,
+            model="command-r-plus-08-2024"
+        )
+        
+        # Configure retriever with specific parameters
+        self.vector_store = DocumentProcessor.load_vector_store()
+        self.retriever = self.vector_store.as_retriever(
+            search_type="similarity",
+            search_kwargs={
+                "k": 3,  # Number of documents to retrieve
+                "score_threshold": 0.5  # Minimum similarity score (0-1)
+            }
+        )
+        
         self.selected_language = selected_language
-
-    def _setup_logging(self):
-        logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s - %(levelname)s - %(message)s',
-            filename='assistant_logs.log'
-        )
-        self.logger = logging.getLogger(__name__)
-
-    def _initialize_llm(self, model_name: str, temperature: float, max_tokens: int):
-        try:
-            self.llm = ChatCohere(
-                cohere_api_key=os.getenv('COHERE_API_KEY'),
-                temperature=temperature,
-                max_tokens=max_tokens,
-                model=model_name,
-                callbacks=[StreamingStdOutCallbackHandler()]
-            )
-        except Exception as e:
-            self.logger.error(f"Failed to initialize LLM: {str(e)}")
-            raise
-
-    def _setup_retriever(self):
-        try:
-            base_retriever = DocumentProcessor.load_vector_store().as_retriever(
-                search_type="similarity_score_threshold",
-                search_kwargs={
-                    "k": 3,
-                    "score_threshold": 0.7,
-                    "fetch_k": 5
-                }
-            )
-            
-            self.retriever = TimeWeightedVectorStoreRetriever(
-                vectorstore=base_retriever.vectorstore,
-                decay_rate=0.95,
-                k=3,
-                relevance_score_fn=lambda score: max(0, min(1, score))  # Ensure scores are between 0 and 1
-            )
-        except Exception as e:
-            self.logger.error(f"Failed to setup retriever: {str(e)}")
-            raise
-
-    def _setup_memory(self, window_size: int):
-        self.memory = ConversationBufferWindowMemory(
-            memory_key="chat_history",
-            output_key="answer",
-            return_messages=True,
-            input_key="question",
-            k=window_size
-        )
-
-    def _setup_chain(self):
+        self.greetings = {
+            'en': "Hello! How can I help you?",
+            'fr': "Bonjour! Comment puis-je vous aider?",
+            'ar': "مرحبا! كيف يمكنني مساعدتك؟"
+        }
+        
         prompt = ChatPromptTemplate.from_messages([
             ("system", """You are a professional AI Assistant for Fablab Orange digital center.
             Response Language: {language}
@@ -103,72 +56,31 @@ class EnhancedLangChainHandler:
             ("human", "{question}"),
             ("assistant", "Let me help you with that.")
         ])
+        
+        self.memory = ConversationBufferMemory(
+            memory_key="chat_history",
+            output_key="answer",
+            return_messages=True,
+            input_key="question"
+        )
+        
+        self.chain = ConversationalRetrievalChain.from_llm(
+            llm=self.llm,
+            retriever=self.retriever,  # Use configured retriever
+            memory=self.memory,
+            combine_docs_chain_kwargs={
+                "prompt": prompt
+            },
+            return_source_documents=True,
+            chain_type="stuff",
+            verbose=True
+        )
+        
+        self.clear_memory()  # Clear memory on initialization
 
-        try:
-            self.chain = ConversationalRetrievalChain.from_llm(
-                llm=self.llm,
-                retriever=self.retriever,
-                memory=self.memory,
-                combine_docs_chain_kwargs={"prompt": prompt},
-                return_source_documents=True,
-                verbose=True
-            )
-        except Exception as e:
-            self.logger.error(f"Failed to setup chain: {str(e)}")
-            raise
-
-    async def get_response_async(
-        self,
-        question: str,
-        context: Optional[str] = ""
-    ) -> Dict:
-        try:
-            self.logger.info(f"Processing question: {question[:100]}...")
-            
-            response = await self.chain.ainvoke({
-                "question": question,
-                "language": self.selected_language
-            })
-            
-            sources = response.get("source_documents", [])
-            
-            # Log retrieval metrics
-            self.logger.info(f"Retrieved {len(sources)} documents with scores: " + 
-                           ", ".join([f"{doc.metadata.get('score', 'N/A')}" for doc in sources]))
-            
-            return {
-                "answer": response.get("answer", "No answer generated"),
-                "sources": [self._format_source(doc) for doc in sources],
-                "confidence": self._calculate_confidence(sources)
-            }
-            
-        except Exception as e:
-            self.logger.error(f"Error in get_response: {str(e)}")
-            return self._get_error_response()
-
-    def _format_source(self, doc: Document) -> Dict:
-        return {
-            "source": doc.metadata.get('source', 'Unknown'),
-            "score": doc.metadata.get('score', 0),
-            "timestamp": doc.metadata.get('timestamp', datetime.now().isoformat())
-        }
-
-    def _calculate_confidence(self, sources: List[Document]) -> float:
-        if not sources:
-            return 0.0
-        scores = [doc.metadata.get('score', 0) for doc in sources]
-        return sum(scores) / len(scores) if scores else 0.0
-
-    def _get_error_response(self) -> Dict:
-        error_messages = {
-            'en': "I apologize, but I encountered an error processing your request.",
-            'fr': "Je suis désolé, mais j'ai rencontré une erreur lors du traitement de votre demande.",
-            'ar': "عذراً، واجهت مشكلة في معالجة طلبك."
-        }
-        return {
-            "answer": error_messages.get(self.selected_language, error_messages['en']),
-            "sources": [],
-            "confidence": 0.0
+        self.basic_chat_patterns = {
+            'greetings': ['hey', 'hello', 'hi', 'bonjour', 'salam', 'mrhba'],
+            'farewells': ['bye', 'goodbye', 'au revoir', 'bslama']
         }
 
     @classmethod
@@ -190,13 +102,6 @@ class EnhancedLangChainHandler:
         if hasattr(self, 'chain'):
             self.chain.memory.clear()
 
-    def detect_language(self, text):
-        try:
-            lang = detect(text)
-            return lang
-        except:
-            return 'en'  # Default to English if detection fails
-
     def is_basic_chat(self, text):
         """Check if the input is a basic chat interaction"""
         text = text.lower().strip()
@@ -211,12 +116,38 @@ class EnhancedLangChainHandler:
         else:
             return "Hello! How can I help you?"
 
-if __name__ == "__main__":
-    import asyncio
+    def get_response(self, question, context=""):
+        try:
+            # Add debug info about retrieved documents
+            response = self.chain.invoke({
+                "question": question,
+                "context": context
+                })
+            
+            sources = response.get("source_documents", [])
+            
+            if self.chain.verbose:
+                print(f"\nRetrieved {len(sources)} relevant documents")
+                for i, doc in enumerate(sources, 1):
+                    print(f"Doc {i} score: {doc.metadata.get('score', 'N/A')}")
+            
+            return {
+                "answer": response.get("answer", "No answer generated"),
+                "sources": [doc.metadata.get('source', 'Unknown') for doc in sources]
+            }
+        except Exception as e:
+            print(f"Error getting response: {e}")
+            error_messages = {
+                'en': "Sorry, I encountered an error.",
+                'fr': "Désolé, j'ai rencontré une erreur.",
+                'ar': "عذراً، حدث خطأ ما."
+            }
+            return {"answer": error_messages.get(self.selected_language, error_messages['en']), "sources": []}
 
+if __name__ == "__main__":
     # Get language preference at startup
-    selected_language = EnhancedLangChainHandler.select_language()
-    handler = EnhancedLangChainHandler(selected_language)
+    selected_language = LangChainHandler.select_language()
+    handler = LangChainHandler(selected_language)
     
     welcome_messages = {
         'en': "\nODC AI Assistant (powered by LangChain)\nType 'quit', 'exit' to end or 'clear' to reset memory",
@@ -227,33 +158,30 @@ if __name__ == "__main__":
     print(welcome_messages.get(selected_language, welcome_messages['en']))
     print("-" * 50)
     
-    async def main():
-        while True:
-            try:
-                user_input = input("\nYou: ").strip()
-                if user_input.lower() in ['quit', 'exit']:
-                    print("Goodbye!")
-                    break
-                
-                if user_input.lower() == 'clear':
-                    handler.clear_memory()
-                    print("Memory cleared!")
-                    continue
-                
-                if not user_input:
-                    continue
-                    
-                response = await handler.get_response_async(user_input)
-                print("\nAssistant:", response['answer'])
-                if response['sources']:
-                    print("\nSources:", ", ".join(response['sources']))
-                print("-" * 50)
-                
-            except KeyboardInterrupt:
-                print("\nGoodbye!")
+    while True:
+        try:
+            user_input = input("\nYou: ").strip()
+            if user_input.lower() in ['quit', 'exit']:
+                print("Goodbye!")
                 break
-            except Exception as e:
-                print(f"\nError: {e}")
-                print("Let's continue our conversation...")
-
-    asyncio.run(main())
+            
+            if user_input.lower() == 'clear':
+                handler.clear_memory()
+                print("Memory cleared!")
+                continue
+            
+            if not user_input:
+                continue
+                
+            response = handler.get_response(user_input)
+            print("\nAssistant:", response['answer'])
+            if response['sources']:
+                print("\nSources:", ", ".join(response['sources']))
+            print("-" * 50)
+            
+        except KeyboardInterrupt:
+            print("\nGoodbye!")
+            break
+        except Exception as e:
+            print(f"\nError: {e}")
+            print("Let's continue our conversation...")
