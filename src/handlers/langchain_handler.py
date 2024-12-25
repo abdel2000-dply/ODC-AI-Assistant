@@ -4,13 +4,22 @@ from langchain.memory import ConversationBufferWindowMemory
 from langchain.prompts import ChatPromptTemplate
 from langchain.callbacks import StreamingStdOutCallbackHandler
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
-from src.utils.document_processor import DocumentProcessor
 from langchain.schema import Document
 from typing import List, Dict, Optional
 import logging
 from datetime import datetime
+from src.utils.document_processor import DocumentProcessor
+import os
+from dotenv import load_dotenv
+from langdetect import detect
 
 class EnhancedLangChainHandler:
+    SUPPORTED_LANGUAGES = {
+        '1': {'code': 'en', 'name': 'English'},
+        '2': {'code': 'fr', 'name': 'French'},
+        '3': {'code': 'ar', 'name': 'Arabic/Darija'}
+    }
+
     def __init__(
         self,
         selected_language: str = 'en',
@@ -19,6 +28,7 @@ class EnhancedLangChainHandler:
         memory_window: int = 5,
         max_tokens: int = 300
     ):
+        load_dotenv()
         self._setup_logging()
         self._initialize_llm(model_name, temperature, max_tokens)
         self._setup_retriever()
@@ -160,14 +170,54 @@ class EnhancedLangChainHandler:
             "confidence": 0.0
         }
 
+    @classmethod
+    def select_language(cls):
+        print("\nPlease select your preferred language:")
+        for key, lang in cls.SUPPORTED_LANGUAGES.items():
+            print(f"{key}. {lang['name']}")
+        
+        while True:
+            choice = input("Enter your choice (1-3): ").strip()
+            if choice in cls.SUPPORTED_LANGUAGES:
+                return cls.SUPPORTED_LANGUAGES[choice]['code']
+            print("Invalid choice, please try again.")
+
+    def clear_memory(self):
+        """Clear the conversation memory"""
+        if hasattr(self, 'memory'):
+            self.memory.clear()
+        if hasattr(self, 'chain'):
+            self.chain.memory.clear()
+
+    def detect_language(self, text):
+        try:
+            lang = detect(text)
+            return lang
+        except:
+            return 'en'  # Default to English if detection fails
+
+    def is_basic_chat(self, text):
+        """Check if the input is a basic chat interaction"""
+        text = text.lower().strip()
+        return any(text in patterns for patterns in self.basic_chat_patterns.values())
+
+    def get_basic_response(self, text, lang):
+        """Handle basic chat interactions"""
+        if lang == 'fr':
+            return "Bonjour! Comment puis-je vous aider?"
+        elif lang in ['ar', 'ara']:
+            return "مرحبا! كيف يمكنني مساعدتك؟"
+        else:
+            return "Hello! How can I help you?"
+
 if __name__ == "__main__":
     # Get language preference at startup
     selected_language = EnhancedLangChainHandler.select_language()
     handler = EnhancedLangChainHandler(selected_language)
     
     welcome_messages = {
-        'en': "\nODC AI Assistant (Enhanced RAG)\nType 'quit', 'exit' to end or 'clear' to reset memory",
-        'fr': "\nAssistant IA ODC (RAG Amélioré)\nTapez 'quit', 'exit' pour terminer ou 'clear' pour réinitialiser",
+        'en': "\nODC AI Assistant (powered by LangChain)\nType 'quit', 'exit' to end or 'clear' to reset memory",
+        'fr': "\nAssistant IA ODC (propulsé par LangChain)\nTapez 'quit', 'exit' pour terminer ou 'clear' pour réinitialiser",
         'ar': "\nمساعد ODC الذكي\nاكتب 'quit' أو 'exit' للخروج أو 'clear' لمسح المحادثة"
     }
     
@@ -182,25 +232,17 @@ if __name__ == "__main__":
                 break
             
             if user_input.lower() == 'clear':
-                handler.memory.clear()
+                handler.clear_memory()
                 print("Memory cleared!")
                 continue
             
             if not user_input:
                 continue
-            
-            # Use the async method in a synchronous way
-            import asyncio
-            response = asyncio.run(handler.get_response_async(user_input))
-            
+                
+            response = handler.get_response_async(user_input)
             print("\nAssistant:", response['answer'])
-            
-            # Print sources with confidence scores
             if response['sources']:
-                print("\nSources:")
-                for source in response['sources']:
-                    print(f"- {source['source']} (Confidence: {source['score']:.2f})")
-            
+                print("\nSources:", ", ".join(response['sources']))
             print("-" * 50)
             
         except KeyboardInterrupt:
