@@ -1,7 +1,7 @@
-from langchain_cohere import ChatCohere
+from langchain_cohere import ChatCohere, ChatPromptTemplate
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import ChatPromptTemplate
+from langchain.prompts import PromptTemplate
 from src.utils.document_processor import DocumentProcessor
 import os
 from dotenv import load_dotenv
@@ -24,15 +24,7 @@ class LangChainHandler:
             model="command-r-plus-08-2024"
         )
         
-        # Configure retriever with specific parameters
         self.vector_store = DocumentProcessor.load_vector_store()
-        self.retriever = self.vector_store.as_retriever(
-            search_type="similarity",
-            search_kwargs={
-                "k": 3,  # Number of documents to retrieve
-                "score_threshold": 0.5  # Minimum similarity score (0-1)
-            }
-        )
         
         self.selected_language = selected_language
         self.greetings = {
@@ -41,24 +33,21 @@ class LangChainHandler:
             'ar': "مرحبا! كيف يمكنني مساعدتك؟"
         }
         
-        prompt = ChatPromptTemplate.from_messages(
-            messages=[
-                ("system", """You are a professional AI Assistant for Fablab Orange digital center.
-                Response Language: {language}
-                Tone: Professional and concise
-                Context: {context}
-                
-                Guidelines:
-                - Respond ONLY in the specified language
-                - Be direct and brief
-                - Provide specific examples when relevant
-                - If unsure, acknowledge limitations
-                - Include relevant technical details only when asked"""),
-                ("human", "{question}"),
-                ("assistant", "Let me help you with that.")
-            ],
-            input_variables=["context", "chat_history", "question", "language"]
-        )
+        prompt_template = ChatPromptTemplate.from_messages([
+            ("system", """You are a professional AI Assistant for Fablab Orange digital center.
+            Response Language: {language}
+            Tone: Professional and concise
+            Context: {context}
+            
+            Guidelines:
+            - Respond ONLY in the specified language
+            - Be direct and brief
+            - Provide specific examples when relevant
+            - If unsure, acknowledge limitations
+            - Include relevant technical details only when asked"""),
+            ("human", "{question}"),
+            ("assistant", "Let me help you with that.")
+        ])
         
         self.memory = ConversationBufferMemory(
             memory_key="chat_history",
@@ -69,10 +58,13 @@ class LangChainHandler:
         
         self.chain = ConversationalRetrievalChain.from_llm(
             llm=self.llm,
-            retriever=self.retriever,  # Use configured retriever
+            retriever=self.vector_store.as_retriever(),
             memory=self.memory,
             combine_docs_chain_kwargs={
-                "prompt": prompt
+                "prompt": PromptTemplate(
+                    template=prompt_template,
+                    input_variables=["context", "chat_history", "question"]
+                )
             },
             return_source_documents=True,
             chain_type="stuff",
@@ -121,23 +113,15 @@ class LangChainHandler:
 
     def get_response(self, question, context=""):
         try:
-            # Add debug info about retrieved documents
             response = self.chain.invoke({
                 "question": question,
-                "context": context,
                 "language": self.selected_language
-                })
-            
-            sources = response.get("source_documents", [])
-            
-            if self.chain.verbose:
-                print(f"\nRetrieved {len(sources)} relevant documents")
-                for i, doc in enumerate(sources, 1):
-                    print(f"Doc {i} score: {doc.metadata.get('score', 'N/A')}")
+            })
             
             return {
                 "answer": response.get("answer", "No answer generated"),
-                "sources": [doc.metadata.get('source', 'Unknown') for doc in sources]
+                "sources": [doc.metadata.get('source', 'Unknown') 
+                          for doc in response.get("source_documents", [])]
             }
         except Exception as e:
             print(f"Error getting response: {e}")
