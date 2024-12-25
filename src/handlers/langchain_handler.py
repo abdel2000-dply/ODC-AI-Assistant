@@ -133,7 +133,9 @@ class LangChainHandler:
 
     def get_response(self, question, context=""):
         try:
-            standalone_question = self.rephrase_to_standalone(question, self.memory.chat_history)
+            memory_variables = self.memory.load_memory_variables({})
+            chat_history = memory_variables.get("chat_history", "")
+            standalone_question = self.rephrase_to_standalone(question, chat_history)
             response = self.chain.invoke({
                 "question": standalone_question,
                 "language": self.selected_language
