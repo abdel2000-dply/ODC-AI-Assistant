@@ -114,12 +114,11 @@ class EventScraper:
             event_divs = self.get_event_list()
             total_events = len(event_divs)
             print(f"Found {total_events} upcoming events")
-            events = []
 
             # Process each event by index
             for index in range(total_events):
                 try:
-                    # Get fresh list and current event
+                    # Refresh the event list before processing each event
                     event_divs = self.get_event_list()
                     if index >= len(event_divs):
                         print(f"Event index {index} out of range")
