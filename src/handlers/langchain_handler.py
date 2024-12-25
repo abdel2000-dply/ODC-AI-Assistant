@@ -211,6 +211,8 @@ class EnhancedLangChainHandler:
             return "Hello! How can I help you?"
 
 if __name__ == "__main__":
+    import asyncio
+
     # Get language preference at startup
     selected_language = EnhancedLangChainHandler.select_language()
     handler = EnhancedLangChainHandler(selected_language)
@@ -224,30 +226,33 @@ if __name__ == "__main__":
     print(welcome_messages.get(selected_language, welcome_messages['en']))
     print("-" * 50)
     
-    while True:
-        try:
-            user_input = input("\nYou: ").strip()
-            if user_input.lower() in ['quit', 'exit']:
-                print("Goodbye!")
-                break
-            
-            if user_input.lower() == 'clear':
-                handler.clear_memory()
-                print("Memory cleared!")
-                continue
-            
-            if not user_input:
-                continue
+    async def main():
+        while True:
+            try:
+                user_input = input("\nYou: ").strip()
+                if user_input.lower() in ['quit', 'exit']:
+                    print("Goodbye!")
+                    break
                 
-            response = handler.get_response_async(user_input)
-            print("\nAssistant:", response['answer'])
-            if response['sources']:
-                print("\nSources:", ", ".join(response['sources']))
-            print("-" * 50)
-            
-        except KeyboardInterrupt:
-            print("\nGoodbye!")
-            break
-        except Exception as e:
-            print(f"\nError: {e}")
-            print("Let's continue our conversation...")
+                if user_input.lower() == 'clear':
+                    handler.clear_memory()
+                    print("Memory cleared!")
+                    continue
+                
+                if not user_input:
+                    continue
+                    
+                response = await handler.get_response_async(user_input)
+                print("\nAssistant:", response['answer'])
+                if response['sources']:
+                    print("\nSources:", ", ".join(response['sources']))
+                print("-" * 50)
+                
+            except KeyboardInterrupt:
+                print("\nGoodbye!")
+                break
+            except Exception as e:
+                print(f"\nError: {e}")
+                print("Let's continue our conversation...")
+
+    asyncio.run(main())
