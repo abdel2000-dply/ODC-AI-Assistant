@@ -71,7 +71,8 @@ class EnhancedLangChainHandler:
             self.retriever = TimeWeightedVectorStoreRetriever(
                 vectorstore=base_retriever.vectorstore,
                 decay_rate=0.95,
-                k=3
+                k=3,
+                relevance_score_fn=lambda score: max(0, min(1, score))  # Ensure scores are between 0 and 1
             )
         except Exception as e:
             self.logger.error(f"Failed to setup retriever: {str(e)}")
