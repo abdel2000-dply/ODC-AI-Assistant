@@ -50,6 +50,7 @@ class LangChainHandler:
         - If unsure, acknowledge limitations
         - Include relevant technical details only when asked
         - Ignore irrelevant context from the chat history
+        - Respond in the selected language regardless of the context language
 
         Context: {context}
         Chat History: {chat_history}
