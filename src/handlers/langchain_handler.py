@@ -36,7 +36,7 @@ class LangChainHandler:
         prompt_template = """You are a friendly and professional AI Assistant for Fablab Orange digital center. 
         You must ALWAYS respond in {language} language regardless of the content language.
         Maintain a helpful and professional tone.
-        be as brief as possible and avoid unnecessary details, remember its a conversation so short and direct answers are preferred to keep a conversation.
+        Be as brief as possible and avoid unnecessary details, remember it's a conversation so short and direct answers are preferred to keep a conversation.
 
         Guidelines:
         - Respond ONLY in the specified language
@@ -44,6 +44,7 @@ class LangChainHandler:
         - Provide specific examples when relevant
         - If unsure, acknowledge limitations
         - Include relevant technical details only when asked
+        - Ignore irrelevant context from the chat history
 
         Context: {context}
         Chat History: {chat_history}
@@ -113,10 +114,28 @@ class LangChainHandler:
         else:
             return "Hello! How can I help you?"
 
+    def rephrase_to_standalone(self, follow_up_question, chat_history):
+        """Rephrase the follow-up question to be a standalone question"""
+        try:
+            rephrase_prompt = f"""Given the following conversation and a follow-up question, rephrase the follow-up question to be a standalone question, in its original language.
+
+            Chat History:
+            {chat_history}
+
+            Follow Up Input: {follow_up_question}
+            Standalone question:"""
+            
+            response = self.llm.generate(rephrase_prompt)
+            return response['choices'][0]['text'].strip()
+        except Exception as e:
+            print(f"Error rephrasing question: {e}")
+            return follow_up_question
+
     def get_response(self, question, context=""):
         try:
+            standalone_question = self.rephrase_to_standalone(question, self.memory.chat_history)
             response = self.chain.invoke({
-                "question": question,
+                "question": standalone_question,
                 "language": self.selected_language
             })
             
