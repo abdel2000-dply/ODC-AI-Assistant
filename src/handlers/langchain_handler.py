@@ -1,7 +1,7 @@
-from langchain_cohere import ChatCohere, ChatPromptTemplate
+from langchain_cohere import ChatCohere
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import PromptTemplate
+from langchain.prompts import PromptTemplate, ChatPromptTemplate
 from src.utils.document_processor import DocumentProcessor
 import os
 from dotenv import load_dotenv
