@@ -88,7 +88,7 @@ class EventScraper:
         """Save default content when scraping fails"""
         print("Saving default events content...")
         with open(self.events_file, 'w', encoding='utf-8') as f:
-            f.write("Please visit https://www.orangedigitalcenters.com/country/ma/events for the latest events.\n")
+            f.write("I'm sorry I couldn't access that information now due to some technical issues. Please ask a manager or visit https://www.orangedigitalcenters.com/country/ma/events for the latest events.\n")
         print(f"Default content saved to {self.events_file}")
 
     def scrape_events(self):
