@@ -41,21 +41,24 @@ class LangChainHandler:
             'ar': "مرحبا! كيف يمكنني مساعدتك؟"
         }
         
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", """You are a professional AI Assistant for Fablab Orange digital center.
-            Response Language: {language}
-            Tone: Professional and concise
-            Context: {context}
-            
-            Guidelines:
-            - Respond ONLY in the specified language
-            - Be direct and brief
-            - Provide specific examples when relevant
-            - If unsure, acknowledge limitations
-            - Include relevant technical details only when asked"""),
-            ("human", "{question}"),
-            ("assistant", "Let me help you with that.")
-        ])
+        prompt = ChatPromptTemplate.from_messages(
+            messages=[
+                ("system", """You are a professional AI Assistant for Fablab Orange digital center.
+                Response Language: {language}
+                Tone: Professional and concise
+                Context: {context}
+                
+                Guidelines:
+                - Respond ONLY in the specified language
+                - Be direct and brief
+                - Provide specific examples when relevant
+                - If unsure, acknowledge limitations
+                - Include relevant technical details only when asked"""),
+                ("human", "{question}"),
+                ("assistant", "Let me help you with that.")
+            ],
+            input_variables=["context", "chat_history", "question", "language"]
+        )
         
         self.memory = ConversationBufferMemory(
             memory_key="chat_history",
@@ -69,8 +72,7 @@ class LangChainHandler:
             retriever=self.retriever,  # Use configured retriever
             memory=self.memory,
             combine_docs_chain_kwargs={
-                "prompt": prompt,
-                "input_variables": ["context", "chat_history", "question", "language"]
+                "prompt": prompt
             },
             return_source_documents=True,
             chain_type="stuff",
