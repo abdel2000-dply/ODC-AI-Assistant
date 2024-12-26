@@ -6,6 +6,13 @@ import pyaudio
 client = Groq()
 
 def record_audio_to_file(file_name):
+    import speech_recognition as sr
+
+    for index, name in enumerate(sr.Microphone.list_microphone_names()):
+        print(f"Device Index {index}: {name}")
+
+
+
     import wave
     p = pyaudio.PyAudio()
 
