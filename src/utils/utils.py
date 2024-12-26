@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+groq_api_key = os.getenv('GROQ_API_KEY') 
+
 def recognize_speech_from_mic(device_index=3):
     recognizer = sr.Recognizer()
     with sr.Microphone(device_index=device_index) as source:
@@ -62,7 +64,7 @@ async def speak(text, lang='en'):
             os.remove(output_file)
 
 # Initialize the Groq client
-client = Groq(api_key=os.getenv["GROQ_API_KEY"])
+client = Groq(api_key=groq_api_key)
 
 def record_audio_to_file(file_name="live_audio.wav"):
     """Records audio from the microphone and saves it to a WAV file."""
