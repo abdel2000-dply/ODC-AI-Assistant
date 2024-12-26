@@ -7,66 +7,26 @@ import edge_tts
 import asyncio
 from langdetect import detect
 from dotenv import load_dotenv
-import time
 
 load_dotenv()
 
 groq_api_key = os.getenv('GROQ_API_KEY') 
 
-def recognize_speech_from_mic():
-    """
-    Recognizes speech using the default microphone and Google Speech Recognition,
-    with user-selected device and language detection.
-    Returns:
-        str: The recognized text, or None if an error occurred.
-    """
+def recognize_speech_from_mic(device_index=3):
+    recognizer = sr.Recognizer()
+    try:
+        with sr.Microphone(device_index=device_index) as source:  # Use specific device index
+            print("Please say something:")
+            recognizer.adjust_for_ambient_noise(source, duration=1)
+            audio = recognizer.listen(source, timeout=10)
+    except OSError as e:
+        print(f"Could not access the microphone (device index {device_index}): {e}")
+        return None
 
     try:
-        # Create a PyAudio instance
-        p = pyaudio.PyAudio()
-
-        # List available input devices
-        print("Available Input Devices:")
-        info = p.get_host_api_info_by_index(0)
-        numdevices = info.get('deviceCount')
-        input_devices = []
-        for i in range(numdevices):
-            if p.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels') > 0:
-                device_name = p.get_device_info_by_host_api_device_index(0, i).get('name')
-                print(f"  ID {i}: {device_name}")
-                input_devices.append(i)
-
-        if not input_devices:
-            print("No input devices found. Please ensure a microphone is connected.")
-            return None
-
-        # User Select Device
-        while True:
-            try:
-                device_index = int(input("Enter the ID of the microphone you want to use: "))
-                if device_index in input_devices:
-                     break
-                else:
-                     print("Invalid device ID. Please choose from the list above.")
-            except ValueError:
-                print("Invalid input. Please enter a number.")
-
-        # Create a speech recognition object
-        recognizer = sr.Recognizer()
-
-        # Use PyAudio to create an audio source
-        with sr.Microphone(device_index=device_index) as source:
-            print("Please wait, adjusting for ambient noise...")
-            recognizer.adjust_for_ambient_noise(source, duration=2)
-            print("Ready, please speak into the microphone...")
-            start_time = time.time()
-            audio = recognizer.listen(source, timeout=10)
-            end_time = time.time()
-            print(f"Speech captured in {end_time-start_time:.2f} seconds")
-
         # Recognize speech using Google's speech recognition
         text = recognizer.recognize_google(audio)
-        print("Initial recognition: " + text)
+        print("You said: " + text)
 
         # Detect the language of the recognized text
         detected_lang = detect(text)
@@ -85,21 +45,17 @@ def recognize_speech_from_mic():
         print(f"You said (in {language}): " + text)
         return text
 
-    except sr.RequestError as e:
-        print(f"Google Speech Recognition API unavailable. Request Error: {e}")
+    except sr.RequestError:
+        # API was unreachable or unresponsive
+        print("API unavailable")
         return None
-    except sr.UnknownValueError as e:
-        print(f"Google Speech Recognition could not understand audio. Unknown value error: {e}")
+    except sr.UnknownValueError:
+        # Speech was unintelligible
+        print("Unable to recognize speech")
         return None
-    except ValueError as e:
-      print(f"Value Error: {e}. Check if the audio index you provided is valid.")
-      return None
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        print(f"An error occurred: {e}")
         return None
-    finally:
-        if 'p' in locals() and isinstance(p, pyaudio.PyAudio):
-            p.terminate()
 
 async def speak(text, lang='en'):
     """ Generate speech from text using edge-tts and play using mpv """
