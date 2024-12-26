@@ -7,7 +7,7 @@ import edge_tts
 import asyncio
 from langdetect import detect
 
-def recognize_speech_from_mic(device_index=2):
+def recognize_speech_from_mic(device_index=3):
     recognizer = sr.Recognizer()
     with sr.Microphone(device_index=device_index) as source:
         print("Please say something:")
