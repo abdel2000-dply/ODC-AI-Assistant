@@ -5,14 +5,13 @@ import pyaudio
 from groq import Groq
 import edge_tts
 import asyncio
-from langdetect import detect
 from dotenv import load_dotenv
 
 load_dotenv()
 
 groq_api_key = os.getenv('GROQ_API_KEY') 
 
-def recognize_speech_from_mic(device_index=3):
+def recognize_speech_from_mic(language='en-US', device_index=3):
     recognizer = sr.Recognizer()
     try:
         with sr.Microphone(device_index=device_index) as source:  # Use specific device index
@@ -27,18 +26,6 @@ def recognize_speech_from_mic(device_index=3):
         # Recognize speech using Google's speech recognition
         text = recognizer.recognize_google(audio)
         print("You said: " + text)
-
-        # Detect the language of the recognized text
-        detected_lang = detect(text)
-        print(f"Detected language: {detected_lang}")
-
-        # Map detected language to Google Speech API language codes
-        lang_map = {
-            'en': 'en-US',
-            'fr': 'fr-FR',
-            'ar': 'ar-MA'  # Arabic (Morocco)
-        }
-        language = lang_map.get(detected_lang, 'en-US')
 
         # Recognize speech again with the detected language
         text = recognizer.recognize_google(audio, language=language)
@@ -114,12 +101,13 @@ def record_audio_to_file(file_name="live_audio.wav"):
     wf.writeframes(b''.join(frames))
     wf.close()
 
-def transcribe_audio_with_groq(audio_file="live_audio.wav"):
+def transcribe_audio_with_groq(audio_file="live_audio.wav", language="en"):
     """Transcribes audio using Groq API."""
     with open(audio_file, "rb") as file:
         transcription = client.audio.transcriptions.create(
             file=(audio_file, file.read()),
             model="whisper-large-v3-turbo",  # Specify the model
+            language=language,  # Specify the language
             response_format="text"          # Use "text" for a simple string response
         )
     return transcription  # Returns the plain transcription text
