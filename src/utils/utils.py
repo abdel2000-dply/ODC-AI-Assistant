@@ -7,24 +7,22 @@ import edge_tts
 import asyncio
 from langdetect import detect
 
-def recognize_speech_from_mic():
-    """Recognize speech using default system microphone"""
+def recognize_speech_from_mic(device_index=3):
     recognizer = sr.Recognizer()
-    
-    try:
-        # Use default microphone
-        with sr.Microphone() as source:
-            print("Please say something:")
-            recognizer.adjust_for_ambient_noise(source, duration=1)
-            audio = recognizer.listen(source)
+    with sr.Microphone(device_index=device_index) as source:
+        print("Please say something:")
+        recognizer.adjust_for_ambient_noise(source, duration=1)
+        audio = recognizer.listen(source)
 
+    try:
         text = recognizer.recognize_google(audio)
         print("You said: " + text)
 
-        # Detect language
+        # Detect the language of the recognized text
         detected_lang = detect(text)
         print(f"Detected language: {detected_lang}")
 
+        # Map detected language to Google Speech API language codes
         lang_map = {
             'en': 'en-US',
             'fr': 'fr-FR',
