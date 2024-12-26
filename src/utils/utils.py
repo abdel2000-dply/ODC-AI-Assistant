@@ -13,17 +13,36 @@ load_dotenv()
 groq_api_key = os.getenv('GROQ_API_KEY') 
 
 def recognize_speech_from_mic():
-    recognizer = sr.Recognizer()
+    """
+    Recognizes speech using the default microphone and Google Speech Recognition.
+
+    Returns:
+        str: The recognized text, or None if an error occurred.
+    """
+
     try:
-        with sr.Microphone(device_index=None) as source:  # Use default PulseAudio device
+        # Create a PyAudio instance
+        p = pyaudio.PyAudio()
+
+        # Get a list of available input devices
+        info = p.get_host_api_info_by_index(0)
+        numdevices = info.get('deviceCount')
+        for i in range(0, numdevices):
+            if (p.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels')):
+                print("Input Device id ", i, " - ", p.get_device_info_by_host_api_device_index(0, i).get('name'))
+
+        # Choose the desired device index (replace with the actual index)
+        device_index = 3  # Replace with the index of your microphone
+
+        # Create a speech recognition object
+        recognizer = sr.Recognizer()
+
+        # Use PyAudio to create an audio source
+        with sr.Microphone(device_index=device_index) as source:
             print("Please say something:")
             recognizer.adjust_for_ambient_noise(source, duration=1)
             audio = recognizer.listen(source, timeout=10)
-    except OSError as e:
-        print(f"Could not access the microphone: {e}")
-        return None
 
-    try:
         # Recognize speech using Google's speech recognition
         text = recognizer.recognize_google(audio)
         print("You said: " + text)
@@ -46,11 +65,9 @@ def recognize_speech_from_mic():
         return text
 
     except sr.RequestError:
-        # API was unreachable or unresponsive
         print("API unavailable")
         return None
     except sr.UnknownValueError:
-        # Speech was unintelligible
         print("Unable to recognize speech")
         return None
     except Exception as e:
