@@ -1,10 +1,13 @@
 import speech_recognition as sr
 import os
+import wave
+import pyaudio
+from groq import Groq
 import edge_tts
 import asyncio
 from langdetect import detect
 
-def recognize_speech_from_mic(device_index=3):
+def recognize_speech_from_mic(device_index=2):
     recognizer = sr.Recognizer()
     with sr.Microphone(device_index=device_index) as source:
         print("Please say something:")
@@ -57,3 +60,54 @@ async def speak(text, lang='en'):
         # Ensure temporary file is removed even if exceptions occur
         if os.path.exists(output_file):
             os.remove(output_file)
+
+
+
+
+
+# Initialize the Groq client
+client = Groq()
+
+def record_audio_to_file(file_name="live_audio.wav"):
+    """Records audio from the microphone and saves it to a WAV file."""
+    p = pyaudio.PyAudio()
+
+    # Open a stream for recording
+    stream = p.open(format=pyaudio.paInt16,
+                    channels=1,
+                    rate=16000,
+                    input=True,
+                    frames_per_buffer=1024)
+
+    print("Recording... Speak into the microphone.")
+    frames = []
+
+    try:
+        for _ in range(0, int(16000 / 1024 * 5)):  # Record for 5 seconds
+            data = stream.read(1024)
+            frames.append(data)
+    except KeyboardInterrupt:
+        pass
+
+    print("Recording stopped.")
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
+
+    # Save the audio to file
+    wf = wave.open(file_name, 'wb')
+    wf.setnchannels(1)
+    wf.setsampwidth(p.get_sample_size(pyaudio.paInt16))
+    wf.setframerate(16000)
+    wf.writeframes(b''.join(frames))
+    wf.close()
+
+def transcribe_audio_with_groq(audio_file="live_audio.wav"):
+    """Transcribes audio using Groq API."""
+    with open(audio_file, "rb") as file:
+        transcription = client.audio.transcriptions.create(
+            file=(audio_file, file.read()),
+            model="whisper-large-v3-turbo",  # Specify the model
+            response_format="text"          # Use "text" for a simple string response
+        )
+    return transcription  # Returns the plain transcription text
