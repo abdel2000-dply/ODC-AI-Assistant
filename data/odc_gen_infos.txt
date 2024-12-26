@@ -1,0 +1,141 @@
+## **General Overview**
+
+Orange Digital Center is a fully integrated ecosystem offering cutting-edge technological programs and tools to empower individuals, startups, and young talents. It focuses on **skills development**, **innovation**, and **entrepreneurship** while fostering community engagement. Orange Digital Center acts as a catalyst for job creation, technical upskilling, and impactful projects across multiple sectors.
+
+---
+
+### **Programs and Impact**
+
+### **1. Coding School**
+
+**Description:**
+
+The Coding School is a **freely accessible**, **free-of-charge** technological center designed to empower a community of young developers, innovators, and project enthusiasts. It targets students, young graduates, and aspiring entrepreneurs.
+
+**Key Highlights:**
+
+- **Community:** **24,000+**Number of students and professionals trained or who attended events on new technologies.
+- **Employment Rate:** **95% (per year)**Percentage of trainees who secured jobs after completing their internships at Orange Digital Center.
+- **Events:** **540+** events organized to help the community stay updated with emerging trends in technology.
+
+**What It Offers:**
+
+- Hands-on training in coding languages and software development.
+- Workshops and hackathons to boost practical skills.
+- Networking opportunities with industry professionals.
+
+---
+
+### **2. FabLab Solidaires**
+
+**Description:**
+
+The Solidarity FabLab is a **freely accessible**, **free-of-charge digital production workshop** where participants can learn to create and prototype using advanced tools like **3D printers, milling machines, and laser cutters**. The FabLab supports individuals ranging from unemployed youth to students, graduates, and aspiring entrepreneurs.
+
+**Key Highlights:**
+
+- **Community:** **15,000+**Number of young people trained or who developed prototypes at FabLabs Solidaires.
+- **Prototypes Produced:** **1,000+**Prototypes and projects successfully created across the FabLabs Solidaires network.
+- **Events:** **370+**Events and workshops organized to introduce participants to digital manufacturing.
+
+**What It Offers:**
+
+- Access to high-end digital fabrication tools.
+- Training sessions on prototyping, 3D modeling, and manufacturing techniques.
+- Support for transforming ideas into real-world products.
+
+---
+
+### **3. Orange Fab**
+
+**Description:**
+
+Orange Fab is a **startup accelerator** designed to forge national and international business partnerships with the Orange Group and the global Orange Fab network. It focuses on enhancing managerial capabilities and accelerating the commercial development of promising startups.
+
+**Key Highlights:**
+
+- **Orange Fabs Network:** **18** Orange Fab centers spread across 4 continents.
+- **Startups Accelerated:** **30+**Startups that received comprehensive support and resources.
+- **Mentoring Hours:** **1,000+**Hours dedicated to mentoring sessions for accelerated startups.
+
+**What It Offers:**
+
+- Access to expert mentorship and tailored coaching.
+- Networking opportunities with industry leaders and investors.
+- Business acceleration and pathways to global markets.
+
+---
+
+### **Why Choose Orange Digital Center?**
+
+1. **Empowering Communities**: From coding skills to prototyping tools, we create inclusive learning environments.
+2. **Fostering Innovation**: Cutting-edge technology and expert guidance to turn ideas into reality.
+3. **Driving Entrepreneurship**: Accelerating startups and equipping individuals with skills for tomorrow’s market.
+4. **Strong Global Network**: Direct access to mentors, investors, and Orange’s extensive international ecosystem.
+
+---
+
+### **Location and Accessibility**
+
+- **Physical Address**:
+    - **FabLab**: Located at Technopark Tilila, Agadir, on the **Lower Ground Floor (-1)**.
+    - **Coding School**: Situated on the **4th floor** of the same building.
+- **Operating Hours**:
+    - **Monday to Friday**: 9:00 AM to 6:00 PM.
+- **Access Requirements**:
+    - **Who Can Access?**: Open to the **public**, including students, professionals, startups, and enthusiasts (Everyone).
+    - **Reservations or Memberships**: No reservations or memberships are required.
+    - **Entry Process**: Simply visit the location and seek permission from the **responsible staff**.
+    - **Cost**: All services and access are **completely free of charge**.
+
+---
+
+### **Available Equipment**:
+
+The FabLab offers a wide range of materials including microcontrollers like Arduino and Raspberry Pi, various sensors (e.g., temperature, motion, GPS), hand and power tools, 3D printers, CNC machines, and UV printers. It also provides robotics kits, actuators (motors, servos, LEDs), components (resistors, capacitors, transistors), and consumables such as 3D printing filament and PCBs. Additionally, there are power supplies, batteries, communication modules (WiFi, Bluetooth, GSM), and accessories like Raspberry Pi cases, SD cards, and VR headsets.
+
+---
+
+### **Programs and Activities**
+
+At the FabLab, we offer a variety of programs and activities including internships, summer challenges, and a Project Maker program that lasts up to two months. We also provide specialized training sessions that range from one to five days, covering topics such as 3D printing, laser cutting, motherboard repair, and installation of security cameras. These programs are designed to help participants gain hands-on experience with cutting-edge technology and develop practical skills in digital fabrication, electronics, and other tech fields.
+
+---
+
+### **Support and Assistance**
+
+If you need any help with materials, permissions, or details about programs, you can reach out to the responsible staff at the FabLab. They are available to assist you with accessing the right materials, providing guidance on your projects, and answering any questions you may have. Don’t hesitate to ask for support in your project development or any other assistance you might need during your time at the FabLab.
+
+---
+
+### Inscription et Éligibilité
+
+3.1 Conditions d'Inscription et critères d'éligibilité
+
+Les conditions d'inscription et les critères d'éligibilité pour participer aux Formations proposés par l'ODC sont les suivants:
+
+Nationalité: Les Formations sont ouvertes aux ressortissants marocains et aux résidents au Maroc
+
+Pré-requis éducatifs: Les candidats doivent avoir au minimum un niveau de formation équivalent au baccalauréat. Certaines Formations peuvent nécessiter des pré-requis spécifiques en fonction de leur nature.
+
+Motivation et intérêt: Les candidats doivent démontrer un intérêt réel et une motivation pour le codage, les métiers du numérique ou l'entrepreneuriat.
+
+Engagement: Les candidats doivent s'engager à suivre assidûment les Formations, stages et ateliers pour lesquels ils sont sélectionnés.
+
+3.2 Procédure de Sélection
+
+La procédure de sélection des Bénéficiaires se déroule en plusieurs étapes:
+
+Soumission de candidature: Les candidats doivent remplir un formulaire de candidature en
+
+ligne via [www.orangedigitalcenters.com](http://www.orangedigitalcenters.com/), incluant des informations personnelles, un CV, une lettre de motivation et, le cas échéant, des documents attestant des pré-requis spécifiques demandés.
+
+Pré-sélection: Une première évaluation des candidatures est réalisée par le comité de sélection de l'ODC sur la base des critères d'éligibilité et des documents soumis.
+
+Entretien : Les candidats présélectionnés sont convoqués à un entretien individuel ou collectif. Cet entretien vise à évaluer leur motivation, leurs compétences de base et leur adéquation avec les objectifs de la Formation.
+
+Décision: Le comité de sélection de l'ODC prend la décision finale sur la base des résultats de l'entretien et des critères d'éligibilité. Les candidats retenus recevront une notification officielle de leur sélection par courrier électronique.
+
+Inscription définitive: Les candidats sélectionnés doivent confirmer leur participation en complétant les formalités administratives nécessaires dans un délai imparti. Cette confirmation inclut la signature d'un engagement de respect du présent Règlement.
+
+Ces étapes permettent d'assurer que les Bénéficiaires sont bien préparés et motivés pour tirer le meilleur parti des opportunités offertes par l'ODC.
