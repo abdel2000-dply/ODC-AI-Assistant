@@ -7,8 +7,19 @@ import edge_tts
 import asyncio
 from langdetect import detect
 
-def recognize_speech_from_mic(device_index=2):
+def list_microphone_devices():
+    """List all available microphone devices."""
+    mic_list = sr.Microphone.list_microphone_names()
+    for i, mic_name in enumerate(mic_list):
+        print(f"Device Index {i}: {mic_name}")
+
+def recognize_speech_from_mic(device_index=None):
     recognizer = sr.Recognizer()
+    
+    if device_index is None:
+        list_microphone_devices()
+        device_index = int(input("Please enter the device index: "))
+
     with sr.Microphone(device_index=device_index) as source:
         print("Please say something:")
         recognizer.adjust_for_ambient_noise(source)
@@ -60,10 +71,6 @@ async def speak(text, lang='en'):
         # Ensure temporary file is removed even if exceptions occur
         if os.path.exists(output_file):
             os.remove(output_file)
-
-
-
-
 
 # Initialize the Groq client
 # client = Groq()
