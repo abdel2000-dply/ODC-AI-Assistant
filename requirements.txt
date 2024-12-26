@@ -3,6 +3,7 @@ SpeechRecognition
 edge-tts
 langdetect
 python-dotenv
+pyaudio
 
 # LangChain and related packages
 langchain
