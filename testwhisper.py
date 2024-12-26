@@ -1,9 +1,14 @@
 import os
 from groq import Groq
 import pyaudio
+from dotenv import load_dotenv
+
+load_dotenv()
+
+groq_api_key = os.getenv('GROQ_API_KEY')
 
 # Initialize the Groq client
-client = Groq()
+client = Groq(api_key=groq_api_key)
 
 def record_audio_to_file(file_name):
     import speech_recognition as sr
