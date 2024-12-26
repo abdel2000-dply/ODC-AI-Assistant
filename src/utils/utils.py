@@ -7,10 +7,6 @@ import edge_tts
 import asyncio
 from langdetect import detect
 from dotenv import load_dotenv
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-import time
 
 load_dotenv()
 
@@ -57,42 +53,6 @@ def recognize_speech_from_mic(device_index=3):
         # Speech was unintelligible
         print("Unable to recognize speech")
         return None
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        return None
-
-def recognize_speech_from_web():
-    """
-    Recognizes speech using the Google Web Speech API demo.
-
-    Returns:
-        str: The recognized text, or None if an error occurred.
-    """
-    try:
-        # Set up Selenium WebDriver (make sure to have the appropriate driver installed)
-        driver = webdriver.Chrome()  # You can use other drivers like Firefox, Edge, etc.
-        driver.get("https://www.google.com/intl/en/chrome/demos/speech.html")
-
-        # Click on the microphone button to start recording
-        mic_button = driver.find_element(By.ID, "start_button")
-        mic_button.click()
-
-        print("Please speak into the microphone...")
-
-        # Wait for the speech recognition to complete
-        time.sleep(10)  # Adjust the sleep time as needed
-
-        # Retrieve the recognized text
-        result_span = driver.find_element(By.ID, "final_span")
-        recognized_text = result_span.text
-
-        print(f"Recognized Text: {recognized_text}")
-
-        # Close the browser
-        driver.quit()
-
-        return recognized_text
-
     except Exception as e:
         print(f"An error occurred: {e}")
         return None
