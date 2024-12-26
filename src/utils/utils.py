@@ -12,15 +12,15 @@ load_dotenv()
 
 groq_api_key = os.getenv('GROQ_API_KEY') 
 
-def recognize_speech_from_mic(device_index=2):
+def recognize_speech_from_mic():
     recognizer = sr.Recognizer()
     try:
-        with sr.Microphone(device_index=device_index) as source:
+        with sr.Microphone() as source:  # Use default microphone
             print("Please say something:")
             recognizer.adjust_for_ambient_noise(source, duration=1)
-            audio = recognizer.listen(source)
+            audio = recognizer.listen(source, timeout=10)
     except OSError as e:
-        print(f"Could not access the microphone (device index {device_index}): {e}")
+        print(f"Could not access the microphone: {e}")
         return None
 
     try:
