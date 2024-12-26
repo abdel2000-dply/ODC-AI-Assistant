@@ -12,14 +12,19 @@ load_dotenv()
 
 groq_api_key = os.getenv('GROQ_API_KEY') 
 
-def recognize_speech_from_mic(device_index=3):
+def recognize_speech_from_mic():
     recognizer = sr.Recognizer()
-    with sr.Microphone(device_index=device_index) as source:
-        print("Please say something:")
-        recognizer.adjust_for_ambient_noise(source, duration=1)
-        audio = recognizer.listen(source)
+    try:
+        with sr.Microphone(device_index=None) as source:  # Use default PulseAudio device
+            print("Please say something:")
+            recognizer.adjust_for_ambient_noise(source, duration=1)
+            audio = recognizer.listen(source, timeout=10)
+    except OSError as e:
+        print(f"Could not access the microphone: {e}")
+        return None
 
     try:
+        # Recognize speech using Google's speech recognition
         text = recognizer.recognize_google(audio)
         print("You said: " + text)
 
@@ -35,12 +40,21 @@ def recognize_speech_from_mic(device_index=3):
         }
         language = lang_map.get(detected_lang, 'en-US')
 
+        # Recognize speech again with the detected language
         text = recognizer.recognize_google(audio, language=language)
         print(f"You said (in {language}): " + text)
         return text
 
+    except sr.RequestError:
+        # API was unreachable or unresponsive
+        print("API unavailable")
+        return None
+    except sr.UnknownValueError:
+        # Speech was unintelligible
+        print("Unable to recognize speech")
+        return None
     except Exception as e:
-        print(f"Error recognizing speech: {e}")
+        print(f"An error occurred: {e}")
         return None
 
 async def speak(text, lang='en'):
