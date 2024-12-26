@@ -12,7 +12,7 @@ load_dotenv()
 
 groq_api_key = os.getenv('GROQ_API_KEY') 
 
-def recognize_speech_from_mic(device_index=3):
+def recognize_speech_from_mic(device_index=2):
     recognizer = sr.Recognizer()
     try:
         with sr.Microphone(device_index=device_index) as source:
