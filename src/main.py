@@ -1,37 +1,12 @@
 import asyncio
+import sys
+from pathlib import Path
 from .assistant import Assistant  # Change to relative import
 from .utils.utils import recognize_speech_from_mic, record_audio_to_file, transcribe_audio_with_groq  # Updated imports
 
-# async def main():
-#     # Initialize the Assistant with a greeting message
-#     assistant = Assistant("Hello, I'm Orange Digital Center's Assistant. How can I help you?")
-#     await assistant.play_speech()
-
-#     while True:
-#         # Recognize speech from the microphone
-#         question = None
-#         while not question:
-#             question = recognize_speech_from_mic()
-
-#         # Check for exit condition
-#         if question.lower() in ["exit", "quit", "goodbye", "bye", "stop", "bslama", "au revoir"]:
-#             assistant.text = "Goodbye!"
-#             await assistant.play_speech()
-#             break
-
-#         print(f"Question: {question}")
-
-#         # Get the response
-#         response = assistant.get_response(question)
-#         print(f"Response: {response}")
-
-#         # Update the text and play the response
-#         assistant.text = response
-#         await assistant.play_speech()
-
-async def main():
+async def main(selected_language):
     # Initialize the Assistant with a greeting message
-    assistant = Assistant("Hello, I'm Orange Digital Center's Assistant. How can I help you?")
+    assistant = Assistant("Hello, I'm Orange Digital Center's Assistant. How can I help you?", lang=selected_language)
     await assistant.play_speech()
 
     while True:
@@ -39,10 +14,10 @@ async def main():
         question = None
         while not question:
             record_audio_to_file()
-            question = transcribe_audio_with_groq()
+            question = transcribe_audio_with_groq(language=selected_language)
             if not question:
               print("Falling back to speech_recognition...")
-              question = recognize_speech_from_mic()
+              question = recognize_speech_from_mic(language=selected_language)
 
         # Check for exit condition
         if question.lower() in ["exit", "quit", "goodbye", "bye", "stop", "bslama", "au revoir"]:
@@ -62,8 +37,9 @@ async def main():
 
 if __name__ == "__main__":
     # Add this to allow running from project root
-    import sys
-    from pathlib import Path
     sys.path.append(str(Path(__file__).parent.parent))
     
-    asyncio.run(main())
+    # Get the selected language from command line arguments
+    selected_language = sys.argv[1] if len(sys.argv) > 1 else 'en'
+    
+    asyncio.run(main(selected_language))
