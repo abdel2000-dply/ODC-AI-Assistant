@@ -32,20 +32,34 @@ class Assistant:
         return self.lang
 
     def is_basic_chat(self, text):
-        """Check if the input is a basic chat interaction"""
+        """Check if the input includes a basic chat interaction keyword"""
         text = text.lower().strip()
-        return any(text in patterns for patterns in self.basic_chat_patterns.values())
+        for category, patterns in self.basic_chat_patterns.items():
+            if any(pattern in text for pattern in patterns):
+                return category
+        return None
 
     def get_basic_response(self, text):
         """Handle basic chat interactions"""
-        if self.lang == 'fr':
-            return "Bonjour! Comment puis-je vous aider?"
-        elif self.lang in ['ar', 'ara']:
-            return "مرحبا! كيف يمكنني مساعدتك؟"
-        elif self.lang == 'darija':
-            return "سلام! كيفاش نعاونك؟"
-        else:
-            return "Hello! How can I help you?"
+        category = self.is_basic_chat(text)
+        if category == 'greetings':
+            if self.lang == 'fr':
+                return "Bonjour! Comment puis-je vous aider?"
+            # elif self.lang in ['ar', 'ara']:
+            #     return "مرحبا! كيف يمكنني مساعدتك؟"
+            elif self.lang == 'ar':
+                return "سلام! كيفاش نعاونك؟"
+            else:
+                return "Hello! How can I help you?"
+        elif category == 'farewells':
+            if self.lang == 'fr':
+                return "Au revoir! À bientôt!"
+            # elif self.lang in ['ar', 'ara']:
+            #     return "مع السلامة! أراك قريبا!"
+            elif self.lang == 'ar':
+                return "بسلامة! نشوفك قريبا!"
+            else:
+                return "Goodbye! See you soon!"
 
     def get_response(self, question):
         """ Get a response to a question """
