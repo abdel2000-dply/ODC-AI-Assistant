@@ -6,8 +6,7 @@ from .utils.utils import recognize_speech_from_mic, record_audio_to_file, transc
 
 async def main(selected_language):
     # Initialize the Assistant with a greeting message
-    # assistant = Assistant("Hello, I'm Orange Digital Center's Assistant. How can I help you?", lang=selected_language)
-    assistant = Assistant("Hello, I'm Groot Grot Groot", lang=selected_language)
+    assistant = Assistant("Hello, I'm Orange Digital Center's Assistant. How can I help you?", lang=selected_language)
     await assistant.play_speech()
 
     while True:
