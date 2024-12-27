@@ -76,3 +76,28 @@ class DocumentProcessor:
             print(f"Error loading vector store: {e}")
             print("Please ensure setup.py has been run to initialize the vector store")
             return None
+
+    def retrieve_context(self, query):
+        """Retrieve context based on the query"""
+        try:
+            print("Loading FAISS index...")
+            vector_store = self.load_vector_store()
+            if vector_store is None:
+                print("Vector store not found. Please run setup.py first")
+                return None
+
+            print("Generating query embedding...")
+            query_embedding = self.embeddings.embed_query(query)
+
+            print("Using retriever to search for similar chunks...")
+            retriever = vector_store.as_retriever()
+            similar_chunks = retriever.retrieve(query_embedding, k=5)  # Retrieve top 5 similar chunks
+
+            print("Retrieved context:")
+            for chunk in similar_chunks:
+                print(chunk.page_content)
+            
+            return similar_chunks
+        except Exception as e:
+            print(f"Error retrieving context: {e}")
+            return None
