@@ -71,8 +71,9 @@ class EventScraper:
         """Save events to text file"""
         print(f"Saving events to {self.events_file}")
         with open(self.events_file, 'w', encoding='utf-8') as f:
-            f.write("Upcoming Trainings/Events/formation at Orange Digital Center:\n\n")
+            f.write("Welcome to Orange Digital Center Events, Trainings / Bienvenue aux événements du Orange Digital Center Formation, evenment\n\n")
             for event in events:
+                f.write("Upcoming Trainings/Events/formation at Orange Digital Center:\n")
                 # Convert Event object attributes to strings safely
                 f.write(f"Event: {event.title}\n")
                 f.write(f"Date: {event.month} {event.day}\n")
