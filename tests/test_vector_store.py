@@ -24,6 +24,8 @@ def test_vector_store():
         "Tell me about the Coding School at ODC",
         "What is FabLab?",
         "How does ODC help startups?"
+        "Upcoming trainings"
+        "formation"
     ]
     
     print("\n\nTesting Specific Queries:")
