@@ -12,8 +12,8 @@ class DocumentProcessor:
         
         # Use the tested configurations
         self.text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=500,  # Proven to work well in testing
-            chunk_overlap=50,
+            chunk_size=CHUNK_SIZE,  # Use config value
+            chunk_overlap=CHUNK_OVERLAP,  # Use config value
             length_function=len,
         )
         
