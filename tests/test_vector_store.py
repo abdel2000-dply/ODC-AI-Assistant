@@ -23,8 +23,8 @@ def test_vector_store():
         "What programs does ODC offer?",
         "Tell me about the Coding School at ODC",
         "What is FabLab?",
-        "How does ODC help startups?"
-        "Upcoming trainings"
+        "How does ODC help startups?",
+        "Upcoming trainings",
         "formation"
     ]
     
