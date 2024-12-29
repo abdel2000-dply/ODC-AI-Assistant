@@ -16,12 +16,12 @@ async def main(selected_language):
             record_audio_to_file()
             question = transcribe_audio_with_groq(language=selected_language)
             if not question:
-              print("Falling back to speech_recognition...")
-              question = recognize_speech_from_mic(language=selected_language)
+                print("Falling back to speech_recognition...")
+                question = recognize_speech_from_mic(language=selected_language)
 
         # Check for exit condition
-        if question.lower() in ["exit", "quit", "goodbye", "bye", "stop", "bslama", "au revoir"]:
-            assistant.text = "Goodbye!"
+        if any(exit_phrase in question.lower() for exit_phrase in ["exit", "quit", "goodbye", "bye", "stop", "bslama", "au revoir", "مع السلامة", "وداعا", "بسلامة"]):
+            assistant.text = "Goodbye! See you soon!"
             await assistant.play_speech()
             break
 
