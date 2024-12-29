@@ -2,6 +2,8 @@
 venv/
 cm/
 
+**/vectorstore
+
 # Ignore .env file
 .env
 
