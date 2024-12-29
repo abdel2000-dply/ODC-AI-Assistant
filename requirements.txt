@@ -1,7 +1,6 @@
 # Speech recognition and TTS
 SpeechRecognition
 edge-tts
-langdetect
 python-dotenv
 pyaudio
 
