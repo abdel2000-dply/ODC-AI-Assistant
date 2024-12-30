@@ -4,7 +4,7 @@ from pathlib import Path
 from src.assistant import Assistant  # Change to relative import
 from src.utils.utils import recognize_speech_from_mic, record_audio_to_file, transcribe_audio_with_groq  # Updated imports
 
-async def main(selected_language):
+async def main(selected_language='en'):
     # Initialize the Assistant with a greeting message
     assistant = Assistant("Hello, I'm Orange Digital Center's Assistant. How can I help you?", lang=selected_language)
     await assistant.play_speech()
