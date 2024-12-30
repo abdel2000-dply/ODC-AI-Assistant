@@ -1,8 +1,8 @@
 import asyncio
 import sys
 from pathlib import Path
-from .assistant import Assistant  # Change to relative import
-from .utils.utils import recognize_speech_from_mic, record_audio_to_file, transcribe_audio_with_groq  # Updated imports
+from src.assistant import Assistant  # Change to relative import
+from src.utils.utils import recognize_speech_from_mic, record_audio_to_file, transcribe_audio_with_groq  # Updated imports
 
 async def main(selected_language):
     # Initialize the Assistant with a greeting message
