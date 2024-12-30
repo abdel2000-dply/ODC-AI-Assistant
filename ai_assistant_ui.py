@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import font
 from itertools import cycle
+import subprocess
 
 root = tk.Tk()
 root.title("AI Assistant Interface")
@@ -37,8 +38,11 @@ def show_first_interface():
     typing_effect(typing_label, lines)
 
     # Add the "Let's Chat" button
-    chat_button = tk.Button(root, text="Let's Chat", font=button_font, command=show_language_interface, bg="orange", fg="black", bd=0, highlightthickness=0, activebackground="orange", activeforeground="black")
+    chat_button = tk.Button(root, text="Let's Chat", font=button_font, command=open_terminal, bg="orange", fg="black", bd=0, highlightthickness=0, activebackground="orange", activeforeground="black")
     chat_button.pack(pady=20, ipadx=20, ipady=10)
+
+def open_terminal():
+    subprocess.Popen(["python", "main.py"], shell=True)
 
 def show_language_interface():
     for widget in root.winfo_children():
