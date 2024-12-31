@@ -10,7 +10,7 @@ if not os.environ.get('DISPLAY'):
 
 root = tk.Tk()
 root.title("AI Assistant Interface")
-root.attributes('-fullscreen', True)
+# root.attributes('-fullscreen', True)
 root.configure(bg="black")
 
 button_font = font.Font(family="Monospace", size=16, weight="bold")
