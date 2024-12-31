@@ -107,7 +107,7 @@ def transcribe_audio_with_groq(audio_file="live_audio.wav", language="en"):
     with open(audio_file, "rb") as file:
         transcription = client.audio.transcriptions.create(
             file=(audio_file, file.read()),
-            model="whisper-large-v3",  # Specify the model
+            model="whisper-large-v3-turbo",  # Specify the model
             language=language,  # Specify the language
             response_format="text"          # Use "text" for a simple string response
         )
