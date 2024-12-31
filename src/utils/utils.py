@@ -46,7 +46,7 @@ def recognize_speech_from_mic(language='en-US', device_index=3):
 
 async def speak(text, lang='en'):
     """ Generate speech from text using edge-tts and play using mpv """
-    voice = 'en-US-AndrewMultilingualNeural'  # Adjust voice as needed
+    voice = 'en-US-EmmaMultilingualNeural'  # Adjust voice as needed
     output_file = "temp.mp3"
 
     try:
@@ -107,7 +107,7 @@ def transcribe_audio_with_groq(audio_file="live_audio.wav", language="en"):
     with open(audio_file, "rb") as file:
         transcription = client.audio.transcriptions.create(
             file=(audio_file, file.read()),
-            model="whisper-large-v3-turbo",  # Specify the model
+            model="whisper-large-v3",  # Specify the model
             language=language,  # Specify the language
             response_format="text"          # Use "text" for a simple string response
         )

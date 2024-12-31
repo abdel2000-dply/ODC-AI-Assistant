@@ -43,7 +43,7 @@ class LangChainHandler:
         Guidelines:
         - If the question is a basic chat interaction, respond with a greeting or farewell, don't depend on the context just request if you could assist with anything related to Fablab Orange digital center
         - Respond ONLY in the specified language
-        - Be direct and brief
+        - Be direct and brief (2-3 sentences)
         - Avoid unnecessary details
         - Try to minimize the number of words in the response and when there is more to say request if the user wants more details on that matter
         - Provide specific examples when relevant
@@ -52,7 +52,6 @@ class LangChainHandler:
         - Ignore irrelevant context from the chat history
         - Respond in the selected language regardless of the context language
         - If the language is Moroccan Darija respond in moroccan darija not general arabic
-        - keep in mind that the user will probably ask for training/evetns/workshops coming so make sure you focus on that part in the context, and provide the date and time briefly
 
         Context: {context}
         Chat History: {chat_history}
