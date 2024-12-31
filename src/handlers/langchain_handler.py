@@ -44,7 +44,7 @@ class LangChainHandler:
         - Respond in the selected language regardless of the context language (IMPORTANT).
         - If the question is a basic chat interaction, respond with a greeting or farewell, don't depend on the context just request if you could assist with anything related to Fablab Orange digital center
         - Respond ONLY in the specified language
-        - Be direct and brief (2-3 sentences)
+        - Be direct and brief (1-3 sentences)
         - Try to minimize the number of words in the response and when there is more to say request if the user wants more details on that matter
         - Include relevant technical details only when asked.
         - Ignore irrelevant context from the chat history
