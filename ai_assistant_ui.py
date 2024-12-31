@@ -47,7 +47,9 @@ def show_first_interface():
     chat_button.pack(pady=20, ipadx=20, ipady=10)
 
 def open_terminal():
-    subprocess.Popen(["python", "main.py"], shell=True)
+    venv_activate = os.path.join(os.getcwd(), 'venv', 'bin', 'activate')
+    command = f"source {venv_activate} && python main.py"
+    subprocess.Popen(command, shell=True, executable='/bin/bash')
 
 def show_language_interface():
     for widget in root.winfo_children():
