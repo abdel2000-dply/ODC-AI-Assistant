@@ -144,9 +144,9 @@ class LangChainHandler:
         try:
             memory_variables = self.memory.load_memory_variables({})
             chat_history = memory_variables.get("chat_history", "")
-            standalone_question = self.rephrase_to_standalone(question, chat_history)
+            # standalone_question = self.rephrase_to_standalone(question, chat_history)
             response = self.chain.invoke({
-                "question": standalone_question,
+                "question": question,  # Use the question directly
                 "language": self.selected_language
             })
             
