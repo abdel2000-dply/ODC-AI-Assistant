@@ -48,10 +48,11 @@ class LangChainHandler:
         - Try to minimize the number of words in the response and when there is more to say request if the user wants more details on that matter
         - Provide specific examples when relevant
         - If unsure, acknowledge limitations
-        - Include relevant technical details only when asked
+        - Include relevant technical details only when asked.
         - Ignore irrelevant context from the chat history
-        - Respond in the selected language regardless of the context language
-        - If the language is Moroccan Darija respond in moroccan darija not general arabic
+        - Respond in the selected language regardless of the context language.
+        - If the language is Moroccan Darija respond in moroccan darija not general arabic.
+        - The Question could have a typo, respond to the best of your understanding like the question could be about orange digital center.
 
         Context: {context}
         Chat History: {chat_history}
