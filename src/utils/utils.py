@@ -17,7 +17,7 @@ def recognize_speech_from_mic(language='en-US', device_index=3):
         with sr.Microphone(device_index=device_index) as source:  # Use specific device index
             print("Please say something:")
             recognizer.adjust_for_ambient_noise(source, duration=1)
-            audio = recognizer.listen(source, timeout=10)
+            audio = recognizer.listen(source, timeout=5)
     except OSError as e:
         print(f"Could not access the microphone (device index {device_index}): {e}")
         return None

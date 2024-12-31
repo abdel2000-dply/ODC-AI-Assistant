@@ -15,8 +15,7 @@ async def assistant_main(selected_language='en'):
         question = None
         while not question:
             record_audio_to_file()
-            # question = transcribe_audio_with_groq(language=selected_language)
-            question = None  # Remove this line after implementing transcribe_audio_with_groq
+            question = transcribe_audio_with_groq(language=selected_language)
             if not question:
                 print("Falling back to speech_recognition...")
                 question = recognize_speech_from_mic(language=selected_language)
