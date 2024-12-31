@@ -126,7 +126,7 @@ class LangChainHandler:
     def rephrase_to_standalone(self, follow_up_question, chat_history):
         """Rephrase the follow-up question to be a standalone question"""
         try:
-            rephrase_prompt = f"""Given the following conversation and a follow-up question, rephrase the follow-up question to be a standalone question, in its original language.
+            rephrase_prompt = f"""Given the following conversation and a follow-up question, rephrase the follow-up question to be a standalone question, in its original language, but dont change the question to something else.
 
             Chat History:
             {chat_history}
