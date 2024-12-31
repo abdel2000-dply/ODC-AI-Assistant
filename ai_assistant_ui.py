@@ -2,6 +2,11 @@ import tkinter as tk
 from tkinter import font
 from itertools import cycle
 import subprocess
+import os  # Add this import
+
+# Check if DISPLAY environment variable is set
+if not os.environ.get('DISPLAY'):
+    os.environ['DISPLAY'] = ':0'
 
 root = tk.Tk()
 root.title("AI Assistant Interface")
