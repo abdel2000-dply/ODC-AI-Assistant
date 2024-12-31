@@ -53,6 +53,7 @@ class LangChainHandler:
         - Ignore irrelevant context from the chat history
         - If the language is Moroccan Darija respond in moroccan darija not general arabic.
         - The Question could have a typo, respond to the best of your understanding like the question could be about orange digital center.
+        - If the question contains digital center I mean ORrange digital center the word befor could be a tyepo.
 
         Context: {context}
         Chat History: {chat_history}
