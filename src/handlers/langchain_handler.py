@@ -5,6 +5,7 @@ from langchain.prompts import PromptTemplate, ChatPromptTemplate
 from src.utils.document_processor import DocumentProcessor
 import os
 from dotenv import load_dotenv
+from langchain.chains import LLMChain
 
 class LangChainHandler:
     SUPPORTED_LANGUAGES = {
@@ -18,9 +19,18 @@ class LangChainHandler:
         load_dotenv()
         self.api_key = os.getenv('COHERE_API_KEY')
         
-        self.llm = ChatCohere(
+        # RAG specific LLM
+        self.llm_rag = ChatCohere(
             cohere_api_key=self.api_key,
             temperature=0.3,
+            max_tokens=300,
+            model="command-r-plus-08-2024"
+        )
+        
+        # General LLM (using Cohere LLM)
+        self.llm_general = ChatCohere(
+            cohere_api_key=self.api_key,
+            temperature=0.5,
             max_tokens=300,
             model="command-r-plus-08-2024"
         )
@@ -42,15 +52,14 @@ class LangChainHandler:
 
         Guidelines:
         - Respond in the selected language regardless of the context language (IMPORTANT).
-        - If the question is a basic chat interaction, respond with a greeting or farewell, don't depend on the context just request if you could assist with anything related to Fablab Orange digital center
         - Respond ONLY in the specified language
         - Be direct and brief (1-3 sentences)
-        - Try to minimize the number of words in the response and when there is more to say request if the user wants more details on that matter
+        - Try to minimize the number of words in the response and when there is more to say wait or request(not always) if the user wants more details on that matter
         - Include relevant technical details only when asked.
         - Ignore irrelevant context from the chat history
         - If the language is Moroccan Darija respond in moroccan darija not general arabic.
         - The Question could have a typo, respond to the best of your understanding like the question could be about orange digital center.
-        - If the question contains digital center I mean ORrange digital center the word befor could be a tyepo.
+        - If the question contains digital center I mean Orange digital center the word befor could be a tyepo.
 
         Context: {context}
         Chat History: {chat_history}
@@ -69,7 +78,7 @@ class LangChainHandler:
         retriever = self.vector_store.as_retriever(search_kwargs={"k": 5})
         
         self.chain = ConversationalRetrievalChain.from_llm(
-            llm=self.llm,
+            llm=self.llm_rag, # RAG Specific LLM
             retriever=retriever,
             memory=self.memory,
             combine_docs_chain_kwargs={
@@ -81,15 +90,42 @@ class LangChainHandler:
             return_source_documents=True,
             chain_type="stuff",
             # question_generator=None, # set to None for no standalone question generation
-            verbose=True
+            # verbose=True
         )
         
+        general_prompt_template = """You are a friendly and professional AI Assistant. 
+        You must ALWAYS respond in a helpful and professional tone.
+        Be as brief as possible and avoid unnecessary details, remember it's a conversation so short and direct answers are preferred to keep a conversation.
+
+        Guidelines:
+        - Be direct and brief (1-3 sentences)
+        - Try to minimize the number of words in the response and when there is more to say request if the user wants more details on that matter
+        - Include relevant technical details only when asked.
+        - Ignore irrelevant context from the chat history
+
+        Question: {question}
+
+        Answer:"""
+        
+        # General LLM chain for questions not on the context of the fablab
+        self.general_chain = LLMChain(
+            llm=self.llm_general,
+            prompt=PromptTemplate(template=general_prompt_template),
+            # verbose=True
+        )
+
         self.clear_memory()  # Clear memory on initialization
 
-        self.basic_chat_patterns = {
-            'greetings': ['hey', 'hello', 'hi', 'bonjour', 'salam', 'mrhba'],
-            'farewells': ['bye', 'goodbye', 'au revoir', 'bslama']
-        }
+        # classification prompt
+        self.classification_prompt = """
+        You are a classifier that analyzes a question and categorizes it into one of these three categories:
+            - RAG_RELEVANT: The question is related to the Orange Digital Center and it can be answered with the FabLab context
+            - GENERAL_KNOWLEDGE: The question is general and not related to the Orange Digital Center
+            - UNCLEAR: It is not clear if the question is related to the Orange Digital Center
+
+        Question: {question}
+        Category:
+        """
 
     @classmethod
     def select_language(cls):
@@ -125,29 +161,50 @@ class LangChainHandler:
             return "سلام! كيفاش نعاونك؟"
         else:
             return "Hello! How can I help you?"
+    
+    def classify_question(self, question):
+        """Classifies the input question as RAG_RELEVANT, GENERAL_KNOWLEDGE or UNCLEAR"""
+        try:
+            classification_chain = LLMChain(llm = self.llm_general, prompt=PromptTemplate(template=self.classification_prompt))
+            response = classification_chain.invoke({"question": question})
+            classification = response['text'].strip()
+            return classification
+        except Exception as e:
+            return "UNCLEAR"
 
     def get_response(self, question, context=""):
         try:
-            memory_variables = self.memory.load_memory_variables({})
-            chat_history = memory_variables.get("chat_history", "")
-            response = self.chain.invoke({
-                "question": question,  # Use the question directly
-                "language": self.selected_language
-            })
-            
-            return {
-                "answer": response.get("answer", "No answer generated"),
-                "sources": [doc.metadata.get('source', 'Unknown') 
-                          for doc in response.get("source_documents", [])]
-            }
+            classification = self.classify_question(question)
+
+            if classification == "RAG_RELEVANT":
+                memory_variables = self.memory.load_memory_variables({})
+                chat_history = memory_variables.get("chat_history", "")
+                response = self.chain.invoke({
+                    "question": question,
+                    "language": self.selected_language
+                })
+                return {
+                    "answer": response.get("answer", "No answer generated"),
+                    "sources": [doc.metadata.get('source', 'Unknown')
+                            for doc in response.get("source_documents", [])]
+                }
+            elif classification == "GENERAL_KNOWLEDGE":
+                response = self.general_chain.invoke({"question": question})
+                return {"answer": response['text'], "sources": []}
+            else:
+                 fallback_messages = {
+                    'en': "I'm not sure what you mean. Can you please ask another question about FabLab Orange Digital Center?",
+                    'fr': "Je ne suis pas sûr de ce que vous voulez dire. Pouvez-vous poser une autre question sur FabLab Orange Digital Center?",
+                    'ar': "مفهمتش سؤالك مزيان. ممكن تسول شي سؤال آخر على FabLab Orange Digital Center؟"
+                }
+                 return {"answer": fallback_messages.get(self.selected_language, fallback_messages['en']), "sources": []}
         except Exception as e:
-            print(f"Error getting response: {e}")
-            error_messages = {
+             error_messages = {
                 'en': "Sorry, I encountered an error.",
                 'fr': "Désolé, j'ai rencontré une erreur.",
                 'ar': "عذراً، حدث خطأ ما."
             }
-            return {"answer": error_messages.get(self.selected_language, error_messages['en']), "sources": []}
+             return {"answer": error_messages.get(self.selected_language, error_messages['en']), "sources": []}
 
 if __name__ == "__main__":
     # Get language preference at startup
