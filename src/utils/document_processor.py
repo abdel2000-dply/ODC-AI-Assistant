@@ -1,9 +1,29 @@
+import json
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_community.document_loaders import DirectoryLoader, TextLoader
 from pathlib import Path
 from ..config import DATA_DIR, VECTOR_DB_PATH, CHUNK_SIZE, CHUNK_OVERLAP
+from langchain.schema import Document
+
+class JSONLoader:
+    def __init__(self, file_path):
+        self.file_path = file_path
+
+    def load(self):
+        with open(self.file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            # Extract content based on known keys and place it into the 'content' field
+            if 'fablab_materials' in data:
+                content = data['fablab_materials']
+            elif 'knowledge_base' in data:
+                content = data['knowledge_base']
+            elif 'message' in data:
+                content = data['message']
+            else:
+                content = data.get('content', '')
+            return Document(page_content=str(content), metadata={"source": str(self.file_path)})
 
 class DocumentProcessor:
     def __init__(self):
@@ -23,14 +43,18 @@ class DocumentProcessor:
         )
     
     def load_documents(self):
-        """Load all .txt files from data directory"""
+        """Load all .json files from data directory"""
         print("Loading documents from data directory...")
-        loader = DirectoryLoader(
-            str(self.data_dir),
-            glob="*.txt",  # Only process root txt files
-            loader_cls=TextLoader
-        )
-        return loader.load()
+        documents = []
+        for json_file in self.data_dir.glob("*.json"):
+            loader = JSONLoader(json_file)
+            document = loader.load()
+            if document.page_content:
+                documents.append(document)
+            else:
+                print(f"No content found in {json_file}")
+        print(f"Loaded {len(documents)} documents")
+        return documents
 
     def process_documents(self):
         """Process documents and create vector store"""
