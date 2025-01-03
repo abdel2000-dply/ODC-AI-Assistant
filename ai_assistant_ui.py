@@ -11,6 +11,7 @@ if not os.environ.get('DISPLAY'):
 root = tk.Tk()
 root.title("AI Assistant Interface")
 root.attributes('-fullscreen', True)
+root.geometry("640x480")
 root.configure(bg="black")
 
 button_font = font.Font(family="Monospace", size=16, weight="bold")
@@ -37,7 +38,7 @@ def show_first_interface():
     typing_label.pack(expand=True)
 
     # The text split into three lines
-    lines = ["Hello", "I'm ODC", "Assistant"]
+    lines = ["Hello", "I'm ODC", "AI Assistant"]
 
     # Start the typing effect
     typing_effect(typing_label, lines)
