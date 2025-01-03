@@ -1,11 +1,12 @@
-import os
-from pyvirtualdisplay import Display
+# Remove the virtual display setup
+# import os
+# from pyvirtualdisplay import Display
 
-print("Starting virtual display...")
-os.environ['DISPLAY'] = ':99.0'
-display = Display(visible=0, size=(800, 600))
-display.start()
-print("Virtual display started.")
+# print("Starting virtual display...")
+# os.environ['DISPLAY'] = ':99.0'
+# display = Display(visible=0, size=(800, 600))
+# display.start()
+# print("Virtual display started.")
 
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
