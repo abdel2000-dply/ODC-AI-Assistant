@@ -1,3 +1,10 @@
+import os
+os.environ['DISPLAY'] = ':99.0'
+from pyvirtualdisplay import Display
+
+display = Display(visible=0, size=(800, 600))
+display.start()
+
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
