@@ -1,0 +1,114 @@
+{
+  "knowledge_base": {
+    "orange_digital_center": {
+      "overview": {
+        "description": "Orange Digital Center is a free, fully integrated ecosystem offering technological programs and tools for individuals, startups, and young talents. It focuses on skills development, innovation, entrepreneurship, and community engagement, acting as a catalyst for job creation and impactful projects.",
+        "keywords": ["digital center", "technology", "skills", "innovation", "entrepreneurship", "job creation"]
+      },
+      "programs": {
+        "coding_school": {
+          "name": "Coding School",
+          "description": "A free technological center for young developers, innovators, and project enthusiasts. It targets students, graduates, and aspiring entrepreneurs.",
+          "key_highlights": {
+            "community_size": "24,000+ students and professionals trained or attended events.",
+            "employment_rate": "95% of trainees secure jobs after internships."
+          },
+          "offerings": [
+            "Hands-on training in coding languages and software development.",
+            "Workshops and hackathons to boost practical skills.",
+            "Networking with industry professionals."
+          ],
+           "keywords": ["coding", "software development", "programming", "training", "hackathons"]
+        },
+        "fablab_solidaires": {
+          "name": "FabLab Solidaires",
+          "description": "A free digital production workshop for creating prototypes using advanced tools like 3D printers and laser cutters. Supports youth, students, graduates, and entrepreneurs.",
+          "key_highlights": {
+            "community_size": "15,000+ young people trained or developed prototypes.",
+            "prototypes_produced": "1,000+ prototypes and projects created."
+          },
+          "offerings": [
+            "Access to high-end digital fabrication tools.",
+            "Training on prototyping, 3D modeling, and manufacturing.",
+            "Support for transforming ideas into real-world products."
+          ],
+           "keywords": ["fablab", "prototyping", "3D printing", "digital fabrication", "laser cutting", "manufacturing"]
+
+        },
+        "orange_fab": {
+          "name": "Orange Fab",
+          "description": "A startup accelerator that forges business partnerships with the Orange Group. Focuses on managerial capabilities and commercial development.",
+          "key_highlights": {
+             "network": "18 Orange Fab centers across 4 continents.",
+            "startups_accelerated": "30+ startups received support.",
+             "mentoring_hours": "1,000+ hours dedicated to mentoring sessions."
+          },
+          "offerings": [
+            "Expert mentorship and tailored coaching.",
+            "Networking with industry leaders and investors.",
+            "Business acceleration and pathways to global markets."
+          ],
+          "keywords": ["startup", "accelerator", "mentorship", "business partnerships", "investment"]
+        }
+      },
+      "why_choose": {
+        "reasons": [
+          "Empowering Communities: Creating inclusive learning environments for all.",
+           "Fostering Innovation: Providing technology and guidance to turn ideas into reality.",
+           "Driving Entrepreneurship: Accelerating startups and skills for the future market.",
+          "Strong Global Network: Access to mentors, investors, and Orange’s international ecosystem."
+        ],
+        "keywords": ["empowerment", "innovation", "entrepreneurship", "global network", "community"]
+      },
+      "location_accessibility": {
+        "address": {
+          "fablab": "Technopark Tilila, Agadir, Lower Ground Floor (-1).",
+          "coding_school": "Technopark Tilila, Agadir, 4th floor."
+        },
+          "operating_hours": "Monday to Friday, 9:00 AM to 6:00 PM.",
+          "access_requirements": {
+            "who_can_access": "Open to everyone (students, professionals, startups, enthusiasts).",
+            "reservations_memberships": "No reservations or memberships needed.",
+            "entry_process": "Visit the location and seek permission from staff.",
+             "cost": "All services and access are free of charge."
+           },
+           "keywords": ["location", "address", "operating hours", "access", "free"]
+      },
+        "equipment": {
+        "materials": ["microcontrollers (Arduino, Raspberry Pi)", "sensors (temperature, motion, GPS)", "hand and power tools", "3D printers", "CNC machines", "UV printers", "robotics kits", "actuators (motors, servos, LEDs)", "electronic components (resistors, capacitors, transistors)", "consumables (3D printing filament, PCBs)", "power supplies", "batteries", "communication modules (WiFi, Bluetooth, GSM)", "accessories (Raspberry Pi cases, SD cards, VR headsets)"],
+           "keywords": ["equipment", "materials", "hardware", "microcontrollers", "sensors", "3D printers", "CNC", "robotics"]
+      },
+      "programs_and_activities": {
+       "activities": [
+          "Internships", "Summer challenges", "Project Maker program (up to two months)"
+           ],
+       "keywords": ["internships", "summer challenges", "projects", "activities"]
+      },
+      "support_assistance": {
+          "description": "Responsible staff are available to help with materials, permissions, programs, and project development.",
+         "keywords": ["support", "assistance", "staff", "help", "guidance"]
+      },
+        "inscription_eligibility": {
+        "eligibility_criteria": {
+        "nationality": "Open to Moroccan citizens and residents in Morocco.",
+        "educational_background": "Minimum education level equivalent to a baccalaureate degree. Some programs may require specific prerequisites.",
+        "motivation_interest": "Demonstrated interest and motivation for coding, digital careers, or entrepreneurship.",
+        "engagement": "Commitment to attending training, internships, and workshops.",
+          "keywords": ["eligibility", "nationality", "education", "motivation", "commitment"]
+
+        },
+        "selection_process": {
+          "steps": [
+             "Submission of application through www.orangedigitalcenters.com, including personal info, CV, motivation letter, and any specific documents.",
+             "Initial evaluation of applications based on eligibility criteria.",
+            "Individual or group interviews to assess motivation, skills, and suitability.",
+            "Final decision by the ODC committee.",
+            "Official notification of selection by email.",
+             "Confirmation of participation by completing required paperwork."
+            ],
+          "keywords": ["application", "selection", "interview", "notification", "process"]
+        }
+      }
+    }
+  }
+}
