@@ -1,9 +1,11 @@
 import os
-os.environ['DISPLAY'] = ':0'
 from pyvirtualdisplay import Display
 
+print("Starting virtual display...")
+os.environ['DISPLAY'] = ':99.0'
 display = Display(visible=0, size=(800, 600))
 display.start()
+print("Virtual display started.")
 
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
@@ -221,7 +223,10 @@ class AssistantUI(BoxLayout):
 class AssistantApp(App):
     def build(self):
         Window.fullscreen = 'auto'
+        print("Building AssistantUI...")
         return AssistantUI()
 
 if __name__ == '__main__':
+    print("Running AssistantApp...")
     AssistantApp().run()
+    print("AssistantApp finished.")
