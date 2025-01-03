@@ -1,13 +1,3 @@
-# Remove the virtual display setup
-# import os
-# from pyvirtualdisplay import Display
-
-# print("Starting virtual display...")
-# os.environ['DISPLAY'] = ':99.0'
-# display = Display(visible=0, size=(800, 600))
-# display.start()
-# print("Virtual display started.")
-
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -224,7 +214,7 @@ class AssistantUI(BoxLayout):
 class AssistantApp(App):
     def build(self):
         Window.size = (480, 320)  # Set the window size to match the 3.5" display resolution
-        Window.fullscreen = False  # Disable fullscreen to fit the small screen
+        Window.fullscreen = True  # Enable fullscreen mode
         print("Building AssistantUI...")
         return AssistantUI()
 
