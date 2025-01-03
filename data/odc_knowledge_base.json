@@ -99,12 +99,9 @@
         },
         "selection_process": {
           "steps": [
-             "Submission of application through www.orangedigitalcenters.com, including personal info, CV, motivation letter, and any specific documents.",
-             "Initial evaluation of applications based on eligibility criteria.",
-            "Individual or group interviews to assess motivation, skills, and suitability.",
-            "Final decision by the ODC committee.",
-            "Official notification of selection by email.",
-             "Confirmation of participation by completing required paperwork."
+             "Submission of application through www.orangedigitalcenters.com, including personal information.",
+             "Initial evaluation of applications.",
+            "Official notification of selection by phone call or email."
             ],
           "keywords": ["application", "selection", "interview", "notification", "process"]
         }
