@@ -65,9 +65,12 @@ class LangChainHandler:
             input_key="question"
         )
         
+        # Custom retriever with control over number of results (k)
+        retriever = self.vector_store.as_retriever(search_kwargs={"k": 5})
+        
         self.chain = ConversationalRetrievalChain.from_llm(
             llm=self.llm,
-            retriever=self.vector_store.as_retriever(),
+            retriever=retriever,
             memory=self.memory,
             combine_docs_chain_kwargs={
                 "prompt": PromptTemplate(
@@ -77,6 +80,7 @@ class LangChainHandler:
             },
             return_source_documents=True,
             chain_type="stuff",
+            # question_generator=None, # set to None for no standalone question generation
             verbose=True
         )
         
@@ -122,28 +126,10 @@ class LangChainHandler:
         else:
             return "Hello! How can I help you?"
 
-    def rephrase_to_standalone(self, follow_up_question, chat_history):
-        """Rephrase the follow-up question to be a standalone question"""
-        try:
-            rephrase_prompt = f"""Given the following conversation and a follow-up question, rephrase the follow-up question to be a standalone question, in its original language, but dont change the question to something else.
-
-            Chat History:
-            {chat_history}
-
-            Follow Up Input: {follow_up_question}
-            Standalone question:"""
-            
-            response = self.llm.generate(rephrase_prompt)
-            return response['choices'][0]['text'].strip()
-        except Exception as e:
-            print(f"Error rephrasing question: {e}")
-            return follow_up_question
-
     def get_response(self, question, context=""):
         try:
             memory_variables = self.memory.load_memory_variables({})
             chat_history = memory_variables.get("chat_history", "")
-            # standalone_question = self.rephrase_to_standalone(question, chat_history)
             response = self.chain.invoke({
                 "question": question,  # Use the question directly
                 "language": self.selected_language
