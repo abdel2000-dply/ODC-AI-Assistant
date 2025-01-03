@@ -11,6 +11,7 @@ import time
 import platform
 import subprocess
 from pathlib import Path
+import json
 
 @dataclass
 class Event:
@@ -27,7 +28,7 @@ class EventScraper:
     def __init__(self):
         self.url = "https://www.orangedigitalcenters.com/country/ma/events"
         self.data_dir = Path(__file__).parent.parent.parent / "data"
-        self.events_file = self.data_dir / "events.txt"
+        self.events_file = self.data_dir / "upcoming_training_events.json"
         self.data_dir.mkdir(exist_ok=True)
 
     def wait_for_element(self, by, value, timeout=10):
@@ -68,28 +69,34 @@ class EventScraper:
             return ""
 
     def _save_events(self, events):
-        """Save events to text file"""
+        """Save events to JSON file"""
         print(f"Saving events to {self.events_file}")
+        events_data = [{
+            "content": {
+                "title": event.title,
+                "start_date": event.start_date,
+                "end_date": event.end_date,
+                "location": event.location,
+                "month": event.month,
+                "day": event.day,
+                "description": event.description,
+                "venue": event.venue
+            }
+        } for event in events]
+        
         with open(self.events_file, 'w', encoding='utf-8') as f:
-            f.write("Welcome to Orange Digital Center Events, Trainings / Bienvenue aux événements du Orange Digital Center Formation, evenment\n\n")
-            for event in events:
-                f.write("Upcoming Trainings/Events/formation at Orange Digital Center:\n")
-                # Convert Event object attributes to strings safely
-                f.write(f"Event: {event.title}\n")
-                f.write(f"Date: {event.month} {event.day}\n")
-                f.write(f"From: {event.start_date}\n")
-                f.write(f"To: {event.end_date}\n")
-                f.write(f"Location: {event.location}\n")
-                if event.description:
-                    f.write(f"Description: {event.description}\n")
-                f.write("\n---\n\n")
+            json.dump(events_data, f, ensure_ascii=False, indent=4)
+        
         print(f"Events saved to {self.events_file}")
 
     def _save_default_content(self):
         """Save default content when scraping fails"""
-        print("Saving default events content...")
+        print("Saving default content...")     
+        default_content = {
+            "content": "I'm sorry I couldn't access that information now due to some technical issues. Please ask a manager or visit https://www.orangedigitalcenters.com/country/ma/events for the latest events."
+        }
         with open(self.events_file, 'w', encoding='utf-8') as f:
-            f.write("I'm sorry I couldn't access that information now due to some technical issues. Please ask a manager or visit https://www.orangedigitalcenters.com/country/ma/events for the latest events.\n")
+            json.dump(default_content, f, ensure_ascii=False, indent=4)
         print(f"Default content saved to {self.events_file}")
 
     def scrape_events(self):
