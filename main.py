@@ -3,7 +3,6 @@ import sys
 from pathlib import Path
 from src.assistant import Assistant  # Change to relative import
 from src.utils.utils import recognize_speech_from_mic, record_audio_to_file, transcribe_audio_with_groq  # Updated imports
-import tkinter as tk
 
 async def assistant_main(selected_language='en'):
     # Initialize the Assistant with a greeting message
@@ -36,17 +35,6 @@ async def assistant_main(selected_language='en'):
         assistant.text = response
         await assistant.play_speech()
 
-def main():
-    root = tk.Tk()
-    root.title("Main Application")
-    root.geometry("800x600")
-    root.configure(bg="white")
-
-    label = tk.Label(root, text="This is the main application", font=("Monospace", 20), fg="black", bg="white")
-    label.pack(expand=True)
-
-    root.mainloop()
-
 if __name__ == "__main__":
     # Add this to allow running from project root
     sys.path.append(str(Path(__file__).parent.parent))
@@ -55,4 +43,3 @@ if __name__ == "__main__":
     selected_language = sys.argv[1] if len(sys.argv) > 1 else 'en'
     
     asyncio.run(assistant_main(selected_language))
-    main()
