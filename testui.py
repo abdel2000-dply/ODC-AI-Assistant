@@ -18,7 +18,7 @@ Builder.load_string('''
 <AssistantUI>:
     canvas.before:
         Color:
-            rgba: 0.1, 0.1, 0.1, 1
+            rgba: 0, 0, 0, 1  # Set background to dark black
         Rectangle:
             pos: self.pos
             size: self.size
@@ -30,12 +30,13 @@ Builder.load_string('''
 
         # ODC Logo and Title
         BoxLayout:
-            size_hint_y: 0.13
+            size_hint_y: 0.15
             orientation: 'vertical'
             Label:
                 text: 'ODC AI Assistant'
-                font_size: '28sp'
+                font_size: '36sp'
                 bold: True
+                font_name: 'Roboto'
                 color: 1, 0.5, 0, 1
                 size_hint_y: None
                 height: self.texture_size[1]
@@ -48,7 +49,7 @@ Builder.load_string('''
             padding: [20, 0]
             Label:
                 text: root.status_text
-                font_size: '18sp'
+                font_size: '20sp'
                 color: 0.5, 0.8, 1, 1
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
             
@@ -65,7 +66,7 @@ Builder.load_string('''
         # Language Selection
         BoxLayout:
             size_hint_y: 0.12
-            size_hint_x: 0.8
+            size_hint_x: 0.6
             pos_hint: {'center_x': 0.5}
             spacing: 15
             Button:
@@ -73,6 +74,7 @@ Builder.load_string('''
                 on_release: root.show_language_dropdown()
                 background_normal: ''
                 background_color: (0.2, 0.6, 1, 1)
+                font_size: '20sp'
 
         # Chat History
         ScrollView:
@@ -116,6 +118,7 @@ Builder.load_string('''
                 background_normal: ''
                 background_color: (1, 0, 0, 1) if root.is_recording else (1, 0.5, 0, 1)
                 on_press: root.toggle_recording()
+                font_size: '20sp'
 
 <MessageBubble@BoxLayout>:
     orientation: 'vertical'
@@ -139,6 +142,7 @@ Builder.load_string('''
         color: 1, 1, 1, 1
         halign: 'left' if root.is_user else 'right'
         valign: 'middle'
+        font_size: '18sp'
 ''')
 
 class MessageBubble(BoxLayout):
@@ -157,7 +161,7 @@ class AssistantUI(BoxLayout):
         super().__init__(**kwargs)
         self.animation_event = None
         self.visualizer_animation = None  # To store the visualizer animation
-        Window.clearcolor = (0.1, 0.1, 0.1, 1)
+        Window.clearcolor = (0, 0, 0, 1)  # Set background to dark black
 
         # Create Dropdown for languages
         self.language_dropdown = DropDown()
@@ -213,7 +217,7 @@ class AssistantUI(BoxLayout):
 
 class AssistantApp(App):
     def build(self):
-        Window.size = (480, 320)  # Set the window size to match the 3.5" display resolution
+        Window.size = (640, 480)  # Set the window size to match the 3.5" display resolution
         Window.fullscreen = True  # Enable fullscreen mode
         print("Building AssistantUI...")
         return AssistantUI()
