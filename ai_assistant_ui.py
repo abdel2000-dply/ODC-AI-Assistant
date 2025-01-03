@@ -14,8 +14,8 @@ root.attributes('-fullscreen', True)
 root.geometry("640x480")
 root.configure(bg="black")
 
-button_font = font.Font(family="Monospace", size=16, weight="bold")
-typing_font = ("Monospace", 45)
+button_font = font.Font(family="Monospace", size=20, weight="bold")
+typing_font = ("Monospace", 50)
 
 # Define functions for each interface
 def show_first_interface():
@@ -86,7 +86,7 @@ def show_talking_interface(language):
         talk_label.config(text=text)
         root.after(300, animate_face)
 
-    talk_label = tk.Label(root, text="", font=("Monospace", 100), bg="black", fg="orange")
+    talk_label = tk.Label(root, text="", font=("Monospace", 120), bg="black", fg="orange")
     talk_label.pack(expand=True)
     animate_face()
 
@@ -96,7 +96,7 @@ def show_talking_interface(language):
             label.config(text=text[:char_index+1] + ("|" if show_cursor else ""))
             label.after(150, typing_effect, label, text, char_index+1, not show_cursor)
 
-    typing_label = tk.Label(root, text="", font=("Monospace", 20), fg="orange", bg="black")
+    typing_label = tk.Label(root, text="", font=("Monospace", 25), fg="orange", bg="black")
     typing_label.place(relx=0.5, rely=0.9, anchor="center")
     typing_effect(typing_label, "Talking...")
 
@@ -117,7 +117,7 @@ def show_listening_interface():
         listen_label.config(text=text)
         root.after(500, animate_face)  # Adjust this to control the blink speed
 
-    listen_label = tk.Label(root, text="", font=("Monospace", 120), bg="black", fg="white")
+    listen_label = tk.Label(root, text="", font=("Monospace", 140), bg="black", fg="white")
     listen_label.pack(expand=True)
     animate_face()
 
@@ -127,7 +127,7 @@ def show_listening_interface():
             label.config(text=text[:char_index+1] + ("|" if show_cursor else ""))
             label.after(150, typing_effect, label, text, char_index+1, not show_cursor)
 
-    typing_label = tk.Label(root, text="", font=("Monospace", 20), fg="white", bg="black")
+    typing_label = tk.Label(root, text="", font=("Monospace", 25), fg="white", bg="black")
     typing_label.place(relx=0.5, rely=0.9, anchor="center")
     typing_effect(typing_label, "Listening...")
 
