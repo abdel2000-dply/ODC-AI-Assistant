@@ -32,7 +32,7 @@ def setup_assistant():
         print(f"Data directory contains: {', '.join(f.name for f in data_dir.glob('*'))}")
         print("\nYou can now run:")
         print("1. python run_scheduler.py (in one terminal)")
-        print("2. python src/main.py (in another terminal)")
+        print("2. python main.py (in another terminal)")
     else:
         print("\nSetup completed with warnings. Please check the logs above.")
 
