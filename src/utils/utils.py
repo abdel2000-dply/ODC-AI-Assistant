@@ -83,7 +83,7 @@ def record_audio_to_file(file_name="live_audio.wav"):
     frames = []
 
     try:
-        for _ in range(0, int(16000 / 1024 * 5)):  # Record for 5 seconds
+        for _ in range(0, int(16000 / 1024 * 8)):  # Record for 5 seconds
             data = stream.read(1024)
             frames.append(data)
     except KeyboardInterrupt:
