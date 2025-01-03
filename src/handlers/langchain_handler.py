@@ -124,7 +124,7 @@ class LangChainHandler:
             - UNCLEAR: It is not clear if the question is related to the Orange Digital Center.
 
         Guidelines:
-        - If the question mentions specific programs, events, or facilities at the Orange Digital Center, classify it as RAG_RELEVANT.
+        - If the question mentions specific programs, events, Trainings, registarion, materials, support, or facilities at the Orange Digital Center, classify it as RAG_RELEVANT.
         - If the question is about general knowledge or unrelated topics, classify it as GENERAL_KNOWLEDGE.
         - If the question is ambiguous or lacks enough context to determine its relevance, classify it as UNCLEAR.
 
