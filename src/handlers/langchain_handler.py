@@ -119,9 +119,19 @@ class LangChainHandler:
         # classification prompt
         self.classification_prompt = """
         You are a classifier that analyzes a question and categorizes it into one of these three categories:
-            - RAG_RELEVANT: The question is related to the Orange Digital Center and it can be answered with the FabLab context
-            - GENERAL_KNOWLEDGE: The question is general and not related to the Orange Digital Center
-            - UNCLEAR: It is not clear if the question is related to the Orange Digital Center
+            - RAG_RELEVANT: The question is related to the Orange Digital Center and it can be answered with the FabLab context.
+            - GENERAL_KNOWLEDGE: The question is general and not related to the Orange Digital Center.
+            - UNCLEAR: It is not clear if the question is related to the Orange Digital Center.
+
+        Guidelines:
+        - If the question mentions specific programs, events, or facilities at the Orange Digital Center, classify it as RAG_RELEVANT.
+        - If the question is about general knowledge or unrelated topics, classify it as GENERAL_KNOWLEDGE.
+        - If the question is ambiguous or lacks enough context to determine its relevance, classify it as UNCLEAR.
+
+        Examples:
+        - "What programs does the Orange Digital Center offer?" -> RAG_RELEVANT
+        - "How do I learn to code?" -> GENERAL_KNOWLEDGE
+        - "Can you tell me more about the center?" -> UNCLEAR
 
         Question: {question}
         Category:
