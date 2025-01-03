@@ -222,7 +222,8 @@ class AssistantUI(BoxLayout):
 
 class AssistantApp(App):
     def build(self):
-        Window.fullscreen = 'auto'
+        Window.size = (480, 320)  # Set the window size to match the 3.5" display resolution
+        Window.fullscreen = False  # Disable fullscreen to fit the small screen
         print("Building AssistantUI...")
         return AssistantUI()
 
