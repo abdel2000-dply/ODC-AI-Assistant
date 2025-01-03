@@ -151,11 +151,11 @@ class MessageBubble(BoxLayout):
 
 class AssistantUI(BoxLayout):
     status_text = StringProperty('Ready')
-    current_lang = StringProperty('en')
+    current_lang = StringProperty('English')
     is_recording = BooleanProperty(False)
     visualizer_angle = NumericProperty(0)  # For the recording animation
     
-    languages = ['en','fr','ar']
+    languages = ['English','French','Arabic']
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
