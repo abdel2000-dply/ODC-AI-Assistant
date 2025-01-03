@@ -1,5 +1,5 @@
 import os
-os.environ['DISPLAY'] = ':99.0'
+os.environ['DISPLAY'] = ':0'
 from pyvirtualdisplay import Display
 
 display = Display(visible=0, size=(800, 600))
