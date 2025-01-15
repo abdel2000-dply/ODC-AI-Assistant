@@ -38,8 +38,8 @@ class Assistant:
             await self.voices[self.lang].save(output_file)
             
             # Play audio
-            command = f'mpv --no-terminal {output_file}'
-            # command = fr'"C:\Users\Home\Downloads\mpv-i686-w64-mingw32\mpv.exe" {output_file}'
+            # command = f'mpv --no-terminal {output_file}'
+            command = fr'"C:\Users\Home\Downloads\mpv-i686-w64-mingw32\mpv.exe" {output_file}'
             os.system(command)
         finally:
             if os.path.exists(output_file):
