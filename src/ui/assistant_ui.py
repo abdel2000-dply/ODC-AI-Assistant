@@ -1,3 +1,6 @@
+import os
+import wave
+import pyaudio
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -14,6 +17,7 @@ from kivy.lang import Builder
 from kivy.graphics import Color, Rectangle, Ellipse
 from kivy.uix.popup import Popup
 from kivy.uix.dropdown import DropDown
+from src.utils.utils import transcribe_audio_with_groq, recognize_speech_from_mic, record_audio_to_file  # Import updated functions
 
 Builder.load_string('''
 <AssistantUI>:
@@ -169,6 +173,9 @@ class AssistantUI(BoxLayout):
         self.animation_event = None
         self.visualizer_animation = None  # To store the visualizer animation
         Window.clearcolor = (0, 0, 0, 1)  # Set background to dark black
+        self.audio_stream = None
+        self.audio_frames = []
+        self.pyaudio_instance = pyaudio.PyAudio()
 
         # Create Dropdown for languages
         self.language_dropdown = DropDown()
@@ -177,7 +184,6 @@ class AssistantUI(BoxLayout):
             btn.bind(on_release=lambda btn: self.language_selection(btn.text))
             self.language_dropdown.add_widget(btn)
 
-        
     def show_language_dropdown(self):
         self.language_dropdown.open(self.children[0].children[1].children[0])
     
@@ -195,13 +201,45 @@ class AssistantUI(BoxLayout):
     def start_recording(self):
         self.status_text = 'Recording...'
         self.start_visualizer_animation()
+        self.audio_frames = []
+        self.audio_stream = self.pyaudio_instance.open(format=pyaudio.paInt16,
+                                                       channels=1,
+                                                       rate=16000,
+                                                       input=True,
+                                                       frames_per_buffer=1024)
+        Clock.schedule_interval(self.record_audio_chunk, 0.1)
 
+    def record_audio_chunk(self, dt):
+        data = self.audio_stream.read(1024)
+        self.audio_frames.append(data)
 
     def stop_recording(self):
         self.status_text = 'Processing...'
         self.stop_visualizer_animation()
-        Clock.schedule_once(lambda dt: self.reset_status(), 2)
-        
+        Clock.unschedule(self.record_audio_chunk)
+        self.audio_stream.stop_stream()
+        self.audio_stream.close()
+        self.save_audio_to_file()
+        Clock.schedule_once(lambda dt: self.process_audio(), 1)
+
+    def save_audio_to_file(self, file_name="live_audio.wav"):
+        wf = wave.open(file_name, 'wb')
+        wf.setnchannels(1)
+        wf.setsampwidth(self.pyaudio_instance.get_sample_size(pyaudio.paInt16))
+        wf.setframerate(16000)
+        wf.writeframes(b''.join(self.audio_frames))
+        wf.close()
+
+    def process_audio(self):
+        question = transcribe_audio_with_groq(language=self.current_lang)
+        if not question:
+            question = recognize_speech_from_mic(language=self.current_lang)
+        if question:
+            self.add_message(question, is_user=True)
+            response = self.assistant.get_response(question)
+            self.add_message(response, is_user=False)
+        self.reset_status()
+
     def reset_status(self):
         self.status_text = 'Ready'
 
@@ -209,7 +247,6 @@ class AssistantUI(BoxLayout):
         self.visualizer_animation = Animation(visualizer_angle=360, duration=2)
         self.visualizer_animation.repeat = True  # Set repeat attribute correctly
         self.visualizer_animation.start(self)
-
 
     def stop_visualizer_animation(self):
         if self.visualizer_animation:
