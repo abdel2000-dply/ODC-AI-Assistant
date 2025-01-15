@@ -71,7 +71,7 @@ class EventScraper:
     def _save_events(self, events):
         """Save events to JSON file"""
         print(f"Saving events to {self.events_file}")
-        events_data = [{
+        events_data = {{
             "content": {
                 "title": event.title,
                 "start_date": event.start_date,
@@ -82,7 +82,7 @@ class EventScraper:
                 "description": event.description,
                 "venue": event.venue
             }
-        } for event in events]
+        } for event in events}
         
         with open(self.events_file, 'w', encoding='utf-8') as f:
             json.dump(events_data, f, ensure_ascii=False, indent=4)

@@ -36,6 +36,9 @@ class LangChainHandler:
         )
         
         self.vector_store = DocumentProcessor.load_vector_store()
+
+        if self.vector_store is None:
+            raise ValueError("Failed to load vector store. Please check the DocumentProcessor configuration.")
         
         self.selected_language = selected_language
         self.greetings = {
@@ -202,19 +205,16 @@ class LangChainHandler:
                 response = self.general_chain.invoke({"question": question})
                 return {"answer": response['text'], "sources": []}
             else:
-                 fallback_messages = {
-                    'en': "I'm not sure what you mean. Can you please ask another question about FabLab Orange Digital Center?",
-                    'fr': "Je ne suis pas sûr de ce que vous voulez dire. Pouvez-vous poser une autre question sur FabLab Orange Digital Center?",
-                    'ar': "مفهمتش سؤالك مزيان. ممكن تسول شي سؤال آخر على FabLab Orange Digital Center؟"
-                }
-                 return {"answer": fallback_messages.get(self.selected_language, fallback_messages['en']), "sources": []}
+                # Use general LLM for fallback
+                response = self.general_chain.invoke({"question": question})
+                return {"answer": response['text'], "sources": []}
         except Exception as e:
-             error_messages = {
+            error_messages = {
                 'en': "Sorry, I encountered an error.",
                 'fr': "Désolé, j'ai rencontré une erreur.",
                 'ar': "عذراً، حدث خطأ ما."
             }
-             return {"answer": error_messages.get(self.selected_language, error_messages['en']), "sources": []}
+            return {"answer": error_messages.get(self.selected_language, error_messages['en']), "sources": []}
 
 if __name__ == "__main__":
     # Get language preference at startup

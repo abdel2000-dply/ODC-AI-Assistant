@@ -13,14 +13,14 @@ def setup_assistant():
     data_dir.mkdir(exist_ok=True)
     
     # 2. Scrape latest events
-    # print("\n1. Scraping latest events...")
-    # scraper = EventScraper()
-    # events = scraper.scrape_events()
+    print("\n1. Scraping latest events...")
+    scraper = EventScraper()
+    events = scraper.scrape_events()
     
-    # if not events:
-    #     print("Note: Using default events content")
-    # else:
-    #     print(f"Successfully scraped {len(events)} events")
+    if not events:
+        print("Note: Using default events content")
+    else:
+        print(f"Successfully scraped {len(events)} events")
     
     # 3. Process all documents and create vector store
     print("\n2. Processing all documents...")
