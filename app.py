@@ -25,7 +25,7 @@ Builder.load_string('''
 <AssistantUI>:
     canvas.before:
         Color:
-            rgba: 0, 0, 0, 1  # Set background to dark black
+            rgba: 0.1, 0.1, 0.1, 1  # Darkest dark background
         Rectangle:
             pos: self.pos
             size: self.size
@@ -63,14 +63,14 @@ Builder.load_string('''
             Label:
                 text: root.status_text
                 font_size: '20sp'
-                color: 0.5, 0.8, 1, 1
+                color: (0.7, 0.7, 0.7, 1) # light gray
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
             
             # Recording status Icon
             Label:
                 text: '●' if root.is_recording else ''
                 font_size: '24sp'
-                color: 1, 0, 0, 1
+                color: 1, 0, 0, 1 # Red
                 size_hint_x: None
                 width: 20
                 pos_hint: {'center_y': 0.5}
@@ -86,7 +86,8 @@ Builder.load_string('''
                 text: root.current_lang
                 on_release: root.show_language_dropdown()
                 background_normal: ''
-                background_color: (0.2, 0.6, 1, 1)
+                background_color: (0.3, 0.3, 0.3, 1) # Dark Gray
+                color: (1, 0.913, 0.788, 1) # Blanched Almond
                 font_size: '20sp'
 
         # Chat History
@@ -115,7 +116,7 @@ Builder.load_string('''
                 
                 canvas:
                     Color:
-                        rgba: (1, 0, 0, 0.8) if root.is_recording else (1, 0.5, 0, 0.8)
+                        rgba: (1, 0, 0, 0.8) if root.is_recording else (1, 0.5, 0, 0.8) # Red/Orange
                     Ellipse:
                         pos: self.x + 5, self.y + 5
                         size: self.width - 10, self.height - 10
@@ -129,9 +130,10 @@ Builder.load_string('''
                 size: 250, 70
                 pos_hint: {'center_x': 0.5}
                 background_normal: ''
-                background_color: (1, 0, 0, 1) if root.is_recording else (1, 0.5, 0, 1)
-                on_press: root.toggle_recording()
+                background_color: (1, 0, 0, 1) if root.is_recording else (1, 0.5, 0, 1)  # Red/Orange
                 font_size: '20sp'
+
+                on_press: root.toggle_recording()
 
 <MessageBubble@BoxLayout>:
     orientation: 'vertical'
@@ -152,14 +154,14 @@ Builder.load_string('''
         text_size: root.width * 0.8, None
         size_hint_y: None
         height: self.texture_size[1]
-        color: 1, 1, 1, 1
+        color: 0,0,0,1 # Black
         halign: 'left' if root.is_user else 'right'
         valign: 'middle'
         font_size: '18sp'
 ''')
 
 class MessageBubble(BoxLayout):
-    bg_color = [0.2, 0.6, 1, 1]
+    bg_color = (1, 0.913, 0.788, 0.8) # Blanched Almond with some transparency
     is_user = BooleanProperty(False)
 
 class AssistantUI(BoxLayout):
@@ -174,7 +176,7 @@ class AssistantUI(BoxLayout):
         super().__init__(**kwargs)
         self.animation_event = None
         self.visualizer_animation = None  # To store the visualizer animation
-        Window.clearcolor = (0, 0, 0, 1)  # Set background to dark black
+        Window.clearcolor = (0.1, 0.1, 0.1, 1)  # Set background to dark black
         self.audio_stream = None
         self.audio_frames = []
         self.pyaudio_instance = pyaudio.PyAudio()
@@ -268,7 +270,7 @@ class AssistantUI(BoxLayout):
     def add_message(self, text, is_user=True):
         bubble = MessageBubble(is_user=is_user)
         bubble.ids.msg_label.text = text
-        bubble.bg_color = [0.2, 0.6, 1, 1] if is_user else [1, 0.5, 0, 1]
+        bubble.bg_color = (1, 0.913, 0.788, 0.8) if is_user else (1, 0.5, 0, 0.8)
         self.ids.chat_history.add_widget(bubble)
 
 class AssistantApp(App):
