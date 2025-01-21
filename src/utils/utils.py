@@ -55,8 +55,8 @@ async def speak(text, lang='en'):
         await communicate.save(output_file)
 
         # Play the audio file using mpv
-        # command = f'mpv --no-terminal {output_file}'
-        command = fr'"C:\Users\Home\Downloads\mpv-i686-w64-mingw32\mpv.exe" {output_file}'
+        command = f'mpv --no-terminal {output_file}'
+        # command = fr'"C:\Users\Home\Downloads\mpv-i686-w64-mingw32\mpv.exe" {output_file}'
         os.system(command)
     except Exception as e:
         print(f"Error during TTS or playback: {e}")  # Informative error message
