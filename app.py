@@ -95,6 +95,8 @@ Builder.load_string('''
             size_hint_y: 0.45
             size_hint_x: 0.9
             pos_hint: {'center_x': 0.5}
+            scroll_type: ['content']
+            effect_cls: 'ScrollEffect'
             BoxLayout:
                 id: chat_history
                 orientation: 'vertical'
@@ -248,10 +250,11 @@ class AssistantUI(BoxLayout):
         if not question:
             question = recognize_speech_from_mic(language=self.langchain_handler.selected_language)
         if question:
-            self.add_message(question, is_user=True)
-            response = await asyncio.to_thread(self.langchain_handler.get_response, question)
-            self.add_message(response['answer'], is_user=False)
-            await speak(response['answer'], lang=self.langchain_handler.selected_language)
+             self.add_message(question, is_user=True)
+             response = await asyncio.to_thread(self.langchain_handler.get_response, question)
+             self.add_message(response['answer'], is_user=False)
+             await speak(response['answer'], lang=self.langchain_handler.selected_language)
+
         self.reset_status()
 
     def reset_status(self):
