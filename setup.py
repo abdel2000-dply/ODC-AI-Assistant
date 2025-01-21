@@ -12,7 +12,7 @@ def setup_assistant():
     data_dir = Path("./data")
     data_dir.mkdir(exist_ok=True)
     
-    # 2. Scrape latest events
+    # 2. Scrape latest events with EventScraper
     print("\n1. Scraping latest events...")
     scraper = EventScraper()
     events = scraper.scrape_events()
