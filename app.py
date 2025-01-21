@@ -281,6 +281,22 @@ class AssistantApp(App):
         Window.size = (640, 480)  # Set the window size to match the 3.5" display resolution
         Window.fullscreen = True  # Enable fullscreen mode
         print("Building AssistantUI...")
+        
+        # Force Kivy to refresh input configuration (touch events)
+        from kivy.config import Config
+        import os
+        
+        config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.ini')
+
+        if os.path.exists(config_path):
+           Config.read(config_path)
+           Config.set('input', 'mouse', 'mouse')
+           Config.set('kivy', 'window_size', '640x480')
+           Config.set('kivy', 'window_icon', 'None')
+           Config.write()
+        else:
+            print(f"Config file not found at {config_path}")
+        
         return AssistantUI()
 
 if __name__ == '__main__':
