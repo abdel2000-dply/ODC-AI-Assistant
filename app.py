@@ -97,6 +97,8 @@ Builder.load_string('''
             pos_hint: {'center_x': 0.5}
             scroll_type: ['content']
             effect_cls: 'ScrollEffect'
+            touch_mode: 'scroll'  # added this
+            multitouch_sim: False  # added this
             BoxLayout:
                 id: chat_history
                 orientation: 'vertical'
