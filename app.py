@@ -25,7 +25,7 @@ Builder.load_string('''
 <AssistantUI>:
     canvas.before:
         Color:
-            rgba: 0.1, 0.1, 0.1, 1  # Darkest dark background
+            rgba: 0, 0, 0, 1  # Darkest dark background
         Rectangle:
             pos: self.pos
             size: self.size
