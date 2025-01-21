@@ -1,11 +1,12 @@
 from langchain_cohere import ChatCohere
-from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts import PromptTemplate, ChatPromptTemplate
 from src.utils.document_processor import DocumentProcessor
 import os
 from dotenv import load_dotenv
-from langchain.chains import LLMChain
+from langchain_core.runnables import RunnablePassthrough, RunnableParallel
+from langchain_core.output_parsers import StrOutputParser
+from typing import Dict, Any
 
 class LangChainHandler:
     SUPPORTED_LANGUAGES = {
@@ -48,7 +49,7 @@ class LangChainHandler:
             'ar': "سلام! كيفاش نعاونك؟"
         }
         
-        prompt_template = """You are a friendly and professional AI Assistant for Fablab Orange digital center. 
+        rag_prompt_template = """You are a friendly and professional AI Assistant for Fablab Orange digital center. 
         You must ALWAYS respond in {language} language regardless of the content language.
         Maintain a helpful and professional tone.
         Be as brief as possible and avoid unnecessary details, remember it's a conversation so short and direct answers are preferred to keep a conversation.
@@ -80,20 +81,21 @@ class LangChainHandler:
         # Custom retriever with control over number of results (k)
         retriever = self.vector_store.as_retriever(search_kwargs={"k": 5})
         
-        self.chain = ConversationalRetrievalChain.from_llm(
-            llm=self.llm_rag, # RAG Specific LLM
-            retriever=retriever,
-            memory=self.memory,
-            combine_docs_chain_kwargs={
-                "prompt": PromptTemplate(
-                    template=prompt_template,
-                    input_variables=["context", "chat_history", "question"]
-                )
-            },
-            return_source_documents=True,
-            chain_type="stuff",
-            # question_generator=None, # set to None for no standalone question generation
-            # verbose=True
+        self.rag_prompt = ChatPromptTemplate.from_template(rag_prompt_template)
+
+        # RAG chain as a runnable sequence
+        def load_memory_and_retrive(inputs: Dict[str, Any]):
+            memory_variables = self.memory.load_memory_variables({})
+            chat_history = memory_variables.get("chat_history", [])
+            retrieved_docs = retriever.get_relevant_documents(inputs['question'])
+            context = "\n".join([doc.page_content for doc in retrieved_docs])
+            return {"context": context, "chat_history": chat_history, **inputs}
+        
+        self.rag_chain = (
+            load_memory_and_retrive
+            | self.rag_prompt
+            | self.llm_rag
+            | StrOutputParser()
         )
         
         general_prompt_template = """You are a friendly and professional AI Assistant. 
@@ -110,11 +112,12 @@ class LangChainHandler:
 
         Answer:"""
         
+        self.general_prompt = PromptTemplate.from_template(general_prompt_template)
         # General LLM chain for questions not on the context of the fablab
-        self.general_chain = LLMChain(
-            llm=self.llm_general,
-            prompt=PromptTemplate(template=general_prompt_template),
-            # verbose=True
+        self.general_chain = (
+            self.general_prompt
+            | self.llm_general
+            | StrOutputParser()
         )
 
         self.clear_memory()  # Clear memory on initialization
@@ -140,6 +143,11 @@ class LangChainHandler:
         Category:
         """
 
+        self.classification_chain = (
+            PromptTemplate.from_template(self.classification_prompt)
+            | self.llm_general
+            | StrOutputParser()
+        )
     @classmethod
     def select_language(cls):
         print("\nPlease select your preferred language:")
@@ -156,8 +164,8 @@ class LangChainHandler:
         """Clear the conversation memory"""
         if hasattr(self, 'memory'):
             self.memory.clear()
-        if hasattr(self, 'chain'):
-            self.chain.memory.clear()
+        # if hasattr(self, 'chain'):
+        #     self.chain.memory.clear() #no chain so no memory to clear
 
     def is_basic_chat(self, text):
         """Check if the input is a basic chat interaction"""
@@ -178,9 +186,7 @@ class LangChainHandler:
     def classify_question(self, question):
         """Classifies the input question as RAG_RELEVANT, GENERAL_KNOWLEDGE or UNCLEAR"""
         try:
-            classification_chain = LLMChain(llm = self.llm_general, prompt=PromptTemplate(template=self.classification_prompt))
-            response = classification_chain.invoke({"question": question})
-            classification = response['text'].strip()
+            classification = self.classification_chain.invoke({"question": question})
             return classification
         except Exception as e:
             return "UNCLEAR"
@@ -190,24 +196,24 @@ class LangChainHandler:
             classification = self.classify_question(question)
 
             if classification == "RAG_RELEVANT":
-                memory_variables = self.memory.load_memory_variables({})
-                chat_history = memory_variables.get("chat_history", "")
-                response = self.chain.invoke({
+                response = self.rag_chain.invoke({
                     "question": question,
                     "language": self.selected_language
                 })
+                retriever = self.vector_store.as_retriever(search_kwargs={"k": 5})
+                retrieved_docs = retriever.get_relevant_documents(question)
                 return {
-                    "answer": response.get("answer", "No answer generated"),
+                    "answer": response,
                     "sources": [doc.metadata.get('source', 'Unknown')
-                            for doc in response.get("source_documents", [])]
+                            for doc in retrieved_docs]
                 }
             elif classification == "GENERAL_KNOWLEDGE":
                 response = self.general_chain.invoke({"question": question})
-                return {"answer": response['text'], "sources": []}
+                return {"answer": response, "sources": []}
             else:
                 # Use general LLM for fallback
                 response = self.general_chain.invoke({"question": question})
-                return {"answer": response['text'], "sources": []}
+                return {"answer": response, "sources": []}
         except Exception as e:
             error_messages = {
                 'en': "Sorry, I encountered an error.",
