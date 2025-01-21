@@ -1,3 +1,34 @@
 {
-    "message": "I'm sorry I couldn't access that information now due to some technical issues. Please ask a manager or visit https://www.orangedigitalcenters.com/country/ma/events for the latest events."
+    "content": [
+        {
+            "title": "ODC Agadir - Formation E-commerce",
+            "start_date": "27 janvier 2025 à 09:30 GMT+1",
+            "end_date": "29 janvier 2025 à 16:00 GMT+1",
+            "location": "Orange Digital Center Agadir",
+            "month": "janv.",
+            "day": "27",
+            "description": "Prenez le contrôle de votre réussite digitale grâce à une formation conçue pour vous initier aux fondamentaux du commerce en ligne. 💻\nApprenez à créer et gérer votre boutique en ligne, à maîtriser les stratégies de marketing digital, et à optimiser la gestion des paiements et de la logistique. 📦✨\nDécouvrez les compétences clés pour développer votre activité, attirer votre audience cible, et vous démarquer dans un marché compétitif. 🚀💡\n📅 Du 27 au 29 janvier 2025\n🔗 Inscrivez-vous dès maintenant pour donner vie à vos ambitions e-commerce et conquérir le monde numérique ! 🙌",
+            "venue": ""
+        },
+        {
+            "title": "ODC Agadir - Solar Green",
+            "start_date": "27 janvier 2025 à 09:30 GMT+1",
+            "end_date": "14 février 2025 à 16:00 GMT+1",
+            "location": "Orange Digital Center Agadir",
+            "month": "janv.",
+            "day": "27",
+            "description": "Plongez dans l'univers de l'énergie solaire !\n📅 Dates : Du 15 janvier au 28 février 2025\n⏰ Horaires : 9h30 à 16h00\n👉 Réservez votre place dès maintenant et devenez un acteur du changement énergétique ! 🔧⚡",
+            "venue": ""
+        },
+        {
+            "title": "Appel à candidatures Stage PFE",
+            "start_date": "3 février 2025 à 09:00 GMT+1",
+            "end_date": "27 juin 2025 à 18:00 GMT+1",
+            "location": "ODC Rabat & Agadir",
+            "month": "févr.",
+            "day": "03",
+            "description": "Vous êtes en 5ème année universitaire et vous cherchez le stage PFE idéal pour concrétiser votre projet professionnel ? 🎓\nCe stage PFE vous propulse dans un environnement professionnel innovant, où vous travaillerez sur des projets concrets et stratégiques en lien avec les dernières avancées technologiques. 💻🚀\nEncadré par des experts, vous développerez vos compétences techniques, votre esprit critique et vos soft-skills tout en contribuant activement à des initiatives à fort impact.\nUne opportunité idéale pour transformer votre PFE en tremplin vers une carrière prometteuse ! 💡🌟\n📅 Début : 3 février 2025\n⏳ Deadline pour les candidatures : 10 janvier 2025\nDéposez votre CV, avant le 10 Janvier !",
+            "venue": ""
+        }
+    ]
 }
