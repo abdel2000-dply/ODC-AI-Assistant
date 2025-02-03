@@ -21,6 +21,8 @@ class JSONLoader:
                 content = data['knowledge_base']
             elif 'message' in data:
                 content = data['message']
+            elif 'trainings' in data:
+                content = data['trainings']
             else:
                 content = data.get('content', '')
             return Document(page_content=str(content), metadata={"source": str(self.file_path)})
