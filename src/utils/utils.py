@@ -7,6 +7,9 @@ import edge_tts
 import asyncio
 from dotenv import load_dotenv
 import noisereduce as nr
+import sounddevice as sd
+import numpy as np
+import scipy.io.wavfile as wav
 
 load_dotenv()
 
@@ -67,45 +70,24 @@ async def speak(text, lang='en'):
             os.remove(output_file)
 
 
-def record_audio_to_file(file_name="live_audio.wav"):
+def record_audio_to_file(file_name="live_audio.wav", duration=5, sample_rate=44100):
     """Records audio from the microphone, applies noise reduction, and saves it to a WAV file."""
-    p = pyaudio.PyAudio()
-
-    # Open a stream for recording
-    stream = p.open(format=pyaudio.paInt16,
-                    channels=1,
-                    rate=16000,
-                    input=True,
-                    frames_per_buffer=1024)
-
-    print("Recording... Speak into the microphone.")
-    frames = []
+    print("Recording...")
 
     try:
-        for _ in range(0, int(16000 / 1024 * 8)):  # Record for 5 seconds
-            data = stream.read(1024)
-            frames.append(data)
-    except KeyboardInterrupt:
-        pass
+        # Record audio
+        audio_data = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1, dtype='int16')
+        sd.wait()  # Wait until recording is finished
 
-    print("Recording stopped.")
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
+        # Apply noise reduction
+        audio_data = audio_data.flatten()
+        reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=sample_rate)
 
-    # Convert frames to numpy array
-    audio_data = np.frombuffer(b''.join(frames), dtype=np.int16)
-
-    # Apply noise reduction
-    reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=16000)
-
-    # Save the audio to file
-    wf = wave.open(file_name, 'wb')
-    wf.setnchannels(1)
-    wf.setsampwidth(p.get_sample_size(pyaudio.paInt16))
-    wf.setframerate(16000)
-    wf.writeframes(reduced_noise_audio.tobytes())
-    wf.close()
+        # Save to a WAV file
+        wav.write(file_name, sample_rate, reduced_noise_audio.astype(np.int16))
+        print(f"Recording saved as '{file_name}'.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 def record_audio_to_file_stream(frames, file_name="live_audio.wav", pyaudio_instance = None):
     """Saves a list of audio frames to a WAV file."""
