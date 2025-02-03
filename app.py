@@ -222,14 +222,71 @@ class AssistantUI(BoxLayout):
             self.stop_recording()
         self.is_recording = not self.is_recording
 
+    def normalize_audio(self, audio_data, target_rms=0.1):
+        """Normalize audio using RMS-based amplitude normalization"""
+        # Calculate RMS of audio
+        rms = np.sqrt(np.mean(np.square(audio_data)))
+        if rms > 0:
+            # Calculate scaling factor
+            scaling_factor = target_rms / rms
+            # Scale audio
+            normalized_audio = audio_data * scaling_factor
+            # Clip to prevent overflow
+            normalized_audio = np.clip(normalized_audio, -1.0, 1.0)
+            return normalized_audio
+        return audio_data
+
+    def save_audio_to_file(self, file_name="live_audio.wav"):
+        """Save recorded audio with improved quality"""
+        try:
+            # Concatenate all audio frames
+            audio_data = np.concatenate(self.audio_frames, axis=0).flatten()
+            
+            # Apply noise reduction
+            reduced_noise_audio = nr.reduce_noise(
+                y=audio_data, 
+                sr=44100,
+                prop_decrease=0.75,  # Adjust noise reduction strength
+                n_fft=2048,
+                win_length=2048,
+                hop_length=512
+            )
+            
+            # Normalize audio
+            normalized_audio = self.normalize_audio(reduced_noise_audio)
+            
+            # Convert to int16
+            max_val = np.iinfo(np.int16).max
+            final_audio = np.int16(normalized_audio * max_val)
+            
+            # Save with higher quality settings
+            wav.write(
+                file_name, 
+                44100, 
+                final_audio
+            )
+            print(f"Recording saved as '{file_name}'.")
+        except Exception as e:
+            print(f"An error occurred while saving audio: {e}")
+
     def start_recording(self):
         self.status_text = 'Recording...'
         self.start_visualizer_animation()
         self.audio_frames = []
-        self.audio_stream = sd.InputStream(samplerate=44100, channels=1, dtype='int16', callback=self.audio_callback)
+        
+        # Configure input stream with better quality settings
+        self.audio_stream = sd.InputStream(
+            samplerate=44100,
+            channels=1,
+            dtype=np.float32,  # Use float32 for better quality
+            blocksize=2048,    # Larger block size for better processing
+            callback=self.audio_callback
+        )
         self.audio_stream.start()
 
     def audio_callback(self, indata, frames, time, status):
+        if status:
+            print(f'Audio callback status: {status}')
         self.audio_frames.append(indata.copy())
 
     def stop_recording(self):
@@ -239,19 +296,6 @@ class AssistantUI(BoxLayout):
         self.audio_stream.close()
         self.save_audio_to_file()
         Clock.schedule_once(lambda dt: asyncio.run(self.process_audio()), 1)
-
-    def save_audio_to_file(self, file_name="live_audio.wav"):
-        audio_data = np.concatenate(self.audio_frames, axis=0).flatten()
-        
-        # Apply noise reduction
-        reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=44100)
-        
-        # Amplify the audio
-        max_val = np.iinfo(np.int16).max
-        amplified_audio = np.int16(reduced_noise_audio / np.max(np.abs(reduced_noise_audio)) * max_val)
-        
-        wav.write(file_name, 44100, amplified_audio)
-        print(f"Recording saved as '{file_name}'.")
 
     async def process_audio(self):
         question = transcribe_audio_with_groq(audio_file="live_audio.wav", language=self.langchain_handler.selected_language)
