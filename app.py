@@ -237,27 +237,55 @@ class AssistantUI(BoxLayout):
         return audio_data
 
     def save_audio_to_file(self, file_name="live_audio.wav"):
-        """Save recorded audio with improved quality"""
+        """Save recorded audio with improved quality and enhanced noise reduction"""
         try:
             # Concatenate all audio frames
             audio_data = np.concatenate(self.audio_frames, axis=0).flatten()
             
-            # Apply noise reduction
+            # First pass of noise reduction - aggressive
             reduced_noise_audio = nr.reduce_noise(
                 y=audio_data, 
                 sr=44100,
-                prop_decrease=0.75,  # Adjust noise reduction strength
+                prop_decrease=0.95,  # More aggressive noise reduction
                 n_fft=2048,
                 win_length=2048,
-                hop_length=512
+                hop_length=512,
+                n_jobs=-1,  # Use all CPU cores
+                use_tensorflow=False,  # Use numpy backend for better control
+                thresh_n_mult_nonstationary=2,
+                stationary=False,  # Better for voice
+                chunk_size=600000,
+                padding=30000
+            )
+            
+            # Second pass - gentler for preserving voice
+            reduced_noise_audio = nr.reduce_noise(
+                y=reduced_noise_audio,
+                sr=44100,
+                prop_decrease=0.6,
+                n_fft=1024,
+                win_length=1024,
+                hop_length=256,
+                n_jobs=-1,
+                use_tensorflow=False,
+                stationary=True,  # Better for remaining static noise
+                chunk_size=600000,
+                padding=30000
             )
             
             # Normalize audio
-            normalized_audio = self.normalize_audio(reduced_noise_audio)
+            normalized_audio = self.normalize_audio(reduced_noise_audio, target_rms=0.2)  # Increased target RMS
             
-            # Convert to int16
+            # Apply a gentle high-pass filter to remove low frequency noise
+            from scipy.signal import butter, filtfilt
+            nyquist = 44100 / 2
+            cutoff = 80  # Hz
+            b, a = butter(4, cutoff/nyquist, btype='high', analog=False)
+            filtered_audio = filtfilt(b, a, normalized_audio)
+            
+            # Convert to int16 with dithering to reduce quantization noise
             max_val = np.iinfo(np.int16).max
-            final_audio = np.int16(normalized_audio * max_val)
+            final_audio = np.int16(np.clip(filtered_audio * max_val, -max_val, max_val))
             
             # Save with higher quality settings
             wav.write(
@@ -278,8 +306,9 @@ class AssistantUI(BoxLayout):
         self.audio_stream = sd.InputStream(
             samplerate=44100,
             channels=1,
-            dtype=np.float32,  # Use float32 for better quality
-            blocksize=2048,    # Larger block size for better processing
+            dtype=np.float32,
+            blocksize=4096,    # Increased block size
+            latency='low',     # Lower latency
             callback=self.audio_callback
         )
         self.audio_stream.start()
