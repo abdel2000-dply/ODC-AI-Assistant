@@ -72,7 +72,7 @@ class EventScraper:
         """Save events to JSON file"""
         print(f"Saving events to {self.events_file}")
         events_data = {
-            "content": [{
+            "trainings": [{
                 "info": "This is a list of upcoming trainings/events/formation in ODC Agadir",
                 "title": event.title,
                 "start_date": event.start_date,
@@ -94,7 +94,7 @@ class EventScraper:
         """Save default content when scraping fails"""
         print("Saving default content...")     
         default_content = {
-            "content": "I'm sorry I couldn't access that information now due to some technical issues. Please ask a manager or visit https://www.orangedigitalcenters.com/country/ma/events for the latest events."
+            "trainings": "I'm sorry I couldn't access that information now due to some technical issues. Please ask a manager or visit https://www.orangedigitalcenters.com/country/ma/events for the latest events."
         }
         with open(self.events_file, 'w', encoding='utf-8') as f:
             json.dump(default_content, f, ensure_ascii=False, indent=4)
