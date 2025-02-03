@@ -25,6 +25,9 @@ def recognize_speech_from_mic(language='en-US', device_index=3):
     except OSError as e:
         print(f"Could not access the microphone (device index {device_index}): {e}")
         return None
+    except AttributeError as e:
+        print(f"Microphone stream error: {e}")
+        return None
 
     try:
         # Recognize speech using Google's speech recognition
