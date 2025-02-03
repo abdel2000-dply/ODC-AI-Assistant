@@ -59,8 +59,8 @@ async def speak(text, lang='en'):
         await communicate.save(output_file)
 
         # Play the audio file using mpv
-        command = f'mpv --no-terminal {output_file}'
-        # command = fr'"C:\Users\Home\Downloads\mpv-i686-w64-mingw32\mpv.exe" {output_file}'
+        # command = f'mpv --no-terminal {output_file}'
+        command = fr'"C:\Users\Home\Downloads\mpv-i686-w64-mingw32\mpv.exe" {output_file}'
         os.system(command)
     except Exception as e:
         print(f"Error during TTS or playback: {e}")  # Informative error message
@@ -89,16 +89,20 @@ def record_audio_to_file(file_name="live_audio.wav", duration=5, sample_rate=441
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def record_audio_to_file_stream(frames, file_name="live_audio.wav", pyaudio_instance = None):
-    """Saves a list of audio frames to a WAV file."""
-    if pyaudio_instance is None:
-        pyaudio_instance = pyaudio.PyAudio()
-    wf = wave.open(file_name, 'wb')
-    wf.setnchannels(1)
-    wf.setsampwidth(pyaudio_instance.get_sample_size(pyaudio.paInt16))
-    wf.setframerate(16000)
-    wf.writeframes(b''.join(frames))
-    wf.close()
+def record_audio_to_file_stream(frames, file_name="live_audio.wav", sample_rate=44100):
+    """Saves a list of audio frames to a WAV file with noise reduction."""
+    try:
+        # Convert frames to numpy array
+        audio_data = np.frombuffer(b''.join(frames), dtype=np.int16)
+
+        # Apply noise reduction
+        reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=sample_rate)
+
+        # Save the audio to file
+        wav.write(file_name, sample_rate, reduced_noise_audio.astype(np.int16))
+        print(f"Recording saved as '{file_name}'.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 def transcribe_audio_with_groq(audio_file="live_audio.wav", language="en"):
     """Transcribes audio using Groq API."""
