@@ -185,9 +185,7 @@ class AssistantUI(BoxLayout):
         self.animation_event = None
         self.visualizer_animation = None  # To store the visualizer animation
         Window.clearcolor = (0.1, 0.1, 0.1, 1)  # Set background to dark black
-        self.audio_stream = None
         self.audio_frames = []
-        self.pyaudio_instance = pyaudio.PyAudio()
         self.langchain_handler = LangChainHandler()
         
         # set lang to default value
@@ -227,34 +225,26 @@ class AssistantUI(BoxLayout):
     def start_recording(self):
         self.status_text = 'Recording...'
         self.start_visualizer_animation()
-        Clock.schedule_once(self.record_audio, 0)
+        self.audio_frames = []
+        self.audio_stream = sd.InputStream(samplerate=44100, channels=1, dtype='int16', callback=self.audio_callback)
+        self.audio_stream.start()
 
-    def record_audio(self, dt):
-        duration = 5  # seconds
-        sample_rate = 44100  # Hz
-        print("Recording...")
-
-        try:
-            # Record audio
-            audio_data = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1, dtype='int16')
-            sd.wait()  # Wait until recording is finished
-
-            # Apply noise reduction
-            audio_data = audio_data.flatten()
-            reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=sample_rate)
-
-            # Save to a WAV file
-            file_name = "live_audio.wav"
-            wav.write(file_name, sample_rate, reduced_noise_audio.astype(np.int16))
-            print(f"Recording saved as '{file_name}'.")
-        except Exception as e:
-            print(f"An error occurred: {e}")
+    def audio_callback(self, indata, frames, time, status):
+        self.audio_frames.append(indata.copy())
 
     def stop_recording(self):
         self.status_text = 'Processing...'
         self.stop_visualizer_animation()
-        Clock.unschedule(self.record_audio)
+        self.audio_stream.stop()
+        self.audio_stream.close()
+        self.save_audio_to_file()
         Clock.schedule_once(lambda dt: asyncio.run(self.process_audio()), 1)
+
+    def save_audio_to_file(self, file_name="live_audio.wav"):
+        audio_data = np.concatenate(self.audio_frames, axis=0).flatten()
+        reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=44100)
+        wav.write(file_name, 44100, reduced_noise_audio.astype(np.int16))
+        print(f"Recording saved as '{file_name}'.")
 
     async def process_audio(self):
         question = transcribe_audio_with_groq(audio_file="live_audio.wav", language=self.langchain_handler.selected_language)
