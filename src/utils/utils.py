@@ -55,8 +55,8 @@ async def speak(text, lang='en'):
         await communicate.save(output_file)
 
         # Play the audio file using mpv
-        command = f'mpv --no-terminal {output_file}'
-        # command = fr'"C:\Users\Home\Downloads\mpv-i686-w64-mingw32\mpv.exe" {output_file}'
+        # command = f'mpv --no-terminal {output_file}'
+        command = fr'"C:\Users\Home\Downloads\mpv-i686-w64-mingw32\mpv.exe" {output_file}'
         os.system(command)
     except Exception as e:
         print(f"Error during TTS or playback: {e}")  # Informative error message
@@ -117,8 +117,37 @@ def transcribe_audio_with_groq(audio_file="live_audio.wav", language="en"):
     with open(audio_file, "rb") as file:
         transcription = client.audio.transcriptions.create(
             file=(audio_file, file.read()),
-            model="whisper-large-v3-turbo",  # Specify the model
+            model="whisper-large-v3",  # Specify the model
             language=language,  # Specify the language
             response_format="text"          # Use "text" for a simple string response
         )
     return transcription  # Returns the plain transcription text
+
+def play_audio_file(file_name):
+    """Plays the specified WAV audio file."""
+    chunk = 1024
+    wf = wave.open(file_name, 'rb')
+    p = pyaudio.PyAudio()
+
+    # Open a stream for playback
+    stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
+                    channels=wf.getnchannels(),
+                    rate=wf.getframerate(),
+                    output=True)
+
+    # Read data in chunks and play
+    data = wf.readframes(chunk)
+    while data:
+        stream.write(data)
+        data = wf.readframes(chunk)
+
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
+
+if __name__ == "__main__":
+    file_name = "test_audio.wav"
+    record_audio_to_file(file_name)
+    print(f"Audio recorded and saved to {file_name}.")
+    print("now playing the audio file")
+    play_audio_file(file_name)
