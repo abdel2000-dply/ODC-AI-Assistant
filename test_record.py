@@ -1,7 +1,7 @@
 import sounddevice as sd
 import scipy.io.wavfile as wav
 import numpy as np
-from webrtc_audio_processing import AudioProcessingModule
+import noisereduce as nr
 
 # Set parameters
 duration = 5  # seconds
@@ -14,9 +14,9 @@ try:
     audio_data = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1, dtype='int16')
     sd.wait()  # Wait until recording is finished
 
-    # Apply noise reduction using webrtc-audio-processing
-    apm = AudioProcessingModule()
-    reduced_noise_audio = apm.process_stream(audio_data.flatten(), sample_rate)
+    # Apply noise reduction
+    audio_data = audio_data.flatten()
+    reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=sample_rate)
 
     # Save to a WAV file
     wav.write('test_recording_filtered.wav', sample_rate, reduced_noise_audio.astype(np.int16))
