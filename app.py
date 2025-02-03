@@ -1,6 +1,10 @@
 import os
 import wave
 import pyaudio
+import sounddevice as sd
+import numpy as np
+import noisereduce as nr
+import scipy.io.wavfile as wav
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -17,7 +21,7 @@ from kivy.lang import Builder
 from kivy.graphics import Color, Rectangle, Ellipse
 from kivy.uix.popup import Popup
 from kivy.uix.dropdown import DropDown
-from src.utils.utils import transcribe_audio_with_groq, recognize_speech_from_mic, record_audio_to_file_stream, speak  # Import updated functions
+from src.utils.utils import transcribe_audio_with_groq, recognize_speech_from_mic, speak  # Import updated functions
 from src.assistant import LangChainHandler
 import asyncio
 
@@ -223,32 +227,37 @@ class AssistantUI(BoxLayout):
     def start_recording(self):
         self.status_text = 'Recording...'
         self.start_visualizer_animation()
-        self.audio_frames = []
-        self.audio_stream = self.pyaudio_instance.open(format=pyaudio.paInt16,
-                                                       channels=1,
-                                                       rate=16000,
-                                                       input=True,
-                                                       frames_per_buffer=1024)
-        Clock.schedule_interval(self.record_audio_chunk, 0.1)
+        Clock.schedule_once(self.record_audio, 0)
 
-    def record_audio_chunk(self, dt):
-        data = self.audio_stream.read(1024)
-        self.audio_frames.append(data)
+    def record_audio(self, dt):
+        duration = 5  # seconds
+        sample_rate = 44100  # Hz
+        print("Recording...")
+
+        try:
+            # Record audio
+            audio_data = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1, dtype='int16')
+            sd.wait()  # Wait until recording is finished
+
+            # Apply noise reduction
+            audio_data = audio_data.flatten()
+            reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=sample_rate)
+
+            # Save to a WAV file
+            file_name = "live_audio.wav"
+            wav.write(file_name, sample_rate, reduced_noise_audio.astype(np.int16))
+            print(f"Recording saved as '{file_name}'.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
     def stop_recording(self):
         self.status_text = 'Processing...'
         self.stop_visualizer_animation()
-        Clock.unschedule(self.record_audio_chunk)
-        self.audio_stream.stop_stream()
-        self.audio_stream.close()
-        self.save_audio_to_file()
+        Clock.unschedule(self.record_audio)
         Clock.schedule_once(lambda dt: asyncio.run(self.process_audio()), 1)
 
-    def save_audio_to_file(self, file_name="live_audio.wav"):
-        record_audio_to_file_stream(self.audio_frames, file_name)
-
     async def process_audio(self):
-        question = transcribe_audio_with_groq(language=self.langchain_handler.selected_language)
+        question = transcribe_audio_with_groq(audio_file="live_audio.wav", language=self.langchain_handler.selected_language)
         if not question:
             question = recognize_speech_from_mic(language=self.langchain_handler.selected_language)
         if question:
