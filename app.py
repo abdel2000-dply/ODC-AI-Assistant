@@ -230,7 +230,7 @@ class AssistantUI(BoxLayout):
         self.audio_stream.start()
 
     def audio_callback(self, indata, frames, time, status):
-         self.audio_frames.append(indata.copy())
+        self.audio_frames.append(indata.copy())
 
     def stop_recording(self):
         self.status_text = 'Processing...'
@@ -246,16 +246,9 @@ class AssistantUI(BoxLayout):
         # Apply noise reduction
         reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=44100)
         
-        # Normalize the audio to a target RMS
-        target_rms = 0.02  # Target RMS value
-        rms = np.sqrt(np.mean(reduced_noise_audio**2)) # calculate RMS value
-
-        if rms > 0 :
-            gain = target_rms / rms  # calculate gain factor
-            amplified_audio = np.int16(reduced_noise_audio * gain) # apply the gain
-        else:
-            amplified_audio = np.int16(reduced_noise_audio)
-            
+        # Amplify the audio
+        max_val = np.iinfo(np.int16).max
+        amplified_audio = np.int16(reduced_noise_audio / np.max(np.abs(reduced_noise_audio)) * max_val)
         
         wav.write(file_name, 44100, amplified_audio)
         print(f"Recording saved as '{file_name}'.")
