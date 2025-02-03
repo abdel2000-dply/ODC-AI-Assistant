@@ -6,6 +6,7 @@ from groq import Groq
 import edge_tts
 import asyncio
 from dotenv import load_dotenv
+import noisereduce as nr
 
 load_dotenv()
 
@@ -67,7 +68,7 @@ async def speak(text, lang='en'):
 
 
 def record_audio_to_file(file_name="live_audio.wav"):
-    """Records audio from the microphone and saves it to a WAV file."""
+    """Records audio from the microphone, applies noise reduction, and saves it to a WAV file."""
     p = pyaudio.PyAudio()
 
     # Open a stream for recording
@@ -92,12 +93,18 @@ def record_audio_to_file(file_name="live_audio.wav"):
     stream.close()
     p.terminate()
 
+    # Convert frames to numpy array
+    audio_data = np.frombuffer(b''.join(frames), dtype=np.int16)
+
+    # Apply noise reduction
+    reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=16000)
+
     # Save the audio to file
     wf = wave.open(file_name, 'wb')
     wf.setnchannels(1)
     wf.setsampwidth(p.get_sample_size(pyaudio.paInt16))
     wf.setframerate(16000)
-    wf.writeframes(b''.join(frames))
+    wf.writeframes(reduced_noise_audio.tobytes())
     wf.close()
 
 def record_audio_to_file_stream(frames, file_name="live_audio.wav", pyaudio_instance = None):
