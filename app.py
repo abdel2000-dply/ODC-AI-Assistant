@@ -17,7 +17,7 @@ from kivy.lang import Builder
 from kivy.graphics import Color, Rectangle, Ellipse
 from kivy.uix.popup import Popup
 from kivy.uix.dropdown import DropDown
-from src.utils.utils import transcribe_audio_with_groq, recognize_speech_from_mic, record_audio_to_file, speak  # Import updated functions
+from src.utils.utils import transcribe_audio_with_groq, recognize_speech_from_mic, record_audio_to_file_stream, speak  # Import updated functions
 from src.assistant import LangChainHandler
 import asyncio
 
@@ -245,7 +245,7 @@ class AssistantUI(BoxLayout):
         Clock.schedule_once(lambda dt: asyncio.run(self.process_audio()), 1)
 
     def save_audio_to_file(self, file_name="live_audio.wav"):
-        record_audio_to_file(file_name)
+        record_audio_to_file_stream(self.audio_frames, file_name)
 
     async def process_audio(self):
         question = transcribe_audio_with_groq(language=self.langchain_handler.selected_language)
