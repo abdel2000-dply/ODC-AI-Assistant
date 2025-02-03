@@ -242,8 +242,15 @@ class AssistantUI(BoxLayout):
 
     def save_audio_to_file(self, file_name="live_audio.wav"):
         audio_data = np.concatenate(self.audio_frames, axis=0).flatten()
+        
+        # Apply noise reduction
         reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=44100)
-        wav.write(file_name, 44100, reduced_noise_audio.astype(np.int16))
+        
+        # Amplify the audio
+        max_val = np.iinfo(np.int16).max
+        amplified_audio = np.int16(reduced_noise_audio / np.max(np.abs(reduced_noise_audio)) * max_val)
+        
+        wav.write(file_name, 44100, amplified_audio)
         print(f"Recording saved as '{file_name}'.")
 
     async def process_audio(self):
