@@ -222,100 +222,14 @@ class AssistantUI(BoxLayout):
             self.stop_recording()
         self.is_recording = not self.is_recording
 
-    def normalize_audio(self, audio_data, target_rms=0.1):
-        """Normalize audio using RMS-based amplitude normalization"""
-        # Calculate RMS of audio
-        rms = np.sqrt(np.mean(np.square(audio_data)))
-        if rms > 0:
-            # Calculate scaling factor
-            scaling_factor = target_rms / rms
-            # Scale audio
-            normalized_audio = audio_data * scaling_factor
-            # Clip to prevent overflow
-            normalized_audio = np.clip(normalized_audio, -1.0, 1.0)
-            return normalized_audio
-        return audio_data
-
-    def save_audio_to_file(self, file_name="live_audio.wav"):
-        """Save recorded audio with improved quality and enhanced noise reduction"""
-        try:
-            # Concatenate all audio frames
-            audio_data = np.concatenate(self.audio_frames, axis=0).flatten()
-            
-            # First pass of noise reduction - aggressive
-            reduced_noise_audio = nr.reduce_noise(
-                y=audio_data, 
-                sr=44100,
-                prop_decrease=0.95,  # More aggressive noise reduction
-                n_fft=2048,
-                win_length=2048,
-                hop_length=512,
-                n_jobs=-1,  # Use all CPU cores
-                use_tensorflow=False,  # Use numpy backend for better control
-                thresh_n_mult_nonstationary=2,
-                stationary=False,  # Better for voice
-                chunk_size=600000,
-                padding=30000
-            )
-            
-            # Second pass - gentler for preserving voice
-            reduced_noise_audio = nr.reduce_noise(
-                y=reduced_noise_audio,
-                sr=44100,
-                prop_decrease=0.6,
-                n_fft=1024,
-                win_length=1024,
-                hop_length=256,
-                n_jobs=-1,
-                use_tensorflow=False,
-                stationary=True,  # Better for remaining static noise
-                chunk_size=600000,
-                padding=30000
-            )
-            
-            # Normalize audio
-            normalized_audio = self.normalize_audio(reduced_noise_audio, target_rms=0.2)  # Increased target RMS
-            
-            # Apply a gentle high-pass filter to remove low frequency noise
-            from scipy.signal import butter, filtfilt
-            nyquist = 44100 / 2
-            cutoff = 80  # Hz
-            b, a = butter(4, cutoff/nyquist, btype='high', analog=False)
-            filtered_audio = filtfilt(b, a, normalized_audio)
-            
-            # Convert to int16 with dithering to reduce quantization noise
-            max_val = np.iinfo(np.int16).max
-            final_audio = np.int16(np.clip(filtered_audio * max_val, -max_val, max_val))
-            
-            # Save with higher quality settings
-            wav.write(
-                file_name, 
-                44100, 
-                final_audio
-            )
-            print(f"Recording saved as '{file_name}'.")
-        except Exception as e:
-            print(f"An error occurred while saving audio: {e}")
-
     def start_recording(self):
         self.status_text = 'Recording...'
         self.start_visualizer_animation()
         self.audio_frames = []
-        
-        # Configure input stream with better quality settings
-        self.audio_stream = sd.InputStream(
-            samplerate=44100,
-            channels=1,
-            dtype=np.float32,
-            blocksize=4096,    # Increased block size
-            latency='low',     # Lower latency
-            callback=self.audio_callback
-        )
+        self.audio_stream = sd.InputStream(samplerate=44100, channels=1, dtype='int16', callback=self.audio_callback)
         self.audio_stream.start()
 
     def audio_callback(self, indata, frames, time, status):
-        if status:
-            print(f'Audio callback status: {status}')
         self.audio_frames.append(indata.copy())
 
     def stop_recording(self):
@@ -325,6 +239,19 @@ class AssistantUI(BoxLayout):
         self.audio_stream.close()
         self.save_audio_to_file()
         Clock.schedule_once(lambda dt: asyncio.run(self.process_audio()), 1)
+
+    def save_audio_to_file(self, file_name="live_audio.wav"):
+        audio_data = np.concatenate(self.audio_frames, axis=0).flatten()
+        
+        # Apply noise reduction
+        reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=44100)
+        
+        # Amplify the audio
+        max_val = np.iinfo(np.int16).max
+        amplified_audio = np.int16(reduced_noise_audio / np.max(np.abs(reduced_noise_audio)) * max_val)
+        
+        wav.write(file_name, 44100, amplified_audio)
+        print(f"Recording saved as '{file_name}'.")
 
     async def process_audio(self):
         question = transcribe_audio_with_groq(audio_file="live_audio.wav", language=self.langchain_handler.selected_language)
