@@ -1,4 +1,4 @@
-from langchain_cohere import ChatCohere
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts import PromptTemplate, ChatPromptTemplate
 from src.utils.document_processor import DocumentProcessor
@@ -18,22 +18,22 @@ class LangChainHandler:
 
     def __init__(self, selected_language='en'):
         load_dotenv()
-        self.api_key = os.getenv('COHERE_API_KEY')
+        self.api_key = os.getenv('GEMINI_API_KEY')
         
         # RAG specific LLM
-        self.llm_rag = ChatCohere(
-            cohere_api_key=self.api_key,
+        self.llm_rag = ChatGoogleGenerativeAI(
+            model="gemini-2.0-flash-exp",
             temperature=0.3,
-            max_tokens=300,
-            model="command-r-plus-08-2024"
+            convert_system_message_to_human=True,
+            api_key = self.api_key 
         )
         
-        # General LLM (using Cohere LLM)
-        self.llm_general = ChatCohere(
-            cohere_api_key=self.api_key,
-            temperature=0.5,
-            max_tokens=300,
-            model="command-r-plus-08-2024"
+        # General LLM 
+        self.llm_general = ChatGoogleGenerativeAI(
+             model="gemini-2.0-flash-exp",
+             temperature=0.5,
+             convert_system_message_to_human=True,
+             api_key=self.api_key
         )
         
         self.vector_store = DocumentProcessor.load_vector_store()
@@ -45,7 +45,6 @@ class LangChainHandler:
         self.greetings = {
             'en': "Hello! How can I help you?",
             'fr': "Bonjour! Comment puis-je vous aider?",
-            # 'ar': "مرحبا! كيف يمكنني مساعدتك؟",
             'ar': "سلام! كيفاش نعاونك؟"
         }
         
@@ -58,7 +57,7 @@ class LangChainHandler:
         Guidelines:
         - Respond in the selected language regardless of the context language (IMPORTANT).
         - Respond ONLY in the specified language
-        - Be direct and brief (1-3 sentences)
+        - Be direct and brief (3-5 sentences)
         - Try to minimize the number of words in the response and when there is more to say wait or request(not always) if the user wants more details on that matter
         - Include relevant technical details only when asked.
         - Ignore irrelevant context from the chat history
@@ -105,19 +104,32 @@ class LangChainHandler:
         Be as brief as possible and avoid unnecessary details, remember it's a conversation so short and direct answers are preferred to keep a conversation.
 
         Guidelines:
-        - Be direct and brief (1-3 sentences)
+        - Be direct and brief (3-5 sentences)
         - Try to minimize the number of words in the response and when there is more to say request if the user wants more details on that matter
         - Include relevant technical details only when asked.
         - Ignore irrelevant context from the chat history
-
+        Chat History: {chat_history}
         Question: {question}
 
         Answer:"""
         
+        self.general_memory = ConversationBufferMemory(
+          memory_key="chat_history",
+          output_key="answer",
+          return_messages=True,
+            input_key="question"
+        )
+
         self.general_prompt = PromptTemplate.from_template(general_prompt_template)
         # General LLM chain for questions not on the context of the fablab
+        def load_general_memory(inputs: Dict[str, Any]):
+              memory_variables = self.general_memory.load_memory_variables({})
+              chat_history = memory_variables.get("chat_history", [])
+              return {"chat_history": chat_history, **inputs}
+        
         self.general_chain = (
-            self.general_prompt
+            load_general_memory
+            | self.general_prompt
             | self.llm_general
             | StrOutputParser()
         )
@@ -135,14 +147,17 @@ class LangChainHandler:
         - If the question mentions specific programs, events, Trainings, registarion, materials, support, or facilities at the Orange Digital Center, classify it as RAG_RELEVANT.
         - If the question is about general knowledge or unrelated topics, classify it as GENERAL_KNOWLEDGE.
         - If the question is ambiguous or lacks enough context to determine its relevance, classify it as UNCLEAR.
+        - Also based on the chat history, you can determine the relevance of the question.
 
         Examples:
         - "What programs does the Orange Digital Center offer?" -> RAG_RELEVANT
         - "How do I learn to code?" -> GENERAL_KNOWLEDGE
-        - "Can you tell me more about the center?" -> UNCLEAR
+        - "Can you tell me more about the center?" -> RAG_RELEVANT (center refers to the Orange Digital Center)
+        - "what is" -> UNCLEAR
 
+        Chat History: {chat_history}
         Question: {question}
-        Category:
+        Category:exit
         """
 
         self.classification_chain = (
@@ -166,8 +181,8 @@ class LangChainHandler:
         """Clear the conversation memory"""
         if hasattr(self, 'memory'):
             self.memory.clear()
-        # if hasattr(self, 'chain'):
-        #     self.chain.memory.clear() #no chain so no memory to clear
+        if hasattr(self, 'general_memory'):
+           self.general_memory.clear()
 
     def is_basic_chat(self, text):
         """Check if the input is a basic chat interaction"""
@@ -178,8 +193,6 @@ class LangChainHandler:
         """Handle basic chat interactions"""
         if lang == 'fr':
             return "Bonjour! Comment puis-je vous aider?"
-        # elif lang in ['ar', 'ara']:
-        #     return "مرحبا! كيف يمكنني مساعدتك؟"
         elif lang == 'ar':
             return "سلام! كيفاش نعاونك؟"
         else:
@@ -188,8 +201,10 @@ class LangChainHandler:
     def classify_question(self, question):
         """Classifies the input question as RAG_RELEVANT, GENERAL_KNOWLEDGE or UNCLEAR"""
         try:
-            classification = self.classification_chain.invoke({"question": question})
-            return classification
+              memory_variables = self.memory.load_memory_variables({})
+              chat_history = memory_variables.get("chat_history", [])
+              classification = self.classification_chain.invoke({"question": question, "chat_history": chat_history})
+              return classification
         except Exception as e:
             return "UNCLEAR"
 
@@ -253,14 +268,10 @@ if __name__ == "__main__":
             if not user_input:
                 continue
 
-            if handler.is_basic_chat(user_input):
-                response = handler.get_basic_response(user_input, handler.selected_language)
-                print("\nAssistant:", response)
-            else:
-                response = handler.get_response(user_input)
-                print("\nAssistant:", response['answer'])
-                if response['sources']:
-                    print("\nSources:", ", ".join(response['sources']))
+            response = handler.get_response(user_input)
+            print("\nAssistant:", response['answer'])
+            if response['sources']:
+                print("\nSources:", ", ".join(response['sources']))
             print("-" * 50)
             
         except KeyboardInterrupt:
