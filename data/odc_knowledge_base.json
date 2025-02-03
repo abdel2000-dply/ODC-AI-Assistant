@@ -84,6 +84,10 @@
            ],
        "keywords": ["internships", "summer challenges", "projects", "activities"]
       },
+      "Project to work on": {
+        "area of interest": ["Smart Agriculture", "AI", "IoT", "Smart City", "Health Tech", "EdTech", "Fintech", "E-commerce", "Renewable Energy", "Cybersecurity", "Blockchain", "Data Science", "Robotics", "Mobile App Development", "Gaming", "Digital Marketing", "Virtual Reality", "Augmented Reality", "Wearable Tech", "Big Data", "Cloud Computing", "Sustainable Development", "Social Impact", "Innovation", "Entrepreneurship", "Startups", "Prototyping", "3D Printing", "Laser Cutting", "Manufacturing", "Coding", "Programming", "Web Development", "App Development", "Software Development", "Hardware Development", "Electronics", "Automation", "Machine Learning", "Deep Learning", "Neural Networks", "Computer Vision"],
+        "more": "You can request any materials or tools you need for your project. The center will provide you with the necessary equipment and support."
+      },
       "support_assistance": {
           "description": "Responsible staff are available to help with materials, permissions, programs, and project development.",
          "keywords": ["support", "assistance", "staff", "help", "guidance"]
