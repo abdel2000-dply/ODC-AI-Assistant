@@ -245,11 +245,21 @@ class AssistantUI(BoxLayout):
         
         # Apply noise reduction
         reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=44100)
-        
-        # Amplify the audio
-        max_val = np.iinfo(np.int16).max
-        amplified_audio = np.int16(reduced_noise_audio / np.max(np.abs(reduced_noise_audio)) * max_val)
-        
+
+         # Calculate RMS
+        rms = np.sqrt(np.mean(reduced_noise_audio**2))
+        if rms != 0:
+            # Desired RMS value for normalization
+            target_rms = 0.02
+            # Calculate the scaling factor to normalize to the target RMS
+            scaling_factor = target_rms / rms
+            # Apply the scaling factor to the audio data
+            normalized_audio = reduced_noise_audio * scaling_factor
+            # Convert back to int16
+            amplified_audio = np.int16(normalized_audio)
+        else:
+            amplified_audio = np.int16(reduced_noise_audio)
+
         wav.write(file_name, 44100, amplified_audio)
         print(f"Recording saved as '{file_name}'.")
 
