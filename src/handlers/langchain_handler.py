@@ -58,6 +58,7 @@ class LangChainHandler:
         - Respond in the selected language regardless of the context language (IMPORTANT).
         - Respond ONLY in the specified language
         - Be direct ( up to 7/8 sentences)
+        - the answer must be clean and clear no '*' or '-' or '#' or any other special characters 
         - Include relevant technical details only when asked.
         - Ignore irrelevant context from the chat history
         - The Question could have a typo, respond to the best of your understanding like the question could be about orange digital center.
@@ -122,7 +123,7 @@ class LangChainHandler:
         # General LLM chain for questions not on the context of the fablab
         def load_general_memory(inputs: Dict[str, Any]):
               memory_variables = self.general_memory.load_memory_variables({})
-              chat_history = memory_variables.get("chat_history", [])
+              chat_history = memory_variables.3get("chat_history", [])
               return {"chat_history": chat_history, **inputs}
         
         self.general_chain = (
