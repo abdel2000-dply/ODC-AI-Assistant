@@ -5,6 +5,7 @@ import sounddevice as sd
 import numpy as np
 import noisereduce as nr
 import scipy.io.wavfile as wav
+import scipy.signal as sps
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -242,25 +243,18 @@ class AssistantUI(BoxLayout):
 
     def save_audio_to_file(self, file_name="live_audio.wav"):
         audio_data = np.concatenate(self.audio_frames, axis=0).flatten()
-        
+
+        # Apply bandpass filter for voice range
+        filtered_audio = bandpass_filter(audio_data, fs=44100)
+
         # Apply noise reduction
-        reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=44100)
+        reduced_noise_audio = nr.reduce_noise(y=filtered_audio, sr=44100)
 
-         # Calculate RMS
-        rms = np.sqrt(np.mean(reduced_noise_audio**2))
-        if rms != 0:
-            # Desired RMS value for normalization
-            target_rms = 0.05
-            # Calculate the scaling factor to normalize to the target RMS
-            scaling_factor = target_rms / rms
-            # Apply the scaling factor to the audio data
-            normalized_audio = reduced_noise_audio * scaling_factor
-            # Convert back to int16
-            amplified_audio = np.int16(normalized_audio)
-        else:
-            amplified_audio = np.int16(reduced_noise_audio)
+        # Amplitude normalization
+        max_val = np.iinfo(np.int16).max
+        normalized_audio = np.int16(reduced_noise_audio / np.max(np.abs(reduced_noise_audio)) * max_val)
 
-        wav.write(file_name, 44100, amplified_audio)
+        wav.write(file_name, 44100, normalized_audio)
         print(f"Recording saved as '{file_name}'.")
 
     async def process_audio(self):
@@ -321,3 +315,8 @@ if __name__ == '__main__':
     print("Running AssistantApp...")
     AssistantApp().run()
     print("AssistantApp finished.")
+
+def bandpass_filter(signal, fs, lowcut=300, highcut=3400, order=6):
+    sos = sps.butter(order, [lowcut, highcut], btype='band', fs=fs, output='sos')
+    filtered = sps.sosfiltfilt(sos, signal)
+    return filtered
