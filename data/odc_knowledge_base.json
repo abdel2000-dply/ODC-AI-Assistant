@@ -3,111 +3,286 @@
     "orange_digital_center": {
       "overview": {
         "description": "Orange Digital Center is a free, fully integrated ecosystem offering technological programs and tools for individuals, startups, and young talents. It focuses on skills development, innovation, entrepreneurship, and community engagement, acting as a catalyst for job creation and impactful projects.",
-        "keywords": ["digital center", "technology", "skills", "innovation", "entrepreneurship", "job creation"]
+        "keywords": [
+          "digital center",
+          "technology",
+          "skills",
+          "innovation",
+          "entrepreneurship",
+          "job creation"
+        ]
       },
       "programs": {
+        "INFO": "As a true network of opportunities, Orange Digital Centers bring together several strategic programs into one place",
         "coding_school": {
+          "info": "this is the coding school program at ODC",
           "name": "Coding School",
           "description": "A free technological center for young developers, innovators, and project enthusiasts. It targets students, graduates, and aspiring entrepreneurs.",
-          "key_highlights": {
-            "community_size": "24,000+ students and professionals trained or attended events.",
-            "employment_rate": "95% of trainees secure jobs after internships."
-          },
           "offerings": [
             "Hands-on training in coding languages and software development.",
-            "Workshops and hackathons to boost practical skills.",
+            "Workshops, bootcamps and hackathons to boost practical skills.",
+            "Trainings to help people navigate the evolving digital world.",
+            "Trainings for children and teenagers to develop digital skills with the program super coders on coding, robotics and so on.",
             "Networking with industry professionals."
           ],
-           "keywords": ["coding", "software development", "programming", "training", "hackathons"]
+          "keywords": [
+            "coding",
+            "software development",
+            "programming",
+            "training",
+            "hackathons",
+            "super coders",
+            "ui/ux design bootcamp"
+          ]
         },
         "fablab_solidaires": {
+          "info": "this is the fablab program at ODC (Orange digital center)",
           "name": "FabLab Solidaires",
-          "description": "A free digital production workshop for creating prototypes using advanced tools like 3D printers and laser cutters. Supports youth, students, graduates, and entrepreneurs.",
-          "key_highlights": {
-            "community_size": "15,000+ young people trained or developed prototypes.",
-            "prototypes_produced": "1,000+ prototypes and projects created."
-          },
+          "description": "A free digital production workshop for creating prototypes using advanced tools like 3D printers, UV Machine, CNC Milling Machine and laser cutters. Supports youth, students, graduates, and entrepreneurs.",
           "offerings": [
             "Access to high-end digital fabrication tools.",
+            "We help people turn their ideas into reality by providing prototyping support and materials.",
             "Training on prototyping, 3D modeling, and manufacturing.",
-            "Support for transforming ideas into real-world products."
+            "Support for transforming ideas into real-world products.",
+            "At the FabLab, we offer a variety of programs and activities including internships (PFE and PFA), summer challenges, and a Project Maker program that lasts up to two months.",
+            "We also provide specialized training sessions that range from one to five days, covering topics such as 3D printing, laser cutting, motherboard repair, IOT and installation of security cameras.",
+            "We also provide longer training courses (1-2 months) in phone and tablet repair, including software aspects like flashing and decoding smartphones.",
+            "'Solar Green' is our new program empowering individuals with knowledge on all aspects of solar energy. We offer training in installation, repair, and energy assessment to help you optimize solar solutions for residential and industrial needs."
           ],
-           "keywords": ["fablab", "prototyping", "3D printing", "digital fabrication", "laser cutting", "manufacturing"]
-
+          "past implemented projects": [
+            {
+              "Info":"Here are some of the projects that have been implemented by the the FabLab Solidaires Community during programms"
+            },
+            {
+              "name": "Autonomous Insect Detection Drone named 'Igran'",
+              "description": "The Autonomous Insect Detection Drone was implemented during the 2024 summer challenge at fablab ODC Agadir, provides early warning of pest infestations in tomato crops, identifying insect presence before damage is visible to the naked eye."
+            },
+            {
+              "name": "Smart home automation",
+              "description": "A system to automate home appliances like lights, fans, and thermostat using a smartphone app."
+            },
+            {
+              "name": "ODAC - Early Cardiac Alert Bracelet",
+              "description": "This medical bracelet detects heart attacks up to 1 minute and 30 seconds before they strike, providing crucial early warning that enables rapid response and potentially life-saving intervention. A game-changer for hospitals and individuals alike."
+            },
+            {
+              "name": "Raspberry Pi Based Emotion Recognition System",
+              "description": "A system that detects the emotion of people entering into a space and stores data in the cloud for further analytics."
+            },
+            {
+              "name": "Raspberry Pi Retro Arcade Machine",
+              "description": "A retro arcade machine built using Raspberry Pi."
+            },
+            {
+              "name": "Recycling PET Plastic to Filament",
+              "description": "filament machine that is recycling PET plastic and also helps reduce the cost of 3D printing."
+            },
+            {
+              "name": "Two-Wheeled Drive Car With a Robotic Arm",
+              "description": "a robotic arm mounted on a Two Wheeled Drive vehicle designed to perform various manipulation tasks in dynamic environments."
+            },
+            {
+              "name": "Autoguided Telescope",
+              "description": "This motorized Dobsonian telescope automatically finds your chosen stars, making stargazing an awe-inspiring adventure for beginners and experienced astronomers alike."
+            },
+            {
+              "name": "AI Voice Assistant with Raspberry Pi",
+              "description": "A voice assistant powered by AI and Raspberry Pi using rag, helps visitors navigate the fablab solidaire answering questions and help with materials availble and trainings."
+            }
+          ],
+          "keywords": [
+            "fablab",
+            "prototyping",
+            "3D printing",
+            "digital fabrication",
+            "laser cutting",
+            "manufacturing"
+          ]
         },
         "orange_fab": {
           "name": "Orange Fab",
           "description": "A startup accelerator that forges business partnerships with the Orange Group. Focuses on managerial capabilities and commercial development.",
-          "key_highlights": {
-             "network": "18 Orange Fab centers across 4 continents.",
-            "startups_accelerated": "30+ startups received support.",
-             "mentoring_hours": "1,000+ hours dedicated to mentoring sessions."
-          },
           "offerings": [
             "Expert mentorship and tailored coaching.",
             "Networking with industry leaders and investors.",
             "Business acceleration and pathways to global markets."
           ],
-          "keywords": ["startup", "accelerator", "mentorship", "business partnerships", "investment"]
+          "keywords": [
+            "startup",
+            "accelerator",
+            "mentorship",
+            "business partnerships",
+            "investment"
+          ]
         }
       },
       "why_choose": {
+        "INFO": "this the values of the Orange Digital Center and the reason to choose to join or participate in one of the programs",
         "reasons": [
           "Empowering Communities: Creating inclusive learning environments for all.",
-           "Fostering Innovation: Providing technology and guidance to turn ideas into reality.",
-           "Driving Entrepreneurship: Accelerating startups and skills for the future market.",
+          "Fostering Innovation: Providing technology and guidance to turn ideas into reality.",
+          "Driving Entrepreneurship: Accelerating startups and skills for the future market.",
           "Strong Global Network: Access to mentors, investors, and Orange’s international ecosystem."
         ],
-        "keywords": ["empowerment", "innovation", "entrepreneurship", "global network", "community"]
+        "keywords": [
+          "empowerment",
+          "innovation",
+          "entrepreneurship",
+          "global network",
+          "community"
+        ]
       },
       "location_accessibility": {
         "address": {
+          "INFO": "this is where ODC Agadir is located",
           "fablab": "Technopark Tilila, Agadir, Lower Ground Floor (-1).",
           "coding_school": "Technopark Tilila, Agadir, 4th floor."
         },
-          "operating_hours": "Monday to Friday, 9:00 AM to 6:00 PM.",
-          "access_requirements": {
-            "who_can_access": "Open to everyone (students, professionals, startups, enthusiasts).",
-            "reservations_memberships": "No reservations or memberships needed.",
-            "entry_process": "Visit the location and seek permission from staff.",
-             "cost": "All services and access are free of charge."
-           },
-           "keywords": ["location", "address", "operating hours", "access", "free"]
+        "operating_hours": "Monday to Friday, 9:00 AM to 6:00 PM.",
+        "access_requirements": {
+          "who_can_access": "Open to everyone (students, professionals, startups, enthusiasts).",
+          "reservations_memberships": "No reservations or memberships needed.",
+          "entry_process": "Visit the location and seek permission from staff.",
+          "cost": "All services and access are free of charge."
+        },
+        "keywords": [
+          "location",
+          "address",
+          "operating hours",
+          "access",
+          "free"
+        ]
       },
-        "equipment": {
-        "materials": ["microcontrollers (Arduino, Raspberry Pi)", "sensors (temperature, motion, GPS)", "hand and power tools", "3D printers", "CNC machines", "UV printers", "robotics kits", "actuators (motors, servos, LEDs)", "electronic components (resistors, capacitors, transistors)", "consumables (3D printing filament, PCBs)", "power supplies", "batteries", "communication modules (WiFi, Bluetooth, GSM)", "accessories (Raspberry Pi cases, SD cards, VR headsets)"],
-           "keywords": ["equipment", "materials", "hardware", "microcontrollers", "sensors", "3D printers", "CNC", "robotics"]
+      "equipment": {
+        "INFO": "this is the equipment available at ODC Agadir => head to materials_detailed for more details on the equipment",
+        "materials": [
+          "microcontrollers (Arduino, Raspberry Pi)",
+          "sensors (temperature, motion, GPS)",
+          "hand and power tools",
+          "3D printers",
+          "CNC machines",
+          "UV printers",
+          "robotics kits",
+          "actuators (motors, servos, LEDs)",
+          "electronic components (resistors, capacitors, transistors)",
+          "consumables (3D printing filament, PCBs)",
+          "power supplies",
+          "batteries",
+          "communication modules (WiFi, Bluetooth, GSM)",
+          "accessories (Raspberry Pi cases, SD cards, VR headsets)"
+        ],
+        "keywords": [
+          "equipment",
+          "materials",
+          "hardware",
+          "microcontrollers",
+          "sensors",
+          "3D printers",
+          "CNC",
+          "robotics"
+        ]
       },
       "programs_and_activities": {
-       "activities": [
-          "Internships", "Summer challenges", "Project Maker program (up to two months)"
-           ],
-       "keywords": ["internships", "summer challenges", "projects", "activities"]
+        "activities": [
+          "Internships",
+          "Summer challenges",
+          "Project Maker program (up to two months)",
+          "Coding Bootcamp (3 months)",
+          "Startup Acceleration program (6 months)",
+          "Prototyping workshops",
+          "Hackathons",
+          "Tech talks and webinars",
+          "Community events and meetups"
+        ],
+        "keywords": [
+          "internships",
+          "summer challenges",
+          "projects",
+          "activities"
+        ]
       },
       "Project to work on": {
-        "area of interest": ["Smart Agriculture", "AI", "IoT", "Smart City", "Health Tech", "EdTech", "Fintech", "E-commerce", "Renewable Energy", "Cybersecurity", "Blockchain", "Data Science", "Robotics", "Mobile App Development", "Gaming", "Digital Marketing", "Virtual Reality", "Augmented Reality", "Wearable Tech", "Big Data", "Cloud Computing", "Sustainable Development", "Social Impact", "Innovation", "Entrepreneurship", "Startups", "Prototyping", "3D Printing", "Laser Cutting", "Manufacturing", "Coding", "Programming", "Web Development", "App Development", "Software Development", "Hardware Development", "Electronics", "Automation", "Machine Learning", "Deep Learning", "Neural Networks", "Computer Vision"],
+        "area of interest": [
+          "Smart Agriculture",
+          "AI",
+          "IoT",
+          "Smart City",
+          "Health Tech",
+          "EdTech",
+          "Fintech",
+          "E-commerce",
+          "Renewable Energy",
+          "Cybersecurity",
+          "Blockchain",
+          "Data Science",
+          "Robotics",
+          "Mobile App Development",
+          "Gaming",
+          "Digital Marketing",
+          "Virtual Reality",
+          "Augmented Reality",
+          "Wearable Tech",
+          "Big Data",
+          "Cloud Computing",
+          "Sustainable Development",
+          "Social Impact",
+          "Innovation",
+          "Entrepreneurship",
+          "Startups",
+          "Prototyping",
+          "3D Printing",
+          "Laser Cutting",
+          "Manufacturing",
+          "Coding",
+          "Programming",
+          "Web Development",
+          "App Development",
+          "Software Development",
+          "Hardware Development",
+          "Electronics",
+          "Automation",
+          "Machine Learning",
+          "Deep Learning",
+          "Neural Networks",
+          "Computer Vision"
+        ],
         "more": "You can request any materials or tools you need for your project. The center will provide you with the necessary equipment and support."
       },
       "support_assistance": {
-          "description": "Responsible staff are available to help with materials, permissions, programs, and project development.",
-         "keywords": ["support", "assistance", "staff", "help", "guidance"]
+        "description": "Responsible staff are available to help with materials, permissions, programs, and project development.",
+        "keywords": [
+          "support",
+          "assistance",
+          "staff",
+          "help",
+          "guidance"
+        ]
       },
-        "inscription_eligibility": {
+      "inscription_eligibility": {
         "eligibility_criteria": {
-        "nationality": "Open to Moroccan citizens and residents in Morocco.",
-        "educational_background": "Minimum education level equivalent to a baccalaureate degree. Some programs may require specific prerequisites.",
-        "motivation_interest": "Demonstrated interest and motivation for coding, digital careers, or entrepreneurship.",
-        "engagement": "Commitment to attending training, internships, and workshops.",
-          "keywords": ["eligibility", "nationality", "education", "motivation", "commitment"]
-
+          "nationality": "Open to Moroccan citizens and residents in Morocco.",
+          "motivation_interest": "Demonstrated interest and motivation for coding, digital careers, or entrepreneurship.",
+          "engagement": "Commitment to attending training, internships, and workshops.",
+          "keywords": [
+            "eligibility",
+            "education",
+            "motivation",
+            "commitment"
+          ]
         },
         "selection_process": {
           "steps": [
-             "Submission of application through www.orangedigitalcenters.com, including personal information.",
-             "Initial evaluation of applications.",
+            "Submission of application through www.orangedigitalcenters.com, including personal information.",
+            "Initial evaluation of applications.",
             "Official notification of selection by phone call or email."
-            ],
-          "keywords": ["application", "selection", "interview", "notification", "process"]
+          ],
+          "keywords": [
+            "application",
+            "selection",
+            "interview",
+            "notification",
+            "process"
+          ]
         }
       }
     }
