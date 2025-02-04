@@ -123,7 +123,7 @@ class LangChainHandler:
         # General LLM chain for questions not on the context of the fablab
         def load_general_memory(inputs: Dict[str, Any]):
               memory_variables = self.general_memory.load_memory_variables({})
-              chat_history = memory_variables.3get("chat_history", [])
+              chat_history = memory_variables.get("chat_history", [])
               return {"chat_history": chat_history, **inputs}
         
         self.general_chain = (
