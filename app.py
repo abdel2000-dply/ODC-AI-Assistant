@@ -250,7 +250,7 @@ class AssistantUI(BoxLayout):
         rms = np.sqrt(np.mean(reduced_noise_audio**2))
         if rms != 0:
             # Desired RMS value for normalization
-            target_rms = 0.02
+            target_rms = 0.05
             # Calculate the scaling factor to normalize to the target RMS
             scaling_factor = target_rms / rms
             # Apply the scaling factor to the audio data
