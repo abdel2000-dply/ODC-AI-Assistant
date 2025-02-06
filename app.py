@@ -1,4 +1,3 @@
-import asyncio
 import os
 import wave
 import pyaudio
@@ -24,7 +23,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.dropdown import DropDown
 from src.utils.utils import transcribe_audio_with_groq, recognize_speech_from_mic, speak  # Import updated functions
 from src.assistant import LangChainHandler
-import concurrent.futures # Import concurrent.futures
+import asyncio
 
 Builder.load_string('''
 <AssistantUI>:
@@ -238,10 +237,8 @@ class AssistantUI(BoxLayout):
         self.stop_visualizer_animation()
         self.audio_stream.stop()
         self.audio_stream.close()
-
-        # Schedule audio processing in a separate thread
+        self.save_audio_to_file()
         Clock.schedule_once(lambda dt: asyncio.run(self.process_audio()), 1)
-        
 
     def save_audio_to_file(self, file_name="live_audio.wav"):
         audio_data = np.concatenate(self.audio_frames, axis=0).flatten()
@@ -254,45 +251,19 @@ class AssistantUI(BoxLayout):
 
         wav.write(file_name, 44100, amplified_audio)
         print(f"Recording saved as '{file_name}'.")
-    
+
     async def process_audio(self):
-        executor = concurrent.futures.ThreadPoolExecutor(max_workers=3)
-        
-        loop = asyncio.get_event_loop()
+        question = transcribe_audio_with_groq(audio_file="live_audio.wav", language=self.langchain_handler.selected_language)
+        if not question:
+            print("using speech recognition instead")
+            question = recognize_speech_from_mic(language=self.langchain_handler.selected_language)
+        if question:
+             self.add_message(question, is_user=True)
+             response = await asyncio.to_thread(self.langchain_handler.get_response, question)
+             self.add_message(response['answer'], is_user=False)
+             await speak(response['answer'], lang=self.langchain_handler.selected_language)
 
-        try:
-            # Transcribe audio
-            transcription_future = loop.run_in_executor(executor, transcribe_audio_with_groq, "live_audio.wav", self.langchain_handler.selected_language)
-
-            # Get transcription result (with timeout)
-            question = await asyncio.wait_for(transcription_future, timeout=10)
-
-            if not question:
-                print("using speech recognition instead")
-                question = recognize_speech_from_mic(language=self.langchain_handler.selected_language)
-
-            if question:
-                self.add_message(question, is_user=True)
-
-                # Process with LangChain
-                langchain_future = loop.run_in_executor(executor, self.langchain_handler.get_response, question)
-
-                # Get LangChain result (with timeout)
-                response = await asyncio.wait_for(langchain_future, timeout=20)
-
-                self.add_message(response['answer'], is_user=False)
-
-                # Speak the answer
-                await speak(response['answer'], lang=self.langchain_handler.selected_language)
-
-        except asyncio.TimeoutError:
-            self.status_text = "Processing timed out"
-        except Exception as e:
-            self.status_text = f"Error: {e}"
-        finally:
-            self.reset_status()
-            executor.shutdown(wait=False)  # Do not wait for completion
-        
+        self.reset_status()
 
     def reset_status(self):
         self.status_text = 'Ready'
