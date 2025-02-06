@@ -316,7 +316,7 @@ class AssistantUI(BoxLayout):
 class AssistantApp(App):
     def build(self):
         Window.size = (640, 480)  # Set the window size to match the 3.5" display resolution
-        Window.fullscreen = False  # Enable fullscreen mode
+        Window.fullscreen = True  # Enable fullscreen mode
         print("Building AssistantUI...")
         
         # Force Kivy to refresh input configuration (touch events)
