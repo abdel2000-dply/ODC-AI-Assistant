@@ -247,9 +247,11 @@ class AssistantUI(BoxLayout):
         reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=44100)
         
         # Amplify the audio
-        amplified_audio = (reduced_noise_audio / np.max(np.abs(reduced_noise_audio))).astype(np.int16)
+        # amplified_audio = (reduced_noise_audio / np.max(np.abs(reduced_noise_audio))).astype(np.int16)
 
-        wav.write(file_name, 44100, amplified_audio)
+        # wav.write(file_name, 44100, amplified_audio)
+        wav.write(file_name, 44100, reduced_noise_audio.astype(np.int16))
+
         print(f"Recording saved as '{file_name}'.")
 
     async def process_audio(self):
