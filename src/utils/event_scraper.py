@@ -73,7 +73,7 @@ class EventScraper:
         print(f"Saving events to {self.events_file}")
         events_data = {
             "trainings": [{
-                "info": "This is a list of upcoming trainings/events/formation in ODC Agadir",
+                "info": "Active upcoming - This is a list of upcoming trainings/events/formation in ODC Agadir",
                 "title": event.title,
                 "start_date": event.start_date,
                 "end_date": event.end_date,
