@@ -58,12 +58,12 @@
               "description": "The Autonomous Insect Detection Drone was implemented during the 2024 summer challenge at fablab ODC Agadir, provides early warning of pest infestations in tomato crops, identifying insect presence before damage is visible to the naked eye."
             },
             {
-              "name": "Smart home automation",
-              "description": "A system to automate home appliances like lights, fans, and thermostat using a smartphone app."
-            },
-            {
               "name": "ODAC - Early Cardiac Alert Bracelet",
               "description": "This medical bracelet detects heart attacks up to 1 minute and 30 seconds before they strike, providing crucial early warning that enables rapid response and potentially life-saving intervention. A game-changer for hospitals and individuals alike."
+            },
+            {
+              "name": "Smart home automation",
+              "description": "A system to automate home appliances like lights, fans, and thermostat using a smartphone app."
             },
             {
               "name": "Raspberry Pi Based Emotion Recognition System",
@@ -87,7 +87,7 @@
             },
             {
               "name": "AI Voice Assistant with Raspberry Pi",
-              "description": "A voice assistant powered by AI and Raspberry Pi using rag, helps visitors navigate the fablab solidaire answering questions and help with materials availble and trainings."
+              "description": "A voice assistant powered by AI and Raspberry Pi using rag, helps visitors navigate the fablab solidaire answering questions and help with materials availble and trainings. was implemented during the project maker program."
             }
           ],
           "keywords": [
@@ -232,13 +232,6 @@
           "Prototyping",
           "3D Printing",
           "Laser Cutting",
-          "Manufacturing",
-          "Coding",
-          "Programming",
-          "Web Development",
-          "App Development",
-          "Software Development",
-          "Hardware Development",
           "Electronics",
           "Automation",
           "Machine Learning",
