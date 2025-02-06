@@ -22,3 +22,6 @@ numpy
 # Web scraping
 selenium
 webdriver-manager
+
+# Fuzzy string matching
+pip Install fuzzywuzzy python-Levenshtein
