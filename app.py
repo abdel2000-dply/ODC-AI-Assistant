@@ -179,7 +179,7 @@ class AssistantUI(BoxLayout):
     is_recording = BooleanProperty(False)
     visualizer_angle = NumericProperty(0)  # For the recording animation
 
-    languages = ['English', 'French']
+    languages = ['English',]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
