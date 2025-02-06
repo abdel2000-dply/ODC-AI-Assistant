@@ -6,7 +6,7 @@ VECTOR_DB_PATH = DATA_DIR / "vectorstore"
 
 # Vector DB settings
 # Reduce these values for Pi
-CHUNK_SIZE = 350  # Increased chunk size
+CHUNK_SIZE = 500  # Increased chunk size
 CHUNK_OVERLAP = 50  # Increased overlap
 
 # Ensure directories exist
