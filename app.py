@@ -243,7 +243,8 @@ class AssistantUI(BoxLayout):
     
     async def get_transcription(self):
          # Ensure transcribe_audio_with_groq updates the UI first
-        question = await asyncio.to_thread(transcribe_audio_with_groq, "live_audio.wav", self.langchain_handler.selected_language)
+        question = recognize_speech_from_mic(language=self.langchain_handler.selected_language)
+        # question = await asyncio.to_thread(transcribe_audio_with_groq, "live_audio.wav", self.langchain_handler.selected_language)
         if not question:
             print("using speech recognition instead")
             question = recognize_speech_from_mic(language=self.langchain_handler.selected_language)
