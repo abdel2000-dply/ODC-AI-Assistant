@@ -250,7 +250,7 @@ class AssistantUI(BoxLayout):
         reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=44100)
         
         # Amplify the audio
-        amplified_audio = (reduced_noise_audio / np.max(np.abs(reduced_noise_audio))).astype(np.float32)
+        amplified_audio = (reduced_noise_audio / np.max(np.abs(reduced_noise_audio))).astype(np.float64)
 
         wav.write(file_name, 44100, amplified_audio)
         print(f"Recording saved as '{file_name}'.")
