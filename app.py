@@ -253,7 +253,7 @@ class AssistantUI(BoxLayout):
         audio_float = reduced_noise_audio.astype(np.float32)
 
         # Apply a scaling factor
-        scaling_factor = 40  # Adjust this scaling factor to control volume
+        scaling_factor = 25  # Adjust this scaling factor to control volume
         scaled_audio = audio_float * scaling_factor
 
         # Clip values that exceed the range of int16
