@@ -110,13 +110,21 @@ def record_audio_to_file_stream(frames, file_name="live_audio.wav", sample_rate=
 def transcribe_audio_with_groq(audio_file="live_audio.wav", language="en"):
     """Transcribes audio using Groq API."""
     client = Groq(api_key=groq_api_key)
+        
     with open(audio_file, "rb") as file:
-        transcription = client.audio.transcriptions.create(
-            file=(audio_file, file.read()),
-            model="whisper-large-v3",  # Specify the model
-            language=language,  # Specify the language
-            response_format="text"          # Use "text" for a simple string response
-        )
+        if language == "en":
+            transcription = client.audio.transcriptions.create(
+                file=(audio_file, file.read()),
+                model="distil-whisper-large-v3-en",  # Specify the model
+                response_format="text"          # Use "text" for a simple string response
+            )
+        else:
+            transcription = client.audio.transcriptions.create(
+                file=(audio_file, file.read()),
+                model="whisper-large-v3",  # Specify the model
+                language=language,  # Specify the language
+                response_format="text"          # Use "text" for a simple string response
+            )
     return transcription  # Returns the plain transcription text
 
 def play_audio_file(file_name):
