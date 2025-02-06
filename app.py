@@ -226,7 +226,7 @@ class AssistantUI(BoxLayout):
         self.status_text = 'Recording...'
         self.start_visualizer_animation()
         self.audio_frames = []
-        self.audio_stream = sd.InputStream(samplerate=44100, channels=1, dtype='float32', callback=self.audio_callback)
+        self.audio_stream = sd.InputStream(samplerate=44100, channels=1, dtype='int16', callback=self.audio_callback)
         self.audio_stream.start()
 
     def audio_callback(self, indata, frames, time, status):
@@ -247,7 +247,7 @@ class AssistantUI(BoxLayout):
         reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=44100)
         
         # Amplify the audio
-        amplified_audio = (reduced_noise_audio / np.max(np.abs(reduced_noise_audio))).astype(np.float32)
+        amplified_audio = (reduced_noise_audio / np.max(np.abs(reduced_noise_audio))).astype(np.int16)
 
         wav.write(file_name, 44100, amplified_audio)
         print(f"Recording saved as '{file_name}'.")
