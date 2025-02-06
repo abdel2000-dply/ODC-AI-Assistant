@@ -24,6 +24,7 @@ from kivy.uix.dropdown import DropDown
 from src.utils.utils import transcribe_audio_with_groq, recognize_speech_from_mic, speak  # Import updated functions
 from src.assistant import LangChainHandler
 import asyncio
+import concurrent.futures
 
 Builder.load_string('''
 <AssistantUI>:
@@ -33,7 +34,7 @@ Builder.load_string('''
         Rectangle:
             pos: self.pos
             size: self.size
-    
+
     BoxLayout:
         orientation: 'vertical'
         padding: [20, 30]
@@ -69,7 +70,7 @@ Builder.load_string('''
                 font_size: '20sp'
                 color: (0.7, 0.7, 0.7, 1) # light gray
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-            
+
             # Recording status Icon
             Label:
                 text: '●' if root.is_recording else ''
@@ -78,7 +79,7 @@ Builder.load_string('''
                 size_hint_x: None
                 width: 20
                 pos_hint: {'center_y': 0.5}
-                
+
 
         # Language Selection
         BoxLayout:
@@ -116,12 +117,12 @@ Builder.load_string('''
             size_hint_y: 0.2
             orientation: 'vertical'
             spacing: 10
-            
+
             Widget: # Recording Visualizer Container
                 size_hint: None, None
                 size: 60, 60
                 pos_hint: {'center_x': 0.5}
-                
+
                 canvas:
                     Color:
                         rgba: (1, 0, 0, 0.8) if root.is_recording else (1, 0.5, 0, 0.8) # Red/Orange
@@ -177,9 +178,9 @@ class AssistantUI(BoxLayout):
     current_lang = StringProperty('English')
     is_recording = BooleanProperty(False)
     visualizer_angle = NumericProperty(0)  # For the recording animation
-    
+
     languages = ['English', 'French', 'Arabic']
-    
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.animation_event = None
@@ -187,7 +188,7 @@ class AssistantUI(BoxLayout):
         Window.clearcolor = (0.1, 0.1, 0.1, 1)  # Set background to dark black
         self.audio_frames = []
         self.langchain_handler = LangChainHandler()
-        
+
         # set lang to default value
         self.set_current_lang(self.langchain_handler.selected_language)
 
@@ -197,7 +198,7 @@ class AssistantUI(BoxLayout):
             btn = Button(text=lang, size_hint_y=None, height=40, background_normal='',background_color= (0.3, 0.3, 0.3, 1))
             btn.bind(on_release=lambda btn, l=lang: self.language_selection(l))
             self.language_dropdown.add_widget(btn)
-    
+
     def set_current_lang(self, lang):
         for key, value in self.langchain_handler.SUPPORTED_LANGUAGES.items():
             if value['code'] == lang:
@@ -206,7 +207,7 @@ class AssistantUI(BoxLayout):
 
     def show_language_dropdown(self):
         self.language_dropdown.open(self.children[0].children[1].children[0])
-    
+
     def language_selection(self, lang):
         self.current_lang = lang
         for key, value in self.langchain_handler.SUPPORTED_LANGUAGES.items():
@@ -238,45 +239,35 @@ class AssistantUI(BoxLayout):
         self.audio_stream.stop()
         self.audio_stream.close()
         self.save_audio_to_file()
-        Clock.schedule_once(lambda dt: asyncio.run(self.process_audio()), 1)
-
-    def save_audio_to_file(self, file_name="live_audio.wav"):
-        audio_data = np.concatenate(self.audio_frames, axis=0).flatten()
-        
-        # Apply noise reduction
-        reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=44100)
-        
-        # Amplify the audio
-        # amplified_audio = (reduced_noise_audio / np.max(np.abs(reduced_noise_audio))).astype(np.int16)
-
-        # wav.write(file_name, 44100, amplified_audio)
-        audio_float = reduced_noise_audio.astype(np.float32)
-
-        # Apply a scaling factor
-        scaling_factor = 25  # Adjust this scaling factor to control volume
-        scaled_audio = audio_float * scaling_factor
-
-        # Clip values that exceed the range of int16
-        max_value = np.iinfo(np.int16).max
-        min_value = np.iinfo(np.int16).min
-        scaled_audio = np.clip(scaled_audio, min_value, max_value)
-
-        wav.write(file_name, 44100, scaled_audio.astype(np.int16))
-
-        print(f"Recording saved as '{file_name}'.")
-
-    async def process_audio(self):
-        question = transcribe_audio_with_groq(audio_file="live_audio.wav", language=self.langchain_handler.selected_language)
+        Clock.schedule_once(lambda dt: asyncio.run(self.get_transcription()), 0.1) # Short Delay
+    
+    async def get_transcription(self):
+         # Ensure transcribe_audio_with_groq updates the UI first
+        question = await asyncio.to_thread(transcribe_audio_with_groq, "live_audio.wav", self.langchain_handler.selected_language)
         if not question:
             print("using speech recognition instead")
             question = recognize_speech_from_mic(language=self.langchain_handler.selected_language)
-        if question:
-             self.add_message(question, is_user=True)
-             response = await asyncio.to_thread(self.langchain_handler.get_response, question)
-             self.add_message(response['answer'], is_user=False)
-             await speak(response['answer'], lang=self.langchain_handler.selected_language)
 
+        if question:
+            self.add_message(question, is_user=True) # Add message
+            Clock.schedule_once(lambda dt: asyncio.run(self.process_audio(question)), 0.1) # and then prompt ai 
         self.reset_status()
+
+    async def process_audio(self, question):
+        response = await asyncio.to_thread(self.langchain_handler.get_response, question)
+        self.add_message(response['answer'], is_user=False)
+        await speak(response['answer'], lang=self.langchain_handler.selected_language)
+        self.reset_status()
+
+    def save_audio_to_file(self, file_name="live_audio.wav"):
+        audio_data = np.concatenate(self.audio_frames, axis=0).flatten()
+
+        # Apply noise reduction
+        reduced_noise_audio = nr.reduce_noise(y=audio_data, sr=44100)
+
+        wav.write(file_name, 44100, reduced_noise_audio.astype(np.int16))
+
+        print(f"Recording saved as '{file_name}'.")
 
     def reset_status(self):
         self.status_text = 'Ready'
@@ -302,22 +293,22 @@ class AssistantApp(App):
         Window.size = (640, 480)  # Set the window size to match the 3.5" display resolution
         Window.fullscreen = True  # Enable fullscreen mode
         print("Building AssistantUI...")
-        
+
         # Force Kivy to refresh input configuration (touch events)
         from kivy.config import Config
         import os
-        
+
         config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.ini')
 
         if os.path.exists(config_path):
-           Config.read(config_path)
-           Config.set('input', 'mouse', 'mouse')
-           Config.set('kivy', 'window_size', '640x480')
-           Config.set('kivy', 'window_icon', 'None')
-           Config.write()
+            Config.read(config_path)
+            Config.set('input', 'mouse', 'mouse')
+            Config.set('kivy', 'window_size', '640x480')
+            Config.set('kivy', 'window_icon', 'None')
+            Config.write()
         else:
             print(f"Config file not found at {config_path}")
-        
+
         return AssistantUI()
 
 if __name__ == '__main__':
